@@ -52,8 +52,6 @@ body{width:100%;background:var(--bg);color:var(--text);font-family:var(--font-b)
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
 .theme-btn{width:32px;height:32px;border-radius:4px;border:1px solid var(--line2);background:var(--bg4);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all 0.15s;flex-shrink:0;}
 .theme-btn:hover{border-color:var(--line3);color:var(--text);}
-.admin-btn-open{font-family:var(--font-d);font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;padding:5px 13px;border-radius:4px;border:1px solid var(--line2);background:transparent;color:var(--text3);cursor:pointer;transition:all 0.15s;}
-.admin-btn-open:hover{border-color:var(--red);color:var(--red);}
 
 /* SHELL */
 .shell{display:grid;grid-template-columns:var(--sidebar) 1fr;height:calc(100vh - var(--hdr));margin-top:var(--hdr);width:100%;overflow:hidden;}
@@ -168,31 +166,6 @@ body{width:100%;background:var(--bg);color:var(--text);font-family:var(--font-b)
 .driver-card.dimmed{opacity:0.35;transform:none !important;filter:saturate(0.3);}
 
 /* ADMIN PANEL */
-.admin-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center;}
-.admin-overlay.open{display:flex;}
-.admin-modal{background:var(--bg2);border:1px solid var(--line2);border-radius:12px;width:900px;max-height:85vh;overflow-y:auto;padding:28px;}
-.admin-title{font-family:var(--font-d);font-weight:900;font-size:22px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
-.admin-sub{font-size:13px;color:var(--text3);margin-bottom:22px;}
-.admin-section{margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid var(--line);}
-.admin-section:last-child{border-bottom:none;margin-bottom:0;}
-.admin-section-title{font-family:var(--font-d);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text2);margin-bottom:12px;}
-.admin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
-.admin-col-header{font-family:var(--font-d);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);text-align:center;padding-bottom:4px;}
-.admin-input{background:var(--bg4);border:1px solid var(--line2);border-radius:4px;padding:6px 9px;font-size:13px;color:var(--text);font-family:var(--font-b);width:100%;}
-.admin-input:focus{outline:none;border-color:var(--red);}
-.admin-btn{font-family:var(--font-d);font-size:14px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;padding:9px 22px;border-radius:5px;border:none;cursor:pointer;transition:all 0.15s;}
-.admin-btn-save{background:var(--red);color:#fff;}
-.admin-btn-save:hover{background:#a50f26;}
-.admin-btn-cancel{background:var(--bg4);color:var(--text2);border:1px solid var(--line2);}
-.admin-btn-cancel:hover{background:var(--bg3);color:var(--text);}
-.admin-msg{font-size:13px;padding:9px 13px;border-radius:5px;margin-top:12px;display:none;}
-.admin-msg.ok{background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);color:#2ecc71;}
-.admin-msg.err{background:rgba(200,16,46,0.1);border:1px solid rgba(200,16,46,0.3);color:var(--red);}
-.loading-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
-.loading-overlay.show{display:flex;}
-.loading-spinner{width:38px;height:38px;border:3px solid var(--line2);border-top-color:var(--red);border-radius:50%;animation:spin 0.8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.loading-text{font-family:var(--font-d);font-size:15px;font-weight:600;color:var(--text2);letter-spacing:0.5px;}
 
 /* DRIVER EXPAND PANEL */
 .driver-expand{display:none;grid-column:1/-1;background:var(--bg2);border:1px solid var(--line2);border-radius:var(--radius);overflow:hidden;}
@@ -281,58 +254,6 @@ body{width:100%;background:var(--bg);color:var(--text);font-family:var(--font-b)
 <div class="loading-overlay" id="loading">
   <div class="loading-spinner"></div>
   <div class="loading-text">Loading live data…</div>
-</div>
-
-<!-- ADMIN MODAL -->
-<div class="admin-overlay" id="admin-overlay">
-  <div class="admin-modal">
-    <div class="admin-title">Update Race Data</div>
-    <div class="admin-sub">Enter data from the official NASCAR points report after each race. Changes are saved and shared with all viewers instantly.</div>
-
-    <div class="admin-section">
-      <div class="admin-section-title">Race Info</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;">
-        <div>
-          <div class="admin-col-header">Races Completed</div>
-          <input class="admin-input" type="number" id="a-races-done" min="0" max="33">
-        </div>
-        <div>
-          <div class="admin-col-header">Last Race</div>
-          <input class="admin-input" type="text" id="a-last-race" placeholder="e.g. Bristol · Apr 11">
-        </div>
-        <div>
-          <div class="admin-col-header">Series Leader (name)</div>
-          <input class="admin-input" type="text" id="a-leader-name" placeholder="e.g. Allgaier">
-        </div>
-        <div>
-          <div class="admin-col-header">Leader Points</div>
-          <input class="admin-input" type="number" id="a-leader-pts">
-        </div>
-      </div>
-    </div>
-
-    <div class="admin-section">
-      <div class="admin-section-title">Driver Points — Cumulative (one per race, comma-separated)</div>
-      <div id="driver-inputs"></div>
-    </div>
-
-    <div class="admin-section">
-      <div class="admin-section-title">Chase Standings — Top 20 (Name · Car · Points, one per line)</div>
-      <textarea class="admin-input" id="a-standings" rows="20" style="width:100%;resize:vertical;font-family:monospace;font-size:11px;line-height:1.6;"></textarea>
-      <div style="font-size:10px;color:var(--text3);margin-top:4px;">Format: <code style="color:var(--text2);">Justin Allgaier · 7 · 422</code> — one driver per line, mark JGR cars with * e.g. <code style="color:var(--text2);">Brandon Jones* · 20 · 247</code></div>
-    </div>
-
-    <div class="admin-section">
-      <div class="admin-section-title">Cutline by Race (P12 cumulative points, comma-separated)</div>
-      <input class="admin-input" type="text" id="a-cutline-by-race" placeholder="26, 43, 70, 94, 110, 132, 164, 203, ...">
-    </div>
-
-    <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
-      <button class="admin-btn admin-btn-save" onclick="saveData()">Save & Publish</button>
-      <button class="admin-btn admin-btn-cancel" onclick="closeAdmin()">Cancel</button>
-      <div class="admin-msg" id="admin-msg"></div>
-    </div>
-  </div>
 </div>
 
 <div class="shell">
@@ -587,6 +508,711 @@ function loadData() {
   DATA = DEFAULT_DATA;
   mergeDriverMeta();
   renderAll();
+}
+
+function mergeDriverMeta() {
+  DRIVERS = DRIVER_META.map(meta => {
+    const d = DATA.drivers[meta.id] || {pts:[], rank:[]};
+    const m = (DATA.driverMeta||{})[meta.id] || {};
+    return {
+      ...meta,
+      // Override static fields with stored values if present
+      finish:    m.finish    || meta.finish,
+      starts:    m.starts    || meta.starts,
+      wins:      m.wins      !== undefined ? m.wins      : (meta.wins||0),
+      stageWins: m.stageWins !== undefined ? m.stageWins : (meta.stageWins||0),
+      stagePts:  m.stagePts  !== undefined ? m.stagePts  : (meta.stagePts||0),
+      stagePtsPerRace: m.stagePtsPerRace || meta.stagePtsPerRace || [],
+      lapsLed: m.lapsLed || meta.lapsLed || [],
+      bonusPts: m.bonusPts || meta.bonusPts || [],
+      avgRunPos: m.avgRunPos || meta.avgRunPos || [],
+      s1AvgPos: m.s1AvgPos || meta.s1AvgPos || [],
+      s2AvgPos: m.s2AvgPos || meta.s2AvgPos || [],
+      s3AvgPos: m.s3AvgPos || meta.s3AvgPos || [],
+      // Always extend pts/rank arrays to 33
+      pts:  [...(d.pts  || []), ...Array(33).fill(null)].slice(0,33),
+      rank: [...(d.rank || []), ...Array(33).fill(null)].slice(0,33),
+    };
+  });
+  activeD = new Set(DRIVERS.map(d => d.id));
+}
+
+// ─────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────
+const lPts  = d => { for(let i=DATA.racesDone-1;i>=0;i--) if(d.pts[i]!==null) return d.pts[i]; return 0; };
+const lRank = d => { for(let i=DATA.racesDone-1;i>=0;i--) if(d.rank[i]!==null) return d.rank[i]; return null; };
+const gain  = (d,i) => { if(d.pts[i]===null) return null; let prev=0; for(let j=i-1;j>=0;j--){if(d.pts[j]!==null){prev=d.pts[j];break;}} return d.pts[i]-prev; };
+const nRaced= d => d.pts.filter((p,i) => i<DATA.racesDone && p!==null).length;
+const avgP  = d => { const n=nRaced(d); return n ? (lPts(d)/n).toFixed(1) : '—'; };
+const avgF  = d => { const v=(d.finish||[]).filter(f=>f!==null); return v.length ? (v.reduce((a,b)=>a+b,0)/v.length).toFixed(1) : '—'; };
+const bestF = d => { const v=(d.finish||[]).filter(f=>f!==null); return v.length ? Math.min(...v) : '—'; };
+const avgS  = d => { const v=(d.starts||[]).filter(s=>s!==null); return v.length ? (v.reduce((a,b)=>a+b,0)/v.length).toFixed(1) : '—'; };
+const poles = d => (d.starts||[]).filter(s=>s===1).length;
+const top5  = d => (d.finish||[]).filter(f=>f!==null && f<=5).length;
+const top10 = d => (d.finish||[]).filter(f=>f!==null && f<=10).length;
+const dnf   = d => (d.finish||[]).filter((f,i)=>i<DATA.racesDone && f===null && (d.starts||[])[i]!==null).length;
+const out20 = d => (d.finish||[]).filter(f=>f!==null && f>20).length;
+const lapsLedTotal = d => (d.lapsLed||[]).reduce((a,b)=>a+b,0);
+const projP = (d,t) => { const n=nRaced(d); if(!n) return '—'; return Math.round(lPts(d)+(lPts(d)/n)*(t-DATA.racesDone)); };
+const CUTLINE = () => DATA.cutlineByRace[DATA.racesDone-1] || 0;
+
+// ─────────────────────────────────────────
+// RENDER ALL
+// ─────────────────────────────────────────
+function renderAll() {
+  updateHeaderPills();
+  updateSidebar();
+  buildDriverCards();
+  buildChaseList();
+  buildMetricsTable();
+  buildMetricsPage();
+  buildMainMetricBtns();
+  rebuildCharts();
+}
+
+function updateHeaderPills() {
+  const rd = DATA.racesDone;
+  document.getElementById('hdr-race').textContent = rd;
+  const lastRaceIdx = DATA.racesDone - 1;
+  const lastRaceTrack = lastRaceIdx >= 0 && RACES[lastRaceIdx] ? RACES[lastRaceIdx].track : (DATA.lastRace || '—').split('·')[0].trim();
+  document.getElementById('hdr-last').textContent = lastRaceTrack;
+  const nextRace = DATA.racesDone < 33 ? RACES[DATA.racesDone] : null;
+  document.getElementById('hdr-next').textContent = nextRace ? nextRace.track : '—';
+  document.getElementById('hdr-leader').textContent = `${DATA.leaderName} ${DATA.leaderPts} pts`;
+  document.getElementById('hdr-cutline').textContent = `P12 · ${CUTLINE()} pts`;
+  document.getElementById('metrics-note').textContent = `Through Race ${rd} · projections at current pace`;
+  document.getElementById('metrics-marker').textContent = `Through Race ${rd}`;
+}
+
+function updateSidebar() {
+  const rd = DATA.racesDone;
+
+  document.getElementById('sb-reg-prog').textContent = `${rd} / 24`;
+  document.getElementById('sb-full-prog').textContent = `${rd} / 33`;
+  document.getElementById('sb-reg-fill').style.width = `${Math.min((rd/24)*100,100)}%`;
+  document.getElementById('sb-full-fill').style.width = `${(rd/33)*100}%`;
+  document.getElementById('sb-to-cutoff').textContent = Math.max(0, 24 - rd);
+}
+
+function buildDriverCards() {
+  const cut = CUTLINE();
+  const html = DRIVERS.map(d => {
+    const pts=lPts(d), rank=lRank(d);
+    const isC=rank&&rank<=12, isBub=rank===12;
+    const diff=pts-cut;
+    let badges='';
+    if(isBub) badges+=`<span class="badge" style="background:${d.color}33;color:${d.color};border:1px solid ${d.color}66;">On Cutline</span>`;
+    else if(isC) badges+=`<span class="badge" style="background:${d.color}33;color:${d.color};border:1px solid ${d.color}66;">In Chase</span>`;
+    else badges+=`<span class="badge b-out">Outside Chase</span>`;
+    if(d.wins) badges+=`<span class="badge" style="background:${d.color};color:#fff;">Win</span>`;
+    if(d.rookie) badges+=`<span class="badge b-rookie">Rookie</span>`;
+    const dc=isBub?'gold':(diff>=0?'green':'red');
+    const dt=isBub?'On cutline':(diff>0?`+${diff}`:`${diff}`);
+    return `<div class="driver-card" data-id="${d.id}" onclick="expandDriver('${d.id}')" style="border-left:5px solid ${d.color};background:linear-gradient(105deg,${d.color}12 0%,var(--bg3) 40%);cursor:pointer;">
+      <div class="dc-top">
+        <div class="dc-num" style="color:${d.color}cc;">#${d.car}</div>
+        <div><div class="dc-name">${d.first} ${d.last}</div><div class="dc-meta">JGR #${d.car} · Toyota GR Supra</div><div class="dc-badges">${badges}</div></div>
+      </div>
+      <div class="dc-stats">
+        <div class="dc-stat"><div class="dc-stat-l">Points</div><div class="dc-stat-v" style="color:${d.color};">${pts||'—'}</div></div>
+        <div class="dc-stat"><div class="dc-stat-l">Rank</div><div class="dc-stat-v ${isC?'red':''}">${rank?`P${rank}`:'—'}</div></div>
+        <div class="dc-stat"><div class="dc-stat-l">vs Cut</div><div class="dc-stat-v ${dc}">${pts?dt:'—'}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('driver-cards-dash').innerHTML = html;
+}
+
+let expandChart = null;
+let expandedId = null;
+
+function expandDriver(id) {
+  const d = DRIVERS.find(x => x.id === id);
+  if(!d) return;
+
+  // Toggle closed if clicking same driver
+  if(expandedId === id) { closeExpand(); return; }
+  expandedId = id;
+
+  // Highlight selected card
+  document.querySelectorAll('.driver-card').forEach(c => {
+    c.classList.toggle('dimmed', c.dataset.id !== id);
+    c.classList.toggle('active-card', c.dataset.id === id);
+  });
+
+  const cut = CUTLINE(), rd = DATA.racesDone;
+  const pts = lPts(d), rank = lRank(d);
+  const diff = pts - cut;
+  const rate = nRaced(d) ? pts / nRaced(d) : 0;
+  const p24 = projP(d, 24);
+  const ptsNeeded = Math.max(0, (cut + Math.round(rate * (24 - rd))) - pts);
+
+  // Stats panel
+  const statRow = (label, value, color='', sub='') =>
+    `<div class="de-stat">
+      <div class="de-stat-l">${label}</div>
+      <div class="de-stat-v"${color?` style="color:${color};"`:''}>${value}</div>
+      ${sub ? `<div class="de-stat-s">${sub}</div>` : ''}
+    </div>`;
+
+  document.getElementById('de-stats').innerHTML = `
+    <div style="font-family:var(--font-d);font-weight:900;font-size:18px;color:${d.color};letter-spacing:1px;margin-bottom:6px;">#${d.car} · ${d.first} ${d.last}</div>
+    ${statRow('Points', pts||'—', d.color, `P${rank||'—'} · ${nRaced(d)} starts`)}
+    ${statRow('vs Cutline', pts?(diff>0?'+':'')+diff:'—', diff>=0?'#2ecc71':'var(--red)', `Cutline ${cut} pts`)}
+    ${statRow('Avg Pts / Race', avgP(d), 'var(--gold)')}
+    ${statRow('Avg Start · Finish', `${avgS(d)} · ${avgF(d)}`)}
+    ${statRow('Wins · Poles', `${d.wins||0} · ${poles(d)}`, 'var(--gold)')}
+    ${statRow('Stage Wins · Pts', `${d.stageWins||0} · ${d.stagePts||0}`)}
+    ${statRow('Top 5 · Top 10', `${top5(d)} · ${top10(d)}`)}
+    ${statRow('Laps Led', lapsLedTotal(d)||'—')}
+    ${statRow('Avg Run Pos', (() => { const v=(d.avgRunPos||[]).filter(x=>x!==null); return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):'—'; })())}
+    ${statRow('Proj R24 · R33', `${p24} · ${projP(d,33)}`, typeof p24==='number'&&p24>=cut?'#2ecc71':'var(--red)')}
+  `;
+
+  // Race log
+  const rows = RACES.slice(0, rd).map((r, i) => {
+    const fin = (d.finish||[])[i], str = (d.starts||[])[i];
+    const cumPts = d.pts[i], rnk = d.rank[i];
+    const stgPts = (d.stagePtsPerRace||[])[i] ?? null;
+    const ledLaps = (d.lapsLed||[])[i] ?? 0;
+    const bonPts = (d.bonusPts||[])[i] ?? 0;
+    const arp = (d.avgRunPos||[])[i] ?? null;
+    const ptsGain = gain(d,i);
+    if(str === null && fin === null) return `<tr><td>R${r.n}</td><td style="color:var(--text3);">${r.short}</td><td colspan="9" style="color:var(--text3);text-align:center;font-size:10px;">DNS</td></tr>`;
+    const isWin = fin === 1;
+    return `<tr>
+      <td style="color:var(--text3);">R${r.n}</td>
+      <td>${r.short}</td>
+      <td>${str !== null ? str : '—'}</td>
+      <td style="color:${isWin ? 'var(--gold)' : 'var(--text)'};">${fin !== null ? fin : '—'}${isWin ? ' ★' : ''}</td>
+      <td style="color:var(--text2);">${arp !== null ? arp.toFixed(1) : '—'}</td>
+      <td style="color:${d.color};">${ptsGain !== null ? '+' + ptsGain : '—'}</td>
+      <td style="color:${stgPts > 0 ? 'var(--gold)' : 'var(--text3)'};">${stgPts !== null ? stgPts : '—'}</td>
+      <td style="color:${bonPts > 0 ? '#2ecc71' : 'var(--text3)'};">${bonPts || '—'}</td>
+      <td style="color:${ledLaps > 0 ? d.color : 'var(--text3)'};">${ledLaps || '—'}</td>
+      <td>${cumPts !== null ? cumPts : '—'}</td>
+      <td style="color:${rnk&&rnk<=12?'var(--red)':'var(--text3)'};">${rnk ? 'P'+rnk : '—'}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('de-tbody').innerHTML = rows;
+
+  // Chart panel
+  const panel = document.getElementById('driver-expand');
+  panel.classList.add('open');
+  panel.style.borderColor = d.color + '44';
+
+  // Build metric selector buttons
+  const metrics = [
+    { key: 'pts',       label: 'Cum. Points' },
+    { key: 'start',     label: 'Start Pos' },
+    { key: 'finish',    label: 'Finish Pos' },
+    { key: 'ptsGained', label: 'Pts / Race' },
+    { key: 'stagePts',  label: 'Stage Pts' },
+    { key: 'lapsLed',   label: 'Laps Led' },
+    { key: 'rank',      label: 'Chase Rank' },
+    { key: 'avgRunPos', label: 'Avg Run Pos' },
+    { key: 's1AvgPos',  label: 'S1 Avg Pos' },
+    { key: 's2AvgPos',  label: 'S2 Avg Pos' },
+    { key: 's3AvgPos',  label: 'S3 Avg Pos' },
+  ];
+
+  document.getElementById('de-metric-btns').innerHTML = metrics.map(m =>
+    `<button class="de-metric-btn${m.key==='pts'?' active':''}" style="${m.key==='pts'?`color:${d.color};`:''};"
+      onclick="setExpandMetric('${m.key}')">${m.label}</button>`
+  ).join('');
+
+  buildExpandChart('pts');
+}
+
+function setExpandMetric(key) {
+  document.querySelectorAll('.de-metric-btn').forEach(b => {
+    const isActive = b.onclick.toString().includes(`'${key}'`);
+    b.classList.toggle('active', isActive);
+    const d = DRIVERS.find(x => x.id === expandedId);
+    b.style.color = isActive && d ? d.color : '';
+  });
+  buildExpandChart(key);
+}
+
+function buildExpandChart(key) {
+  const d = DRIVERS.find(x => x.id === expandedId);
+  if(!d) return;
+  if(expandChart) { expandChart.destroy(); expandChart = null; }
+
+  const rd = DATA.racesDone;
+  const gc = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.05)', tc = isLight ? '#9090a8' : '#707080';
+  const tt = { backgroundColor:isLight?'#ffffff':'#18181e', borderColor:isLight?'rgba(0,0,0,0.15)':'rgba(255,255,255,0.1)', borderWidth:1, titleColor:isLight?'#111118':'#f0f0f0', bodyColor:isLight?'#3a3a52':'#8a8a9a', padding:8 };
+
+  const metricConfig = {
+    pts:       { label:'Cumulative Points', type:'line', reversed:false, cutline:true,
+                 data: RACES.slice(0,24).map((_,i) => d.pts[i] ?? null) },
+    finish:    { label:'Finish Position',   type:'line', reversed:true,
+                 data: RACES.slice(0,rd).map((_,i) => (d.finish||[])[i] ?? null) },
+    start:     { label:'Start Position',    type:'line', reversed:true,
+                 data: RACES.slice(0,rd).map((_,i) => (d.starts||[])[i] ?? null) },
+    ptsGained: { label:'Points per Race',   type:'line',  reversed:false,
+                 data: RACES.slice(0,rd).map((_,i) => gain(d,i)) },
+    stagePts:  { label:'Stage Points',      type:'bar',  reversed:false,
+                 data: RACES.slice(0,rd).map((_,i) => (d.stagePtsPerRace||[])[i] ?? null) },
+    lapsLed:   { label:'Laps Led',          type:'bar',  reversed:false,
+                 data: RACES.slice(0,rd).map((_,i) => (d.lapsLed||[])[i] ?? null) },
+    rank:      { label:'Chase Rank',        type:'line', reversed:true,
+                 data: RACES.slice(0,rd).map((_,i) => d.rank[i] ?? null) },
+    avgRunPos: { label:'Avg Running Position', type:'line', reversed:true,
+                 data: RACES.slice(0,rd).map((_,i) => (d.avgRunPos||[])[i] ?? null) },
+    s1AvgPos:  { label:'Stage 1 Avg Running Pos', type:'line', reversed:true,
+                 data: RACES.slice(0,rd).map((_,i) => (d.s1AvgPos||[])[i] ?? null) },
+    s2AvgPos:  { label:'Stage 2 Avg Running Pos', type:'line', reversed:true,
+                 data: RACES.slice(0,rd).map((_,i) => (d.s2AvgPos||[])[i] ?? null) },
+    s3AvgPos:  { label:'Stage 3 Avg Running Pos', type:'line', reversed:true,
+                 data: RACES.slice(0,rd).map((_,i) => (d.s3AvgPos||[])[i] ?? null) },
+  };
+
+  const cfg = metricConfig[key];
+  document.getElementById('de-chart-title').textContent = cfg.label;
+  const maLegend = document.getElementById('de-ma-legend');
+  if(maLegend) maLegend.style.display = key !== 'pts' ? 'inline-flex' : 'none';
+
+  const useCutoff = key === 'pts';
+  const labels = useCutoff
+    ? RACES.slice(0, 24).map(r => r.short)
+    : RACES.slice(0, rd).map(r => r.short);
+
+  const isLine = cfg.type === 'line';
+  const datasets = [
+    {
+      label: cfg.label,
+      data: cfg.data,
+      borderColor: d.color,
+      backgroundColor: isLine ? d.color + '18' : d.color + 'bb',
+      borderWidth: isLine ? 2.5 : 0,
+      borderRadius: isLine ? 0 : 3,
+      pointRadius: isLine ? 4 : 0,
+      pointHoverRadius: 6,
+      tension: isLine ? 0.35 : 0,
+      fill: false,
+      spanGaps: false,
+    }
+  ];
+
+  // Add 3-race moving average for per-race metrics (not cumulative)
+  if(key !== 'pts') {
+    const window = 3;
+    const maData = cfg.data.map((_, i) => {
+      const slice = cfg.data.slice(Math.max(0, i - window + 1), i + 1).filter(v => v !== null);
+      return slice.length >= 2 ? Math.round((slice.reduce((a,b) => a+b, 0) / slice.length) * 10) / 10 : null;
+    });
+    datasets.push({
+      label: '3-race avg',
+      data: maData,
+      borderColor: 'rgba(255,255,255,0.45)',
+      borderDash: [4, 3],
+      borderWidth: 1.5,
+      pointRadius: 0,
+      tension: 0.4,
+      fill: false,
+      spanGaps: true,
+      type: 'line',
+    });
+  }
+
+  if(cfg.cutline) {
+    datasets.push({
+      label: 'Cutline',
+      data: [...DATA.cutlineByRace.slice(0, rd), ...Array(24 - rd).fill(null)],
+      borderColor: '#D4A017', borderDash: [6,4], borderWidth: 1.5,
+      pointRadius: 0, fill: false, spanGaps: false, type: 'line',
+    });
+  }
+
+  const yOpts = { grid:{color:gc}, ticks:{color:tc, font:{size:10}} };
+  if(cfg.reversed) {
+    const vals = cfg.data.filter(v => v !== null);
+    const maxVal = vals.length ? Math.max(...vals) : 40;
+    yOpts.min = 1;
+    yOpts.max = maxVal + 2;
+  }
+
+  const tooltipCallbacks = {};
+
+  expandChart = new Chart(document.getElementById('de-canvas').getContext('2d'), {
+    type: cfg.type,
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend:{display:false}, tooltip: {...tt, callbacks: tooltipCallbacks} },
+      scales: {
+        x: { grid:{color:gc}, ticks:{color:tc, font:{size:10}} },
+        y: yOpts,
+      }
+    }
+  });
+}
+
+function closeExpand() {
+  expandedId = null;
+  document.getElementById('driver-expand').classList.remove('open');
+  document.querySelectorAll('.driver-card').forEach(c => {
+    c.classList.remove('dimmed', 'active-card');
+  });
+  if(expandChart) { expandChart.destroy(); expandChart = null; }
+}
+
+function buildChaseList() {
+  const el = document.getElementById('chase-list');
+  const standings = DATA.standings || [];
+  let html = '';
+  standings.forEach((s,i) => {
+    if(i===12) html+=`<div class="chase-cutline-sep">── Chase Cutline ──</div>`;
+    const d = s.jgr ? DRIVERS.find(dr=>dr.id===s.dId) : null;
+    const color = d ? d.color : 'var(--text3)';
+    const p12pts = standings[11]?.pts || 0;
+    const diff = s.pts - p12pts;
+    const dTxt = i<12 ? (i===11?'cutline':`+${diff}`) : `${diff}`;
+    const dClr = i<12 ? 'var(--text3)' : (i===12?'var(--gold)':'var(--red)');
+    html+=`<li class="chase-item">
+      <span class="ci-pos">${s.pos}</span>
+      <span class="ci-name"><span class="ci-dot" style="background:${color};"></span>${s.name}${s.jgr?` <span style="color:${color};font-size:9px;">JGR</span>`:''}</span>
+      <span class="ci-pts" style="${s.jgr?`color:${color};`:''}">${s.pts} <span style="font-size:10px;color:${dClr};">${dTxt}</span></span>
+    </li>`;
+  });
+  el.innerHTML = html;
+}
+
+function buildMetricsTable() {
+  const cut=CUTLINE(), ldr=DATA.leaderPts;
+  document.getElementById('metrics-tbody').innerHTML = DRIVERS.map(d=>{
+    const pts=lPts(d), rank=lRank(d), diff=pts-cut;
+    const p24=projP(d,24), p33=projP(d,33);
+    const isC=rank&&rank<=12;
+    return `<tr>
+      <td><div class="mt-d"><div class="mt-sw" style="background:${d.color};"></div>#${d.car} ${d.last}</div></td>
+      <td>${pts||'—'}</td>
+      <td class="${isC?'mv-r':''}">${rank?`P${rank}`:'—'}</td>
+      <td class="${diff>=0?'mv-gr':'mv-r'}">${pts?(diff>0?'+':'')+diff:'—'}</td>
+      <td class="mv-r">${pts?pts-ldr:'—'}</td>
+      <td>${avgP(d)}</td><td>${avgS(d)}</td><td>${avgF(d)}</td>
+      <td class="mv-g">${poles(d)}</td>
+      <td class="mv-g">${d.wins||0}</td>
+      <td class="mv-g">${d.stageWins||0}</td>
+      <td>${d.stagePts||0}</td>
+      <td class="${top5(d)>0?'mv-g':''}">${top5(d)}</td>
+      <td class="${top10(d)>0?'mv-g':''}">${top10(d)}</td>
+      <td class="${dnf(d)>0?'mv-r':''}">${dnf(d)}</td>
+      <td class="${out20(d)>0?'mv-r':''}">${out20(d)}</td>
+      <td class="${lapsLedTotal(d)>0?'mv-g':''}">${lapsLedTotal(d)}</td>
+      <td class="${typeof p24==='number'&&p24>=cut?'mv-gr':'mv-r'}">${p24}</td>
+      <td>${p33}</td>
+    </tr>`;
+  }).join('');
+}
+
+function buildMetricsPage() {
+  const cut=CUTLINE(), ldr=DATA.leaderPts, rd=DATA.racesDone;
+  document.getElementById('metrics-page-grid').innerHTML = DRIVERS.map(d=>{
+    const pts=lPts(d), rank=lRank(d), diff=pts-cut;
+    const p24=projP(d,24), p33=projP(d,33), isC=rank&&rank<=12;
+    const rows=[
+      {k:'Current Points',v:pts||'—',c:''},
+      {k:'Chase Rank',v:rank?`P${rank}`:'—',c:isC?'green':'red'},
+      {k:'Races Run',v:`${nRaced(d)} of ${rd}`,c:''},
+      {k:'Avg Points / Race',v:avgP(d),c:''},
+      {k:'Average Start',v:avgS(d),c:''},
+      {k:'Average Finish',v:avgF(d),c:''},
+      {k:'Poles',v:poles(d),c:poles(d)?'gold':''},
+      {k:'Race Wins',v:d.wins||0,c:d.wins?'gold':''},
+      {k:'Stage Wins',v:d.stageWins||0,c:d.stageWins?'gold':''},
+      {k:'Stage Points',v:d.stagePts||0,c:d.stagePts>0?'gold':''},
+      {k:'Top 5 Finishes',v:top5(d),c:top5(d)>0?'gold':''},
+      {k:'Top 10 Finishes',v:top10(d),c:top10(d)>0?'gold':''},
+      {k:'DNFs',v:dnf(d),c:dnf(d)>0?'red':''},
+      {k:'Finishes Outside Top 20',v:out20(d),c:out20(d)>0?'red':''},
+      {k:'Laps Led',v:lapsLedTotal(d),c:lapsLedTotal(d)>0?'gold':''},
+      {k:'vs Chase Cutline',v:pts?(diff>0?'+':'')+diff:'—',c:diff>=0?'green':'red'},
+      {k:'vs Series Leader',v:pts?pts-ldr:'—',c:'red'},
+      {k:'Projected at Race 24',v:p24,c:typeof p24==='number'&&p24>=cut?'green':'red'},
+      {k:'Projected at Race 33',v:p33,c:''},
+      {k:'Pts/race needed for cutline',v:pts&&nRaced(d)?((cut-pts)/(24-rd)).toFixed(1):'—',c:''},
+    ];
+    return `<div class="mc">
+      <div class="mc-hdr"><div class="mc-sw" style="background:${d.color};"></div><div class="mc-name">#${d.car} ${d.last}</div></div>
+      ${rows.map(r=>`<div class="mc-row"><span class="mc-key">${r.k}</span><span class="mc-val ${r.c}">${r.v}</span></div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────
+// CHARTS
+// ─────────────────────────────────────────
+const MAIN_METRICS = [
+  { key:'pts',        label:'Cum. Points',   reversed:false, cumulative:true  },
+  { key:'finish',     label:'Finish Pos',    reversed:true,  cumulative:false },
+  { key:'start',      label:'Start Pos',     reversed:true,  cumulative:false },
+  { key:'ptsGained',  label:'Pts / Race',    reversed:false, cumulative:false },
+  { key:'stagePts',   label:'Stage Pts',     reversed:false, cumulative:false },
+  { key:'lapsLed',    label:'Laps Led',      reversed:false, cumulative:false },
+  { key:'rank',       label:'Chase Rank',    reversed:true,  cumulative:false },
+  { key:'avgRunPos',  label:'Avg Run Pos',   reversed:true,  cumulative:false },
+  { key:'s1AvgPos',   label:'S1 Avg Pos',    reversed:true,  cumulative:false },
+  { key:'s2AvgPos',   label:'S2 Avg Pos',    reversed:true,  cumulative:false },
+  { key:'s3AvgPos',   label:'S3 Avg Pos',    reversed:true,  cumulative:false },
+];
+
+function getMetricData(d, key, i) {
+  switch(key) {
+    case 'pts':        return d.pts[i] ?? null;
+    case 'finish':     return (d.finish||[])[i] ?? null;
+    case 'start':      return (d.starts||[])[i] ?? null;
+    case 'ptsGained':  return gain(d, i);
+    case 'stagePts':   return (d.stagePtsPerRace||[])[i] ?? null;
+    case 'lapsLed':    return (d.lapsLed||[])[i] ?? null;
+    case 'rank':       return d.rank[i] ?? null;
+    case 'avgRunPos':  return (d.avgRunPos||[])[i] ?? null;
+    case 's1AvgPos':   return (d.s1AvgPos||[])[i] ?? null;
+    case 's2AvgPos':   return (d.s2AvgPos||[])[i] ?? null;
+    case 's3AvgPos':   return (d.s3AvgPos||[])[i] ?? null;
+    default: return null;
+  }
+}
+
+function setMainMetric(key) {
+  mainMetric = key;
+  document.querySelectorAll('.main-metric-btn').forEach(b => {
+    const active = b.dataset.key === key;
+    b.classList.toggle('active', active);
+    b.style.color = active ? '' : '';
+  });
+  // Show/hide proj toggle — only relevant for pts
+  const projBtn = document.getElementById('proj-toggle');
+  if(projBtn) projBtn.style.display = key === 'pts' ? '' : 'none';
+  rebuildCharts();
+}
+
+function buildMainMetricBtns() {
+  const container = document.getElementById('main-metric-btns');
+  if(!container) return;
+  container.innerHTML = MAIN_METRICS.map(m =>
+    `<button class="de-metric-btn main-metric-btn${m.key===mainMetric?' active':''}" data-key="${m.key}"
+      onclick="setMainMetric('${m.key}')">${m.label}</button>`
+  ).join('');
+}
+
+function rebuildCharts() {
+  if(chartPts) { chartPts.destroy(); chartPts=null; }
+  if(chartStandings) { chartStandings.destroy(); chartStandings=null; }
+
+  const rd=DATA.racesDone;
+  const tt={backgroundColor:isLight?'#ffffff':'#18181e',borderColor:isLight?'rgba(0,0,0,0.15)':'rgba(255,255,255,0.1)',borderWidth:1,titleColor:isLight?'#111118':'#f0f0f0',bodyColor:isLight?'#3a3a52':'#8a8a9a',padding:8};
+  const gc=isLight?'rgba(0,0,0,0.06)':'rgba(255,255,255,0.05)', tc=isLight?'#9090a8':'#707080';
+
+  const mCfg = MAIN_METRICS.find(m => m.key === mainMetric) || MAIN_METRICS[0];
+
+  // Update panel title
+  const titleEl = document.getElementById('main-chart-title');
+  if(titleEl) titleEl.textContent = mCfg.label;
+
+  // Legend
+  const isCumulative = mCfg.cumulative;
+  const cutlineVisible = mainMetric === 'pts';
+  const legendHtml =
+    DRIVERS.map(d=>`<div class="leg-item"><div class="leg-dot" style="background:${d.color};"></div>#${d.car} ${d.last}</div>`).join('') +
+    (cutlineVisible ? `<div class="leg-item"><div style="width:14px;height:2px;border-top:2px dashed #D4A017;margin-top:3px;"></div>Cutline</div>` : '');
+  document.getElementById('legend-points').innerHTML = legendHtml;
+
+  const cutoffRace = isCumulative ? 24 : rd;
+  const labels = RACES.slice(0, cutoffRace).map(r => r.short);
+
+  // Build datasets for each driver
+  const datasets = DRIVERS.map(d => ({
+    label: `#${d.car} ${d.last}`,
+    data: RACES.slice(0, cutoffRace).map((_,i) => getMetricData(d, mainMetric, i)),
+    borderColor: d.color, backgroundColor: d.color+'18',
+    borderWidth: 2.5, pointRadius: 4, pointHoverRadius: 6,
+    tension: 0.35, fill: false, spanGaps: false,
+  }));
+
+  // Projection lines (pts only)
+  if(mainMetric === 'pts') {
+    DRIVERS.forEach(d => {
+      const lastPts = lPts(d), n = nRaced(d);
+      if(!n || !lastPts) { datasets.push({label:`#${d.car} proj`, data:Array(cutoffRace).fill(null), hidden:true, borderColor:d.color}); return; }
+      const rate = lastPts / n;
+      const lastIdx = (() => { for(let j=rd-1;j>=0;j--) if(d.pts[j]!==null) return j; return -1; })();
+      const arr = Array(cutoffRace).fill(null);
+      if(lastIdx >= 0) for(let j=lastIdx; j<cutoffRace; j++) arr[j] = Math.round(lastPts + rate*(j-lastIdx));
+      datasets.push({
+        label:`#${d.car} proj`, data: arr,
+        borderColor:d.color, borderDash:[5,5], borderWidth:1.5,
+        pointRadius:0, pointHoverRadius:0, tension:0, fill:false, spanGaps:false,
+        hidden: !showProjections,
+      });
+    });
+    // Cutline
+    datasets.push({
+      label:'Cutline (P12)',
+      data: [...DATA.cutlineByRace.slice(0,rd), ...Array(cutoffRace-rd).fill(null)],
+      borderColor:'#D4A017', borderDash:[8,4], borderWidth:2,
+      pointRadius:3, pointBackgroundColor:'#D4A017', fill:false, spanGaps:false,
+    });
+  }
+
+  // Y-axis config
+  const yOpts = { grid:{color:gc}, ticks:{color:tc, font:{size:13}},
+    title:{display:true, text:mCfg.label, color:tc, font:{size:12}} };
+  if(mCfg.reversed) {
+    const allVals = DRIVERS.flatMap(d => RACES.slice(0,rd).map((_,i) => getMetricData(d,mainMetric,i))).filter(v=>v!==null);
+    if(allVals.length) { yOpts.min = 1; yOpts.max = Math.max(...allVals) + 2; }
+  } else if(mainMetric === 'pts') {
+    yOpts.min = 0;
+  }
+
+  chartPts = new Chart(document.getElementById('chart-points').getContext('2d'), {
+    type:'line',
+    data:{labels, datasets},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:tt },
+      scales:{ x:{grid:{color:gc}, ticks:{color:tc, font:{size:13}}}, y:yOpts }
+    }
+  });
+
+  // "Now" vertical line custom plugin — register once
+  if(!Chart.registry.plugins.get('vertLine')) {
+    Chart.register({
+      id:'vertLine',
+      afterDraw(chart) {
+        if(chart.canvas.id !== 'chart-points') return;
+        if(rd < 1 || rd >= cutoffRace) return;
+        const {ctx, scales:{x, y}} = chart;
+        const px = x.getPixelForValue(rd - 1);
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(px, y.top);
+        ctx.lineTo(px, y.bottom);
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.setLineDash([4,4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.font = '11px "Barlow Condensed", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Now', px, y.top - 4);
+        ctx.restore();
+      }
+    });
+  }
+
+  // ── Chase standings horizontal bar chart ──
+  const standings = DATA.standings || [];
+  const cutlinePts = CUTLINE();
+  const jgrIds = new Set(DRIVERS.map(d=>d.id));
+
+  const barLabels = standings.map(s=>`${s.pos}. ${s.name}`);
+  const barData   = standings.map(s=>s.pts);
+  const barColors = standings.map(s=>{
+    if(s.jgr) {
+      const d = DRIVERS.find(dr=>dr.id===s.dId);
+      return d ? d.color : '#C8102E';
+    }
+    return s.pos <= 12 ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.06)';
+  });
+  const barBorders = standings.map(s=>{
+    if(s.jgr) {
+      const d = DRIVERS.find(dr=>dr.id===s.dId);
+      return d ? d.color : '#C8102E';
+    }
+    return s.pos <= 12 ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.08)';
+  });
+
+  chartStandings = new Chart(document.getElementById('chart-standings').getContext('2d'),{
+    type:'bar',
+    data:{
+      labels: standings.map(s=>`P${s.pos}`),
+      datasets:[
+        {
+          label:'Points',
+          data: barData,
+          backgroundColor: barColors,
+          borderColor: barBorders,
+          borderWidth: 1,
+          borderRadius: 3,
+        },
+        {
+          label:'Cutline',
+          data: Array(standings.length).fill(cutlinePts),
+          type:'line',
+          borderColor:'#D4A017',
+          borderDash:[6,4],
+          borderWidth:2,
+          pointRadius:0,
+          fill:false,
+        }
+      ]
+    },
+    options:{
+      indexAxis:'x',
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          ...tt,
+          callbacks:{
+            title: ctx => `P${standings[ctx[0].dataIndex].pos} — ${standings[ctx[0].dataIndex].name}`,
+            label: ctx => ctx.dataset.label==='Cutline' ? `Cutline: ${cutlinePts} pts` : `${ctx.parsed.y} pts`,
+          }
+        }
+      },
+      scales:{
+        x:{
+          grid:{color:'rgba(255,255,255,0.03)'},
+          ticks:{color:tc,font:{size:13}},
+        },
+        y:{
+          grid:{color:gc},
+          ticks:{color:tc,font:{size:13}},
+          title:{display:true,text:'Points',color:tc,font:{size:12}},
+        }
+      }
+    }
+  });
+}
+
+function updateCharts() {
+  rebuildCharts();
+}
+
+function showPage(id,btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─────────────────────────────────────────
+// PDF UPLOAD & PROCESSING
+// ─────────────────────────────────────────
+// ─────────────────────────────────────────
+// THEME
+// ─────────────────────────────────────────
+let isLight = false;
+
+function toggleTheme() {
+  isLight = !isLight;
+  document.documentElement.classList.toggle('light', isLight);
+  const btn = document.getElementById('theme-btn');
+  if(btn) btn.textContent = isLight ? '☀️' : '🌙';
+  // Rebuild charts with new colors
+  if(typeof rebuildCharts === 'function') rebuildCharts();
+  if(expandedId) buildExpandChart(document.querySelector('.de-metric-btn.active')?.textContent || 'pts');
+  localStorage.setItem('jgr-theme', isLight ? 'light' : 'dark');
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('jgr-theme');
+  if(saved === 'light') { isLight = true; document.documentElement.classList.add('light'); const btn = document.getElementById('theme-btn'); if(btn) btn.textContent = '☀️'; }
 }
 
 initTheme();
