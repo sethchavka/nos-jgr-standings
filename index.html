@@ -168,6 +168,8 @@ body{width:100%;background:var(--bg);color:var(--text);font-family:var(--font-b)
 .driver-card.dimmed{opacity:0.35;transform:none !important;filter:saturate(0.3);}
 
 /* ADMIN PANEL */
+.admin-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center;}
+.admin-overlay.open{display:flex;}
 .admin-modal{background:var(--bg2);border:1px solid var(--line2);border-radius:12px;width:900px;max-height:85vh;overflow-y:auto;padding:28px;}
 .admin-title{font-family:var(--font-d);font-weight:900;font-size:22px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
 .admin-sub{font-size:13px;color:var(--text3);margin-bottom:22px;}
@@ -268,6 +270,7 @@ body{width:100%;background:var(--bg);color:var(--text);font-family:var(--font-b)
   </div>
   <div class="tb-right">
     <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
+    <button class="admin-btn-open" onclick="openAdmin()">↑ Update Data</button>
     <div class="tb-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">Dashboard</button>
       <button class="nav-btn" onclick="showPage('metrics',this)">Metrics</button>
@@ -279,6 +282,58 @@ body{width:100%;background:var(--bg);color:var(--text);font-family:var(--font-b)
 <div class="loading-overlay" id="loading">
   <div class="loading-spinner"></div>
   <div class="loading-text">Loading live data…</div>
+</div>
+
+<!-- ADMIN MODAL -->
+<div class="admin-overlay" id="admin-overlay">
+  <div class="admin-modal">
+    <div class="admin-title">Update Race Data</div>
+    <div class="admin-sub">Enter data from the official NASCAR points report after each race. Changes are saved and shared with all viewers instantly.</div>
+
+    <div class="admin-section">
+      <div class="admin-section-title">Race Info</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;">
+        <div>
+          <div class="admin-col-header">Races Completed</div>
+          <input class="admin-input" type="number" id="a-races-done" min="0" max="33">
+        </div>
+        <div>
+          <div class="admin-col-header">Last Race</div>
+          <input class="admin-input" type="text" id="a-last-race" placeholder="e.g. Bristol · Apr 11">
+        </div>
+        <div>
+          <div class="admin-col-header">Series Leader (name)</div>
+          <input class="admin-input" type="text" id="a-leader-name" placeholder="e.g. Allgaier">
+        </div>
+        <div>
+          <div class="admin-col-header">Leader Points</div>
+          <input class="admin-input" type="number" id="a-leader-pts">
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <div class="admin-section-title">Driver Points — Cumulative (one per race, comma-separated)</div>
+      <div id="driver-inputs"></div>
+    </div>
+
+    <div class="admin-section">
+      <div class="admin-section-title">Chase Standings — Top 20 (Name · Car · Points, one per line)</div>
+      <textarea class="admin-input" id="a-standings" rows="20" style="width:100%;resize:vertical;font-family:monospace;font-size:11px;line-height:1.6;"></textarea>
+      <div style="font-size:10px;color:var(--text3);margin-top:4px;">Format: <code style="color:var(--text2);">Justin Allgaier · 7 · 422</code> — one driver per line, mark JGR cars with * e.g. <code style="color:var(--text2);">Brandon Jones* · 20 · 247</code></div>
+    </div>
+
+    <div class="admin-section">
+      <div class="admin-section-title">Cutline by Race (P12 cumulative points, comma-separated)</div>
+      <input class="admin-input" type="text" id="a-cutline-by-race" placeholder="26, 43, 70, 94, 110, 132, 164, 203, ...">
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+      <button class="admin-btn admin-btn-save" onclick="saveData()">Save & Publish</button>
+      <button class="admin-btn admin-btn-cancel" onclick="closeAdmin()">Cancel</button>
+      <div class="admin-msg" id="admin-msg"></div>
+    </div>
+  </div>
 </div>
 
 <div class="shell">
@@ -458,10 +513,10 @@ const DRIVER_META = [
   //   DEFAULT_DATA.lastRace           — update to current race name + date
   //   DEFAULT_DATA.leaderName/Pts     — update series leader
   // ────────────────────────────────────────────────────────────────────────────
-  {id:'sawalich',first:'William',last:'Sawalich',car:'18',color:'#7B2FBE',finish:[26,23,7,37,9,17,20,1,7,20],wins:1,starts:[4,5,15,15,14,7,16,14,1,7],stageWins:0,stagePts:47,stagePtsPerRace:[11,0,0,0,0,4,7,15,10,0],lapsLed:[2,5,0,0,0,0,0,80,27,0],bonusPts:[0,0,0,0,0,0,0,1,0,0],avgRunPos:[8.42,12.94,16.82,14.79,12.06,11.88,15.74,4.22,5.58,18.07],s1AvgPos:[8.67,12.49,16.7,16.44,17.04,9.47,11.85,9.92,3.36,13.89],s2AvgPos:[7.1,14.78,25.9,12.27,12.31,8.47,13.4,2.98,6.45,25.36],s3AvgPos:[9.22,12.06,9.64,15.25,9.92,16.49,18.62,2.17,6.45,16.77]},
-  {id:'crews',first:'Brent',last:'Crews',car:'19',color:'#E87722',finish:[null,null,6,18,null,null,10,26,3,5],rookie:true,starts:[null,null,7,5,null,null,4,10,17,5],stageWins:0,stagePts:35,stagePtsPerRace:[0,0,0,9,0,0,7,10,6,3],lapsLed:[0,0,5,0,0,0,0,30,3,0],bonusPts:[0,0,0,0,0,0,0,0,1,0],avgRunPos:[null,null,7.31,8.15,null,null,8.19,7.19,8.71,7.39],s1AvgPos:[null,null,9.45,6.91,null,null,3.77,10.15,15.94,7.44],s2AvgPos:[null,null,6.4,5.76,null,null,11.23,4.27,7.18,10.6],s3AvgPos:[null,null,6.32,9.64,null,null,8.83,7.17,4.98,6.05]},
-  {id:'jones',first:'Brandon',last:'Jones',car:'20',color:'#C8102E',finish:[30,10,15,16,13,2,18,2,19,8],starts:[15,15,4,3,5,8,3,8,4,14],stageWins:0,stagePts:87,stagePtsPerRace:[1,6,10,1,1,15,9,14,10,20],lapsLed:[0,0,0,0,4,8,1,0,2,67],bonusPts:[0,0,0,0,0,0,0,0,0,0],avgRunPos:[9.83,9.68,13.14,10.6,9.7,3.93,12.77,4.34,7.73,4.36],s1AvgPos:[13.7,12.8,5.9,5.71,7.24,5.42,2.7,6.83,3.66,2.69],s2AvgPos:[7.63,8.13,14.1,8.16,9.36,3.31,15.63,2.67,5.09,1.96],s3AvgPos:[8.3,8.71,18.16,13.59,10.85,3.23,16.1,3.96,12.12,6.03]},
-  {id:'gray',first:'Taylor',last:'Gray',car:'54',color:'#1D9E3E',finish:[28,9,12,15,37,15,13,7,10,1],wins:1,starts:[9,3,14,1,6,15,13,6,6,10],stageWins:0,stagePts:51,stagePtsPerRace:[0,7,0,3,15,0,8,9,0,9],lapsLed:[0,2,0,10,21,0,0,6,0,48],bonusPts:[0,0,0,0,0,0,0,0,0,0],avgRunPos:[12.3,11.55,13.49,8.57,3.52,19.13,16.94,9.8,12.8,3.96],s1AvgPos:[14.1,3.64,17.6,4.89,5.47,17.78,17.5,3.9,9.59,3.44],s2AvgPos:[8.43,15.82,12.25,7.44,2.76,21.71,5.37,16.78,16.71,7.09],s3AvgPos:[13.9,13.78,11.2,10.55,2.6,18.16,22.03,9.31,12.35,2.88]},
+  {id:'sawalich',first:'William',last:'Sawalich',car:'18',color:'#7B2FBE',finish:[26,23,7,37,9,17,20,1,7,20],wins:1,starts:[4,5,15,15,14,7,16,14,1,7],stageWins:0,stagePts:47,stagePtsPerRace:[11,0,0,0,0,4,7,15,10,0],lapsLed:[2,5,0,0,0,0,0,80,27,0],bonusPts:[0,0,0,0,0,0,0,1,0,0],avgRunPos:[8.42,12.94,16.82,14.79,12.06,11.88,15.74,4.22,5.58,18.07],s1AvgPos:[8.67,12.49,16.7,16.44,17.04,9.47,11.85,9.92,3.36,13.89],s2AvgPos:[7.1,14.78,25.9,12.27,12.31,8.47,13.4,2.98,6.45,25.36],s3AvgPos:[9.22,12.06,9.64,15.25,9.92,16.49,18.62,2.17,6.45,16.77],pctLed:[1.7,3.1,0.0,0.0,0.0,0.0,0.0,32.0,9.0,0.0],pctT5:[34.2,14.1,0.0,0.0,0.0,1.4,5.2,76.0,37.7,0.0]},
+  {id:'crews',first:'Brent',last:'Crews',car:'19',color:'#E87722',finish:[null,null,6,18,null,null,10,26,3,5],rookie:true,starts:[null,null,7,5,null,null,4,10,17,5],stageWins:0,stagePts:35,stagePtsPerRace:[0,0,0,9,0,0,7,10,6,3],lapsLed:[0,0,5,0,0,0,0,30,3,0],bonusPts:[0,0,0,0,0,0,0,0,1,0],avgRunPos:[null,null,7.31,8.15,null,null,8.19,7.19,8.71,7.39],s1AvgPos:[null,null,9.45,6.91,null,null,3.77,10.15,15.94,7.44],s2AvgPos:[null,null,6.4,5.76,null,null,11.23,4.27,7.18,10.6],s3AvgPos:[null,null,6.32,9.64,null,null,8.83,7.17,4.98,6.05],pctLed:[null,null,7.7,0.0,null,null,0.0,12.0,1.0,0.0],pctT5:[null,null,32.3,23.5,null,null,35.2,60.0,46.7,36.0]},
+  {id:'jones',first:'Brandon',last:'Jones',car:'20',color:'#C8102E',finish:[30,10,15,16,13,2,18,2,19,8],starts:[15,15,4,3,5,8,3,8,4,14],stageWins:0,stagePts:87,stagePtsPerRace:[1,6,10,1,1,15,9,14,10,20],lapsLed:[0,0,0,0,4,8,1,0,2,67],bonusPts:[0,0,0,0,0,0,0,0,0,0],avgRunPos:[9.83,9.68,13.14,10.6,9.7,3.93,12.77,4.34,7.73,4.36],s1AvgPos:[13.7,12.8,5.9,5.71,7.24,5.42,2.7,6.83,3.66,2.69],s2AvgPos:[7.63,8.13,14.1,8.16,9.36,3.31,15.63,2.67,5.09,1.96],s3AvgPos:[8.3,8.71,18.16,13.59,10.85,3.23,16.1,3.96,12.12,6.03],pctLed:[0.8,0.0,0.0,0.0,2.0,5.4,0.8,0.0,0.7,33.5],pctT5:[15.0,15.3,10.8,13.5,8.5,85.7,36.0,70.8,41.7,70.5]},
+  {id:'gray',first:'Taylor',last:'Gray',car:'54',color:'#1D9E3E',finish:[28,9,12,15,37,15,13,7,10,1],wins:1,starts:[9,3,14,1,6,15,13,6,6,10],stageWins:0,stagePts:51,stagePtsPerRace:[0,7,0,3,15,0,8,9,0,9],lapsLed:[0,2,0,10,21,0,0,6,0,48],bonusPts:[0,0,0,0,0,0,0,0,0,0],avgRunPos:[12.3,11.55,13.49,8.57,3.52,19.13,16.94,9.8,12.8,3.96],s1AvgPos:[14.1,3.64,17.6,4.89,5.47,17.78,17.5,3.9,9.59,3.44],s2AvgPos:[8.43,15.82,12.25,7.44,2.76,21.71,5.37,16.78,16.71,7.09],s3AvgPos:[13.9,13.78,11.2,10.55,2.6,18.16,22.03,9.31,12.35,2.88],pctLed:[0.0,1.2,0.0,5.0,10.5,0.0,0.0,2.4,0.0,24.0],pctT5:[5.8,28.2,0.0,28.5,64.5,0.0,22.8,26.8,3.3,79.0]},
 ];
 
 // ─────────────────────────────────────────
@@ -527,12 +582,37 @@ function toggleProjections() {
 }
 
 // ─────────────────────────────────────────
-// INIT
+// STORAGE
 // ─────────────────────────────────────────
-function loadData() {
-  DATA = DEFAULT_DATA;
+const STORAGE_KEY = 'jgr-2026-tracker-data';
+
+async function loadData() {
+  document.getElementById('loading').classList.add('show');
+  try {
+    if(typeof window.storage === 'undefined') throw new Error('no storage');
+    const result = await window.storage.get(STORAGE_KEY, true);
+    if(result && result.value) {
+      const parsed = JSON.parse(result.value);
+      DATA = (parsed && parsed.racesDone !== undefined) ? parsed : DEFAULT_DATA;
+    } else {
+      DATA = DEFAULT_DATA;
+    }
+  } catch(e) {
+    DATA = DEFAULT_DATA;
+  }
   mergeDriverMeta();
+  document.getElementById('loading').classList.remove('show');
   renderAll();
+}
+
+async function persistData() {
+  try {
+    if(typeof window.storage === 'undefined') return false;
+    await window.storage.set(STORAGE_KEY, JSON.stringify(DATA), true);
+    return true;
+  } catch(e) {
+    return false;
+  }
 }
 
 function mergeDriverMeta() {
@@ -554,6 +634,8 @@ function mergeDriverMeta() {
       s1AvgPos: m.s1AvgPos || meta.s1AvgPos || [],
       s2AvgPos: m.s2AvgPos || meta.s2AvgPos || [],
       s3AvgPos: m.s3AvgPos || meta.s3AvgPos || [],
+      pctLed: m.pctLed || meta.pctLed || [],
+      pctT5:  m.pctT5  || meta.pctT5  || [],
       // Always extend pts/rank arrays to 33
       pts:  [...(d.pts  || []), ...Array(33).fill(null)].slice(0,33),
       rank: [...(d.rank || []), ...Array(33).fill(null)].slice(0,33),
@@ -740,6 +822,8 @@ function expandDriver(id) {
     { key: 's1AvgPos',  label: 'S1 Avg Pos' },
     { key: 's2AvgPos',  label: 'S2 Avg Pos' },
     { key: 's3AvgPos',  label: 'S3 Avg Pos' },
+    { key: 'pctLed',    label: '% Laps Led' },
+    { key: 'pctT5',     label: '% Laps T5'  },
   ];
 
   document.getElementById('de-metric-btns').innerHTML = metrics.map(m =>
@@ -792,6 +876,10 @@ function buildExpandChart(key) {
                  data: RACES.slice(0,rd).map((_,i) => (d.s2AvgPos||[])[i] ?? null) },
     s3AvgPos:  { label:'Stage 3 Avg Running Pos', type:'line', reversed:true,
                  data: RACES.slice(0,rd).map((_,i) => (d.s3AvgPos||[])[i] ?? null) },
+    pctLed:    { label:'% Laps Led',  type:'bar', reversed:false,
+                 data: RACES.slice(0,rd).map((_,i) => (d.pctLed||[])[i] ?? null) },
+    pctT5:     { label:'% Laps T5',   type:'bar', reversed:false,
+                 data: RACES.slice(0,rd).map((_,i) => (d.pctT5||[])[i] ?? null) },
   };
 
   const cfg = metricConfig[key];
@@ -982,6 +1070,8 @@ const MAIN_METRICS = [
   { key:'s1AvgPos',   label:'S1 Avg Pos',    reversed:true,  cumulative:false },
   { key:'s2AvgPos',   label:'S2 Avg Pos',    reversed:true,  cumulative:false },
   { key:'s3AvgPos',   label:'S3 Avg Pos',    reversed:true,  cumulative:false },
+  { key:'pctLed',     label:'% Laps Led',    reversed:false, cumulative:false },
+  { key:'pctT5',      label:'% Laps T5',     reversed:false, cumulative:false },
 ];
 
 function getMetricData(d, key, i) {
@@ -997,6 +1087,8 @@ function getMetricData(d, key, i) {
     case 's1AvgPos':   return (d.s1AvgPos||[])[i] ?? null;
     case 's2AvgPos':   return (d.s2AvgPos||[])[i] ?? null;
     case 's3AvgPos':   return (d.s3AvgPos||[])[i] ?? null;
+    case 'pctLed':     return (d.pctLed||[])[i] ?? null;
+    case 'pctT5':      return (d.pctT5||[])[i] ?? null;
     default: return null;
   }
 }
@@ -1209,6 +1301,159 @@ function updateCharts() {
   rebuildCharts();
 }
 
+// ─────────────────────────────────────────
+// ADMIN
+// ─────────────────────────────────────────
+function openAdmin() {
+  const rd = DATA.racesDone;
+  document.getElementById('a-races-done').value = rd;
+  document.getElementById('a-last-race').value = DATA.lastRace || '';
+  document.getElementById('a-leader-name').value = DATA.leaderName || '';
+  document.getElementById('a-leader-pts').value = DATA.leaderPts || '';
+  document.getElementById('a-cutline-by-race').value = (DATA.cutlineByRace||[]).join(', ');
+
+  // Build per-driver input rows
+  const container = document.getElementById('driver-inputs');
+  container.innerHTML = DRIVERS.map(d => {
+    const stored = DATA.drivers[d.id] || {};
+    const ptsVal = (stored.pts||[]).map(v=>v===null?'':v).join(', ');
+    const rankVal = (stored.rank||[]).map(v=>v===null?'':v).join(', ');
+    const finishVal = (d.finish||[]).map(v=>v===null?'':v).join(', ');
+    const startsVal = (d.starts||[]).map(v=>v===null?'':v).join(', ');
+    return `
+    <div style="margin-bottom:14px;padding:10px 12px;background:var(--bg3);border-radius:6px;border:1px solid var(--line);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <div style="width:10px;height:10px;border-radius:50%;background:${d.color};flex-shrink:0;"></div>
+        <span style="font-family:var(--font-d);font-weight:700;font-size:13px;color:${d.color};">#${d.car} ${d.first} ${d.last}</span>
+        <span style="font-size:10px;color:var(--text3);margin-left:4px;">from Points PDF →</span>
+        <span style="font-size:10px;color:var(--text3);margin-left:40px;">from Results PDF →</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;">
+        <div>
+          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:3px;">Cum. Points</div>
+          <input class="admin-input" id="pts-${d.id}" type="text" value="${ptsVal}" placeholder="22, 36, ... (blank=DNS)">
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:3px;">Chase Ranks</div>
+          <input class="admin-input" id="rank-${d.id}" type="text" value="${rankVal}" placeholder="15, 21, ... (blank=DNS)">
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:3px;">Finish Pos</div>
+          <input class="admin-input" id="finish-${d.id}" type="text" value="${finishVal}" placeholder="26, 23, ... (blank=DNS)">
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:3px;">Start Pos</div>
+          <input class="admin-input" id="starts-${d.id}" type="text" value="${startsVal}" placeholder="4, 5, ... (blank=DNS)">
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:3px;">Wins / Stg Wins</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+            <input class="admin-input" id="wins-${d.id}" type="number" min="0" value="${d.wins||0}" placeholder="W">
+            <input class="admin-input" id="stwins-${d.id}" type="number" min="0" value="${d.stageWins||0}" placeholder="SW">
+          </div>
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:3px;">Stage Points (total)</div>
+          <input class="admin-input" id="stpts-${d.id}" type="number" min="0" value="${d.stagePts||0}">
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Build standings textarea
+  document.getElementById('a-standings').value = (DATA.standings||[]).map(s =>
+    `${s.name}${s.jgr?'*':''} · ${s.car} · ${s.pts}`
+  ).join('\n');
+
+  document.getElementById('admin-msg').style.display='none';
+  document.getElementById('admin-overlay').classList.add('open');
+}
+
+function closeAdmin() {
+  document.getElementById('admin-overlay').classList.remove('open');
+}
+
+function parseNullableArray(str) {
+  return str.split(',').map(v => {
+    const t = v.trim();
+    if(t===''||t.toLowerCase()==='null'||t.toLowerCase()==='dns') return null;
+    const n = parseFloat(t);
+    return isNaN(n) ? null : n;
+  });
+}
+
+async function saveData() {
+  const msg = document.getElementById('admin-msg');
+  msg.style.display='none';
+
+  const rd = parseInt(document.getElementById('a-races-done').value)||0;
+  const lastRace = document.getElementById('a-last-race').value.trim();
+  const leaderName = document.getElementById('a-leader-name').value.trim();
+  const leaderPts = parseInt(document.getElementById('a-leader-pts').value)||0;
+  const cutlineByRace = parseNullableArray(document.getElementById('a-cutline-by-race').value);
+
+  const drivers = {};
+  const driverMeta = {};
+  for(const d of DRIVERS) {
+    const ptsEl    = document.getElementById(`pts-${d.id}`);
+    const rankEl   = document.getElementById(`rank-${d.id}`);
+    const finishEl = document.getElementById(`finish-${d.id}`);
+    const startsEl = document.getElementById(`starts-${d.id}`);
+    const winsEl   = document.getElementById(`wins-${d.id}`);
+    const stWinsEl = document.getElementById(`stwins-${d.id}`);
+    const stPtsEl  = document.getElementById(`stpts-${d.id}`);
+    if(ptsEl && rankEl) {
+      drivers[d.id] = {
+        pts:  parseNullableArray(ptsEl.value),
+        rank: parseNullableArray(rankEl.value),
+      };
+    }
+    if(finishEl) {
+      driverMeta[d.id] = {
+        finish:    parseNullableArray(finishEl.value),
+        starts:    startsEl ? parseNullableArray(startsEl.value) : d.starts,
+        wins:      winsEl   ? parseInt(winsEl.value)||0   : (d.wins||0),
+        stageWins: stWinsEl ? parseInt(stWinsEl.value)||0 : (d.stageWins||0),
+        stagePts:  stPtsEl  ? parseInt(stPtsEl.value)||0  : (d.stagePts||0),
+      };
+    }
+  }
+
+  // Parse standings
+  const standingsRaw = document.getElementById('a-standings').value.trim().split('\n');
+  const standings = standingsRaw.map((line,i) => {
+    const parts = line.split('·').map(p=>p.trim());
+    if(parts.length<3) return null;
+    const nameRaw = parts[0];
+    const jgr = nameRaw.endsWith('*');
+    const name = nameRaw.replace('*','').trim();
+    const car = parts[1];
+    const pts = parseInt(parts[2])||0;
+    const jgrDriver = jgr ? DRIVERS.find(d=>`${d.first} ${d.last}`===name||d.last===name.split(' ').pop()) : null;
+    return {pos:i+1, name, car, pts, jgr, dId: jgrDriver?.id||null};
+  }).filter(Boolean);
+
+  const now = new Date();
+  const updatedAt = now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+
+  DATA = { racesDone:rd, lastRace, leaderName, leaderPts, updatedAt, cutlineByRace, drivers, standings, driverMeta };
+
+  const ok = await persistData();
+
+  if(ok) {
+    mergeDriverMeta();
+    renderAll();
+    msg.textContent = `✓ Saved and published — ${updatedAt}`;
+    msg.className = 'admin-msg ok';
+    msg.style.display = 'block';
+    setTimeout(()=>closeAdmin(), 1800);
+  } else {
+    msg.textContent = 'Save failed — storage error. Try again.';
+    msg.className = 'admin-msg err';
+    msg.style.display = 'block';
+  }
+}
+
 function showPage(id,btn) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -1218,6 +1463,7 @@ function showPage(id,btn) {
 
 // ─────────────────────────────────────────
 // PDF UPLOAD & PROCESSING
+// ─────────────────────────────────────────
 // ─────────────────────────────────────────
 // THEME
 // ─────────────────────────────────────────
