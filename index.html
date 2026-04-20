@@ -270,7 +270,6 @@ body{width:100%;background:var(--bg);color:var(--text);font-family:var(--font-b)
   </div>
   <div class="tb-right">
     <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
-    <button class="admin-btn-open" onclick="openAdmin()">↑ Update Data</button>
     <div class="tb-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">Dashboard</button>
       <button class="nav-btn" onclick="showPage('metrics',this)">Metrics</button>
@@ -432,7 +431,7 @@ body{width:100%;background:var(--bg);color:var(--text);font-family:var(--font-b)
               <th>Driver</th><th>Points</th><th>Rank</th><th>vs Cutline</th>
               <th>vs Leader</th><th>Avg Pts</th><th>Avg Start</th><th>Avg Fin</th>
               <th>Poles</th><th>Wins</th><th>Stg Wins</th><th>Stg Pts</th>
-              <th>Top 5</th><th>Top 10</th><th>DNF</th><th>Out 20</th><th>Laps Led</th>
+              <th>Top 5</th><th>Top 10</th><th>DNF</th><th>Out 20</th><th>Laps Led</th><th>% Led</th><th>% T5</th>
               <th>Proj R24</th><th>Proj R33</th>
             </tr></thead>
             <tbody id="metrics-tbody"></tbody>
@@ -661,6 +660,8 @@ const top10 = d => (d.finish||[]).filter(f=>f!==null && f<=10).length;
 const dnf   = d => (d.finish||[]).filter((f,i)=>i<DATA.racesDone && f===null && (d.starts||[])[i]!==null).length;
 const out20 = d => (d.finish||[]).filter(f=>f!==null && f>20).length;
 const lapsLedTotal = d => (d.lapsLed||[]).reduce((a,b)=>a+b,0);
+const seasonPctLed = d => { const v=(d.pctLed||[]).filter(x=>x!==null); return v.length ? (v.reduce((a,b)=>a+b,0)/v.length).toFixed(1)+'%' : '—'; };
+const seasonPctT5  = d => { const v=(d.pctT5||[]).filter(x=>x!==null);  return v.length ? (v.reduce((a,b)=>a+b,0)/v.length).toFixed(1)+'%' : '—'; };
 const projP = (d,t) => { const n=nRaced(d); if(!n) return '—'; return Math.round(lPts(d)+(lPts(d)/n)*(t-DATA.racesDone)); };
 const CUTLINE = () => DATA.cutlineByRace[DATA.racesDone-1] || 0;
 
@@ -1015,6 +1016,8 @@ function buildMetricsTable() {
       <td class="${dnf(d)>0?'mv-r':''}">${dnf(d)}</td>
       <td class="${out20(d)>0?'mv-r':''}">${out20(d)}</td>
       <td class="${lapsLedTotal(d)>0?'mv-g':''}">${lapsLedTotal(d)}</td>
+      <td class="${parseFloat(seasonPctLed(d))>0?'mv-g':''}">${seasonPctLed(d)}</td>
+      <td class="${parseFloat(seasonPctT5(d))>0?'mv-g':''}">${seasonPctT5(d)}</td>
       <td class="${typeof p24==='number'&&p24>=cut?'mv-gr':'mv-r'}">${p24}</td>
       <td>${p33}</td>
     </tr>`;
