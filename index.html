@@ -273,6 +273,7 @@ body{width:100%;background:var(--bg);color:var(--text);font-family:var(--font-b)
     <div class="tb-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">Dashboard</button>
       <button class="nav-btn" onclick="showPage('metrics',this)">Metrics</button>
+      <button class="nav-btn" onclick="showPage('qualorder',this)">Qual Order</button>
     </div>
   </div>
 </header>
@@ -447,6 +448,30 @@ body{width:100%;background:var(--bg);color:var(--text);font-family:var(--font-b)
         <div class="sec-note">All stats from official NASCAR points reports · projections based on current avg pts/race</div>
       </div>
       <div class="metrics-grid" id="metrics-page-grid"></div>
+    </div>
+
+    <div class="page" id="page-qualorder">
+      <div class="sec-hdr">
+        <div class="sec-title">Qualifying Order Metric <span class="sec-marker" id="qual-marker">Race — Preview</span></div>
+        <div class="sec-note">Formula: (0.7 × previous race finish) + (0.3 × owner points rank) · Lower score = better qualifying position</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr;gap:16px;">
+        <!-- Next race metric table -->
+        <div class="panel">
+          <div class="panel-hdr">
+            <div class="panel-title" id="qual-next-title">Next Race Qualifying Metric</div>
+            <div class="panel-note">Based on most recent race results</div>
+          </div>
+          <div class="panel-body" style="padding:0;">
+            <table class="mt" style="width:100%;">
+              <thead><tr>
+                <th>Pos</th><th>Car</th><th>Driver</th><th>R12 Finish</th><th>Owner Rank</th><th>Metric</th>
+              </tr></thead>
+              <tbody id="qual-next-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -677,6 +702,7 @@ function renderAll() {
   buildMetricsPage();
   buildMainMetricBtns();
   rebuildCharts();
+  buildQualOrder();
 }
 
 function updateHeaderPills() {
@@ -1468,8 +1494,101 @@ function showPage(id,btn) {
 // PDF UPLOAD & PROCESSING
 // ─────────────────────────────────────────
 // ─────────────────────────────────────────
-// THEME
+// OWNER POINTS RANK HISTORY (R3-R12)
 // ─────────────────────────────────────────
+const OWNER_RANK_START_RACE = 3;
+const OWNER_RANK = {
+  sawalich: [15,19,17,16,16,12,12,12,13,13],
+  crews:    [24,17,11, 9, 9,11,10, 9, 9, 8],
+  jones:    [12,12,13,10,10, 9, 7, 7, 7, 6],
+  gray:     [14,14,14,14,13,13,13,11,11,12],
+};
+
+// Full field qualifying metric data — updated each race
+// Format: sorted by metric ascending (best qualifying position first)
+// Recalculate each race: metric = (0.7 × finish) + (0.3 × owner points rank)
+const QUAL_FIELD = [
+  {car:'88',driver:'Kyle Larson(i)',       fin:1, ownerRank:2,  metric:1.3,  jgr:false, ineligible:true},
+  {car:'7', driver:'Justin Allgaier',      fin:2, ownerRank:1,  metric:1.7,  jgr:false, ineligible:false},
+  {car:'00',driver:'Sheldon Creed',        fin:6, ownerRank:3,  metric:5.1,  jgr:false, ineligible:false},
+  {car:'19',driver:'Brent Crews',          fin:4, ownerRank:8,  metric:5.2,  jgr:true,  ineligible:false},
+  {car:'41',driver:'Sam Mayer',            fin:3, ownerRank:14, metric:6.3,  jgr:false, ineligible:false},
+  {car:'99',driver:'Parker Retzlaff',      fin:5, ownerRank:11, metric:6.8,  jgr:false, ineligible:false},
+  {car:'20',driver:'Brandon Jones',        fin:8, ownerRank:6,  metric:7.4,  jgr:true,  ineligible:false},
+  {car:'2', driver:'Jesse Love',           fin:9, ownerRank:4,  metric:7.5,  jgr:false, ineligible:false},
+  {car:'21',driver:'Austin Hill',          fin:7, ownerRank:10, metric:7.9,  jgr:false, ineligible:false},
+  {car:'8', driver:'Sammy Smith',          fin:13,ownerRank:9,  metric:11.8, jgr:false, ineligible:false},
+  {car:'51',driver:'Jeremy Clements',      fin:10,ownerRank:21, metric:13.3, jgr:false, ineligible:false},
+  {car:'9', driver:'Carson Kvapil',        fin:11,ownerRank:20, metric:13.7, jgr:false, ineligible:false},
+  {car:'39',driver:'Ryan Sieg',            fin:14,ownerRank:15, metric:14.3, jgr:false, ineligible:false},
+  {car:'18',driver:'William Sawalich',     fin:15,ownerRank:13, metric:14.4, jgr:true,  ineligible:false},
+  {car:'96',driver:'Anthony Alfredo',      fin:12,ownerRank:23, metric:15.3, jgr:false, ineligible:false},
+  {car:'26',driver:'Dean Thompson',        fin:16,ownerRank:18, metric:16.6, jgr:false, ineligible:false},
+  {car:'1', driver:'Connor Zilisch(i)',     fin:21,ownerRank:7,  metric:16.8, jgr:false, ineligible:true},
+  {car:'44',driver:'Brennan Poole',        fin:20,ownerRank:16, metric:18.8, jgr:false, ineligible:false},
+  {car:'48',driver:'Patrick Staropoli',    fin:17,ownerRank:24, metric:19.1, jgr:false, ineligible:false},
+  {car:'45',driver:'Lavar Scott',          fin:19,ownerRank:27, metric:21.4, jgr:false, ineligible:false},
+  {car:'92',driver:'Josh Williams',        fin:18,ownerRank:33, metric:22.5, jgr:false, ineligible:false},
+  {car:'24',driver:'Harrison Burton',      fin:22,ownerRank:25, metric:22.9, jgr:false, ineligible:false},
+  {car:'27',driver:'Jeb Burton',           fin:26,ownerRank:19, metric:23.9, jgr:false, ineligible:false},
+  {car:'31',driver:'Blaine Perkins',       fin:25,ownerRank:22, metric:24.1, jgr:false, ineligible:false},
+  {car:'54',driver:'Taylor Gray',          fin:33,ownerRank:12, metric:26.7, jgr:true,  ineligible:false},
+  {car:'07',driver:'Josh Bilicki',         fin:27,ownerRank:28, metric:27.3, jgr:false, ineligible:false},
+  {car:'17',driver:'Corey Day',            fin:37,ownerRank:5,  metric:27.4, jgr:false, ineligible:false},
+  {car:'02',driver:'Ryan Ellis',           fin:24,ownerRank:36, metric:27.6, jgr:false, ineligible:false},
+  {car:'32',driver:'Rajah Caruth',         fin:34,ownerRank:17, metric:28.9, jgr:false, ineligible:false},
+  {car:'3', driver:'Austin Dillon(i)',      fin:23,ownerRank:43, metric:29.0, jgr:false, ineligible:true},
+  {car:'0', driver:'Garrett Smithley',     fin:31,ownerRank:26, metric:29.5, jgr:false, ineligible:false},
+  {car:'55',driver:'Joey Gase',            fin:28,ownerRank:34, metric:29.8, jgr:false, ineligible:false},
+  {car:'28',driver:'Kyle Sieg',            fin:30,ownerRank:30, metric:30.0, jgr:false, ineligible:false},
+  {car:'91',driver:'Mason Maggio',         fin:32,ownerRank:29, metric:31.1, jgr:false, ineligible:false},
+  {car:'87',driver:'Austin Green',         fin:35,ownerRank:32, metric:34.1, jgr:false, ineligible:false},
+  {car:'53',driver:'David Starr',          fin:29,ownerRank:47, metric:34.4, jgr:false, ineligible:false},
+  {car:'42',driver:'Brad Perez',           fin:36,ownerRank:35, metric:35.7, jgr:false, ineligible:false},
+  {car:'35',driver:'Dawson Cram',          fin:38,ownerRank:42, metric:39.2, jgr:false, ineligible:false},
+];
+
+function qualMetric(finish, ownerRank) {
+  if(finish === null || ownerRank === null) return null;
+  return Math.round((0.7 * finish + 0.3 * ownerRank) * 100) / 100;
+}
+
+let qualChart = null;
+
+function buildQualOrder() {
+  const rd = DATA.racesDone;
+  const nextRace = rd + 1;
+  const nextTrack = RACES[rd] ? RACES[rd].track : '—';
+
+  document.getElementById('qual-marker').textContent = `Race ${nextRace} Preview`;
+  document.getElementById('qual-next-title').textContent = `Race ${nextRace} · ${nextTrack} — Projected Starting Order`;
+
+  // Full field table
+  const tbody = document.getElementById('qual-next-tbody');
+  tbody.innerHTML = QUAL_FIELD.map((r, i) => {
+    const jgrD = r.jgr ? DRIVERS.find(d => d.car === r.car) : null;
+    const color = jgrD ? jgrD.color : 'var(--text2)';
+    const rowBg = r.jgr ? `background:${jgrD.color}10;` : '';
+    const ineli = r.ineligible ? ' <span style="font-size:10px;color:var(--text3);">(i)</span>' : '';
+    return `<tr style="${rowBg}">
+      <td style="font-family:var(--font-d);font-weight:700;color:var(--text3);">P${i+1}</td>
+      <td><span style="font-family:var(--font-d);font-weight:900;font-size:16px;color:${color};">#${r.car}</span></td>
+      <td style="font-weight:${r.jgr?'700':'400'};color:${color};">${r.driver}${ineli}</td>
+      <td>P${r.fin}</td>
+      <td>P${r.ownerRank}</td>
+      <td style="font-family:var(--font-d);font-weight:700;font-size:15px;color:${color};">${r.metric.toFixed(2)}</td>
+    </tr>`;
+  }).join('');
+
+  // Owner rank chart (JGR only)
+  if(qualChart) { qualChart.destroy(); qualChart = null; }
+}
+
+function qualMetric(finish, ownerRank) {
+  if(finish === null || ownerRank === null) return null;
+  return Math.round((0.7 * finish + 0.3 * ownerRank) * 100) / 100;
+}
+
 let isLight = false;
 
 function toggleTheme() {
