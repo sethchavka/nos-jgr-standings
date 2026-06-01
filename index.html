@@ -478,14 +478,7 @@ html.light .top-bar{background:rgba(240,242,247,0.92);}
       <button class="admin-btn admin-btn-save" onclick="saveData()">Save & Publish</button>
       <button class="admin-btn admin-btn-cancel" onclick="closeAdmin()">Cancel</button>
       <div class="admin-msg" id="admin-msg"></div>
-    </div>
-
-    <div class="page" id="page-compare">
-      <div class="sec-hdr">
-        <div>
-          <div class="sec-title">Field Comparison <span class="sec-marker" id="cmp-marker">—</span></div>
-          <div class="sec-note">Plot any driver against JGR · race-by-race data</div>
-        </div>
+    </div></div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
           <select id="cmp-metric" onchange="buildCompare()" style="font-family:var(--font-d);font-size:12px;font-weight:700;background:var(--bg4);color:var(--text2);border:1px solid var(--line2);border-radius:5px;padding:5px 10px;cursor:pointer;">
             <option value="pts">Cumulative Points</option>
@@ -680,6 +673,61 @@ html.light .top-bar{background:rgba(240,242,247,0.92);}
               <tbody id="qual-next-tbody"></tbody>
             </table>
           </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="page" id="page-compare">
+      <div class="sec-hdr">
+        <div>
+          <div class="sec-title">Field Comparison <span class="sec-marker" id="cmp-marker">—</span></div>
+          <div class="sec-note">Plot any driver against JGR · race-by-race data</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <select id="cmp-metric" onchange="buildCompare()" style="font-family:var(--font-d);font-size:12px;font-weight:700;background:var(--bg4);color:var(--text2);border:1px solid var(--line2);border-radius:5px;padding:5px 10px;cursor:pointer;">
+            <option value="pts">Cumulative Points</option>
+            <option value="rank">Driver Pts Pos</option>
+            <option value="finish">Finish Position</option>
+          </select>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-hdr">
+          <div class="panel-title">Select Drivers to Compare</div>
+          <div class="panel-note">JGR drivers always shown · click to add/remove field drivers</div>
+        </div>
+        <div class="panel-body" style="padding:10px 12px;">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+            <div style="font-family:var(--font-d);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);width:100%;margin-bottom:2px;">JGR (always on)</div>
+            <div id="cmp-jgr-toggles" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <div style="font-family:var(--font-d);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);width:100%;margin-bottom:2px;">Field</div>
+            <div id="cmp-field-toggles" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-hdr">
+          <div class="panel-title" id="cmp-chart-title">Points — All Drivers</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;" id="cmp-legend"></div>
+        </div>
+        <div class="panel-body">
+          <div class="chart-wrap" style="height:320px;"><canvas id="cmp-chart"></canvas></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-hdr">
+          <div class="panel-title">Season Snapshot</div>
+          <div class="panel-note">Selected drivers only</div>
+        </div>
+        <div class="panel-body" style="padding:0;overflow-x:auto;">
+          <table class="mt" style="width:100%;">
+            <thead><tr>
+              <th>Driver</th><th>Pos</th><th>Points</th><th>vs Cutline</th><th>Wins</th><th>Top 5</th><th>Top 10</th><th>Avg Finish</th>
+            </tr></thead>
+            <tbody id="cmp-table-body"></tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -2481,6 +2529,7 @@ let cmpChart = null;
 const cmpActive = new Set();
 
 function initCompareToggles() {
+  if(!DRIVERS || !DRIVERS.length) return;
   document.getElementById('cmp-jgr-toggles').innerHTML = DRIVERS.map(d =>
     `<div style="display:flex;align-items:center;gap:6px;background:${d.color}20;border:1px solid ${d.color}60;border-radius:20px;padding:4px 12px;font-family:var(--font-d);font-size:12px;font-weight:700;color:${d.color};">
       <span style="width:8px;height:8px;border-radius:50%;background:${d.color};display:inline-block;flex-shrink:0;"></span>
@@ -2514,6 +2563,7 @@ function toggleCmpDriver(id) {
 }
 
 function buildCompare() {
+  if(!DATA || !DRIVERS || !DRIVERS.length) return;
   const rd = DATA.racesDone;
   const metric = document.getElementById('cmp-metric')?.value || 'pts';
   const labels = {pts:'Cumulative Points', rank:'Driver Pts Pos', finish:'Finish Position'};
