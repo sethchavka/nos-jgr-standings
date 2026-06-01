@@ -419,6 +419,7 @@ html.light .top-bar{background:rgba(240,242,247,0.92);}
       <button class="nav-btn active" onclick="showPage('dashboard',this)">Dashboard</button>
       <button class="nav-btn" onclick="showPage('metrics',this)">Metrics</button>
       <button class="nav-btn" onclick="showPage('qualorder',this)">Qual Order</button>
+      <button class="nav-btn" onclick="showPage('compare',this)">Compare</button>
     </div>
   </div>
 </header>
@@ -477,6 +478,67 @@ html.light .top-bar{background:rgba(240,242,247,0.92);}
       <button class="admin-btn admin-btn-save" onclick="saveData()">Save & Publish</button>
       <button class="admin-btn admin-btn-cancel" onclick="closeAdmin()">Cancel</button>
       <div class="admin-msg" id="admin-msg"></div>
+    </div>
+
+    <div class="page" id="page-compare">
+      <div class="sec-hdr">
+        <div>
+          <div class="sec-title">Field Comparison <span class="sec-marker" id="cmp-marker">—</span></div>
+          <div class="sec-note">Plot any driver against JGR · race-by-race data</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <select id="cmp-metric" onchange="buildCompare()" style="font-family:var(--font-d);font-size:12px;font-weight:700;background:var(--bg4);color:var(--text2);border:1px solid var(--line2);border-radius:5px;padding:5px 10px;cursor:pointer;">
+            <option value="pts">Cumulative Points</option>
+            <option value="rank">Driver Pts Pos</option>
+            <option value="finish">Finish Position</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Driver toggle grid -->
+      <div class="panel">
+        <div class="panel-hdr">
+          <div class="panel-title">Select Drivers to Compare</div>
+          <div class="panel-note">JGR drivers always shown · click to add/remove field drivers</div>
+        </div>
+        <div class="panel-body" style="padding:10px 12px;">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+            <div style="font-family:var(--font-d);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);width:100%;margin-bottom:2px;">JGR (always on)</div>
+            <div id="cmp-jgr-toggles" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <div style="font-family:var(--font-d);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);width:100%;margin-bottom:2px;">Field</div>
+            <div id="cmp-field-toggles" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="panel">
+        <div class="panel-hdr">
+          <div class="panel-title" id="cmp-chart-title">Points — All Drivers</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;" id="cmp-legend"></div>
+        </div>
+        <div class="panel-body">
+          <div class="chart-wrap" style="height:320px;"><canvas id="cmp-chart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Stat comparison table -->
+      <div class="panel">
+        <div class="panel-hdr">
+          <div class="panel-title">Season Snapshot</div>
+          <div class="panel-note">Selected drivers only</div>
+        </div>
+        <div class="panel-body" style="padding:0;overflow-x:auto;">
+          <table class="mt" style="width:100%;">
+            <thead><tr>
+              <th>Driver</th><th>Pos</th><th>Points</th><th>vs Cutline</th><th>Wins</th><th>Top 5</th><th>Top 10</th><th>Avg Finish</th>
+            </tr></thead>
+            <tbody id="cmp-table-body"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -628,6 +690,25 @@ html.light .top-bar{background:rgba(240,242,247,0.92);}
 // ─────────────────────────────────────────
 // STATIC DATA (schedule, driver meta)
 // ─────────────────────────────────────────
+
+// ─────────────────────────────────────────
+// FIELD DRIVERS (non-JGR comparison data)
+// ─────────────────────────────────────────
+const FIELD_DRIVERS = [
+  {id:'allgaier',first:'Justin',last:'Allgaier',car:'7',color:'#3B82F6',pts:[50,69,115,184,237,306,373,422,470,520,544,598,640,679,696,770],finish:[2,33,8,1,4,1,1,3,4,3,23,2,10,2,29,1],rank:[2,6,3,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+  {id:'love',first:'Jesse',last:'Love',car:'2',color:'#8B5CF6',pts:[37,80,126,181,224,254,281,296,324,371,403,431,479,502,551,591],finish:[9,5,4,2,6,11,12,27,12,2,7,9,2,23,2,16],rank:[9,5,2,2,2,2,2,3,3,3,3,3,3,3,2,2]},
+  {id:'day',first:'Corey',last:'Day',car:'17',color:'#F97316',pts:[10,50,86,118,154,210,251,272,304,344,399,400,422,484,529,574],finish:[27,4,5,9,8,6,2,10,8,12,1,37,15,1,5,6],rank:[27,4,5,9,8,8,4,4,8,4,4,4,5,4,3,3]},
+  {id:'creed',first:'Sheldon',last:'Creed',car:'00',color:'#06B6D4',pts:[18,80,106,143,188,218,257,291,340,389,439,477,485,504,510,532],finish:[24,1,11,4,3,7,4,6,6,2,3,6,29,18,32,15],rank:[24,1,4,4,5,4,4,4,3,2,2,2,4,2,4,4]},
+  {id:'hill',first:'Austin',last:'Hill',car:'21',color:'#84CC16',pts:[6,29,50,75,120,210,251,277,293,296,321,357,392,424,466,499],finish:[31,12,2,12,10,35,6,11,21,7,13,7,11,5,3,11],rank:[31,12,2,12,10,8,6,6,6,8,8,7,7,7,6,6]},
+  {id:'kvapil',first:'Carson',last:'Kvapil',car:'1',color:'#EC4899',pts:[47,64,80,131,164,213,225,258,300,301,331,357,380,420,450,493],finish:[7,32,19,3,11,5,28,5,1,7,7,8,14,7,9,7],rank:[7,8,10,6,7,5,8,8,4,7,7,8,8,8,8,7]},
+  {id:'smith',first:'Sammy',last:'Smith',car:'8',color:'#F59E0B',pts:[36,48,86,132,164,231,270,284,310,352,399,376,399,427,453,482],finish:[5,30,3,6,5,9,3,12,13,16,4,13,16,9,11,10],rank:[5,8,7,5,6,6,6,7,7,6,6,6,6,6,7,8]},
+  {id:'retzlaff',first:'Parker',last:'Retzlaff',car:'99',color:'#14B8A6',pts:[28,74,81,104,129,169,195,229,257,258,292,329,362,363,388,416],finish:[14,2,30,14,12,8,11,8,9,5,10,9,7,38,12,12],rank:[14,2,9,11,10,11,11,10,10,11,10,9,9,11,9,10]},
+  {id:'mayer',first:'Sam',last:'Mayer',car:'41',color:'#A78BFA',pts:[6,36,78,110,122,149,172,173,195,225,241,285,321,369,376,413],finish:[31,7,14,5,35,10,23,38,20,9,14,12,13,3,36,4],rank:[32,7,11,10,12,10,12,15,14,14,14,12,12,9,11,11]},
+  {id:'sieg',first:'Ryan',last:'Sieg',car:'39',color:'#FB923C',pts:[34,35,57,77,81,105,140,168,202,229,254,277,292,322,356,384],finish:[3,37,16,17,33,13,9,9,11,10,21,14,23,8,7,13],rank:[7,37,18,16,20,13,9,16,14,13,13,13,15,15,14,15]},
+  {id:'caruth',first:'Rajah',last:'Caruth',car:'32',color:'#6366F1',pts:[34,65,90,124,156,156,162,178,201,254,268,271,300,338,369,387],finish:[4,9,9,8,19,23,31,13,14,21,30,34,19,14,13,19],rank:[4,7,5,8,9,12,14,14,15,12,12,15,13,14,13,13]},
+  {id:'poole',first:'Brennan',last:'Poole',car:'44',color:'#78716C',pts:[21,19,70,80,110,110,116,137,181,199,221,238,257,283,293,309],finish:[12,19,10,27,20,18,14,14,15,19,15,20,18,11,27,21],rank:[12,19,13,15,16,17,18,17,18,17,16,16,16,16,16,16]},
+];
+
 const RACES = [
   {n:1, short:'DAY',  track:'Daytona',              date:'Feb 14', name:'United Rentals 300'},
   {n:2, short:'ATL',  track:'Atlanta',               date:'Feb 21', name:'Bennett Transportation 250'},
@@ -852,6 +933,7 @@ function renderAll() {
   buildMainMetricBtns();
   rebuildCharts();
   buildQualOrder();
+  initCompareToggles();
 }
 
 function updateHeaderPills() {
@@ -1640,6 +1722,8 @@ function showPage(id,btn) {
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   btn.classList.add('active');
+  if(id==='compare') buildCompare();
+  if(id==='qualorder') buildQualOrder();
 }
 
 // ─────────────────────────────────────────
@@ -2388,6 +2472,143 @@ function buildQualOrder() {
 function qualMetric(finish, ownerRank) {
   if(finish === null || ownerRank === null) return null;
   return Math.round((0.7 * finish + 0.3 * ownerRank) * 100) / 100;
+}
+
+// ─────────────────────────────────────────
+// COMPARE TAB
+// ─────────────────────────────────────────
+let cmpChart = null;
+const cmpActive = new Set();
+
+function initCompareToggles() {
+  document.getElementById('cmp-jgr-toggles').innerHTML = DRIVERS.map(d =>
+    `<div style="display:flex;align-items:center;gap:6px;background:${d.color}20;border:1px solid ${d.color}60;border-radius:20px;padding:4px 12px;font-family:var(--font-d);font-size:12px;font-weight:700;color:${d.color};">
+      <span style="width:8px;height:8px;border-radius:50%;background:${d.color};display:inline-block;flex-shrink:0;"></span>
+      #${d.car} ${d.last}
+    </div>`
+  ).join('');
+
+  document.getElementById('cmp-field-toggles').innerHTML = FIELD_DRIVERS.map(f =>
+    `<button id="cmp-toggle-${f.id}" onclick="toggleCmpDriver('${f.id}')"
+      style="display:flex;align-items:center;gap:6px;background:var(--bg4);border:1px solid var(--line2);border-radius:20px;padding:4px 12px;font-family:var(--font-d);font-size:12px;font-weight:700;color:var(--text3);cursor:pointer;transition:all 0.15s;">
+      <span id="cmp-dot-${f.id}" style="width:8px;height:8px;border-radius:50%;background:var(--text3);display:inline-block;transition:background 0.15s;flex-shrink:0;"></span>
+      #${f.car} ${f.last}
+    </button>`
+  ).join('');
+}
+
+function toggleCmpDriver(id) {
+  if(cmpActive.has(id)) cmpActive.delete(id);
+  else cmpActive.add(id);
+  const btn = document.getElementById(`cmp-toggle-${id}`);
+  const dot = document.getElementById(`cmp-dot-${id}`);
+  const f = FIELD_DRIVERS.find(x=>x.id===id);
+  if(cmpActive.has(id)) {
+    btn.style.background=f.color+'25'; btn.style.borderColor=f.color+'80';
+    btn.style.color=f.color; dot.style.background=f.color;
+  } else {
+    btn.style.background='var(--bg4)'; btn.style.borderColor='var(--line2)';
+    btn.style.color='var(--text3)'; dot.style.background='var(--text3)';
+  }
+  buildCompare();
+}
+
+function buildCompare() {
+  const rd = DATA.racesDone;
+  const metric = document.getElementById('cmp-metric')?.value || 'pts';
+  const labels = {pts:'Cumulative Points', rank:'Driver Pts Pos', finish:'Finish Position'};
+  const reversed = metric==='rank'||metric==='finish';
+  const cut = CUTLINE();
+
+  document.getElementById('cmp-marker').textContent = `R${rd} · ${labels[metric]}`;
+  document.getElementById('cmp-chart-title').textContent = `${labels[metric]} — Through R${rd}`;
+
+  const raceLabels = RACES.slice(0,rd).map(r=>r.short);
+  const gc = isLight?'rgba(0,0,0,0.05)':'rgba(255,255,255,0.04)';
+  const tc = isLight?'#8888A8':'#555570';
+  const tt = {backgroundColor:isLight?'#fff':'#13151C',borderColor:isLight?'rgba(0,0,0,0.12)':'rgba(255,255,255,0.1)',borderWidth:1,titleColor:isLight?'#0E0F18':'#EEEEF2',bodyColor:isLight?'#3D3D5C':'#9A9AB0',padding:10,cornerRadius:6,displayColors:false};
+
+  const allDrivers = [
+    ...DRIVERS.map(d=>({...d,isJgr:true})),
+    ...FIELD_DRIVERS.filter(f=>cmpActive.has(f.id)).map(f=>({...f,isJgr:false}))
+  ];
+
+  const getData = d => {
+    if(metric==='pts')    return RACES.slice(0,rd).map((_,i)=>d.pts[i]??null);
+    if(metric==='rank')   return RACES.slice(0,rd).map((_,i)=>(d.rank||[])[i]??null);
+    if(metric==='finish') return RACES.slice(0,rd).map((_,i)=>(d.finish||[])[i]??null);
+    return [];
+  };
+
+  const datasets = allDrivers.map(d=>({
+    label:`#${d.car} ${d.last}`,
+    data:getData(d),
+    borderColor:d.color,
+    backgroundColor:d.color+(d.isJgr?'20':'10'),
+    borderWidth:d.isJgr?2.5:1.5,
+    borderDash:d.isJgr?[]:[5,3],
+    pointRadius:d.isJgr?3.5:2.5,
+    pointHoverRadius:6,
+    tension:0.3,
+    fill:false,
+    spanGaps:true,
+  }));
+
+  if(metric==='pts') {
+    datasets.push({
+      label:'Cutline',
+      data:RACES.slice(0,rd).map((_,i)=>DATA.cutlineByRace[i]??null),
+      borderColor:'rgba(232,25,44,0.45)',borderWidth:1.5,borderDash:[6,4],
+      pointRadius:0,fill:false,spanGaps:true,
+    });
+  }
+
+  if(cmpChart){cmpChart.destroy();cmpChart=null;}
+  cmpChart = new Chart(document.getElementById('cmp-chart').getContext('2d'),{
+    type:'line',
+    data:{labels:raceLabels,datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{...tt,callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y!==null?(metric==='pts'?ctx.parsed.y+' pts':'P'+ctx.parsed.y):'—'}`}}
+      },
+      scales:{
+        x:{grid:{color:gc},ticks:{color:tc,font:{size:11}}},
+        y:{reverse:reversed,grid:{color:gc},ticks:{color:tc,font:{size:11},callback:v=>metric==='pts'?v:'P'+v}}
+      }
+    }
+  });
+
+  document.getElementById('cmp-legend').innerHTML = allDrivers.map(d=>
+    `<div class="leg-item">
+      <div class="leg-dot" style="background:${d.isJgr?d.color:'transparent'};border:${d.isJgr?'none':'1.5px dashed '+d.color};width:10px;height:10px;border-radius:50%;flex-shrink:0;"></div>
+      <span style="color:${d.isJgr?d.color:'var(--text2)'};font-weight:${d.isJgr?700:400};">#${d.car} ${d.last}</span>
+    </div>`
+  ).join('');
+
+  const finArr = d=>(d.finish||[]).slice(0,rd).filter(v=>v!==null);
+  const wins = d=>finArr(d).filter(v=>v===1).length;
+  const top5 = d=>finArr(d).filter(v=>v<=5).length;
+  const top10 = d=>finArr(d).filter(v=>v<=10).length;
+  const avgFin = d=>{const a=finArr(d);return a.length?(a.reduce((s,v)=>s+v,0)/a.length).toFixed(1):'—';};
+
+  document.getElementById('cmp-table-body').innerHTML = allDrivers.map(d=>{
+    const pts=d.pts[rd-1]??'—';
+    const rank=(d.rank||[])[rd-1];
+    const diff=typeof pts==='number'?pts-cut:null;
+    const diffTxt=diff!==null?(diff>=0?`<span style="color:var(--green);">+${diff}</span>`:`<span style="color:var(--red);">${diff}</span>`):'—';
+    return `<tr style="${d.isJgr?`background:${d.color}08;`:''}">
+      <td><span style="color:${d.color};font-family:var(--font-d);font-weight:700;">#${d.car}</span> <span style="font-weight:${d.isJgr?700:400};color:${d.isJgr?d.color:'var(--text)'};">${d.first} ${d.last}</span></td>
+      <td>${rank?'P'+rank:'—'}</td>
+      <td style="font-family:var(--font-d);font-weight:700;color:${d.isJgr?d.color:'var(--text)'};">${pts}</td>
+      <td>${diffTxt}</td>
+      <td>${wins(d)||'—'}</td>
+      <td>${top5(d)||'—'}</td>
+      <td>${top10(d)||'—'}</td>
+      <td>${avgFin(d)}</td>
+    </tr>`;
+  }).join('');
 }
 
 let isLight = false;
