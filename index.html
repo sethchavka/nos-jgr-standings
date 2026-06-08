@@ -2178,7 +2178,7 @@ function buildMomentum() {
     const score = momentumScore(d);
     const scoreStr = (score>=0?'+':'')+score.toFixed(1);
     const scoreCol = score>=0?'var(--green)':'var(--red)';
-    const avg = seasonAvgPts(d).toFixed(1);
+    const avg = avgP(d);
     return `<div style="padding:14px 16px;border-right:1px solid var(--line);border-bottom:none;position:relative;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
         <div>
