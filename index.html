@@ -123,8 +123,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:
 .dc-stat-v.green{color:var(--green);}
 .dc-stat-v.red{color:var(--red);}
 
-
-
 /* PANEL */
 .panel{background:var(--bg2);border:1px solid var(--line2);flex-shrink:0;overflow:hidden;}
 .panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--bg3);}
@@ -382,8 +380,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:
               <th>vs Leader</th><th>Avg Pts</th><th>Avg Start</th><th>Avg Finish</th>
               <th>Poles</th><th>Wins</th><th>Stg Wins</th><th>Stg Pts</th>
               <th>Top 5</th><th>Top 10</th><th>DNF</th><th>Out 20</th><th>Laps Led</th>
-              <th>% Led</th><th>% T5</th>
-              <th>Avg RP</th><th>Avg RP S1</th><th>Avg RP S2</th><th>Avg RP S3</th>
+              <th>% Led</th><th>% T5</th><th>Avg RP</th>
               <th>Proj R26</th><th>Proj R33</th>
             </tr></thead>
             <tbody id="metrics-tbody"></tbody>
@@ -631,7 +628,6 @@ function toggleProjections() {
 // ─────────────────────────────────────────
 // STORAGE
 // ─────────────────────────────────────────
-const STORAGE_KEY = 'jgr-2026-tracker-data';
 
 function loadData() {
   DATA = DEFAULT_DATA;
@@ -849,7 +845,7 @@ function expandDriver(id) {
   const pts = lPts(d), rank = driverRank(d);
   const diff = pts - cut;
   const rate = nRaced(d) ? pts / nRaced(d) : 0;
-  const p24 = projP(d, 24);
+  const p26 = projP(d, 26);
   const ptsNeeded = Math.max(0, (cut + Math.round(rate * (24 - rd))) - pts);
 
   // Stats panel
@@ -871,7 +867,7 @@ function expandDriver(id) {
     ${statRow('Top 5 · Top 10', `${top5(d)} · ${top10(d)}`)}
     ${statRow('Laps Led', lapsLedTotal(d)||'—')}
     ${statRow('Avg Run Pos', (() => { const v=(d.avgRunPos||[]).filter(x=>x!==null); return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):'—'; })())}
-    ${statRow('Proj R24 · R33', `${p24} · ${projP(d,33)}`, typeof p24==='number'&&p24>=cut?'#00C37A':'var(--red)')}
+    ${statRow('Proj R24 · R33', `${p26} · ${projP(d,33)}`, typeof p26==='number'&&p26>=cut?'#00C37A':'var(--red)')}
   `;
 
   // Race log
@@ -920,9 +916,6 @@ function expandDriver(id) {
     { key: 'lapsLed',   label: 'Laps Led' },
     { key: 'rank',      label: 'Driver Pts Pos' },
     { key: 'avgRunPos', label: 'Avg Run Pos' },
-    { key: 's1AvgPos',  label: 'S1 Avg Pos' },
-    { key: 's2AvgPos',  label: 'S2 Avg Pos' },
-    { key: 's3AvgPos',  label: 'S3 Avg Pos' },
     { key: 'pctLed',    label: '% Laps Led' },
     { key: 'pctT5',     label: '% Laps T5'  },
   ];
@@ -971,12 +964,7 @@ function buildExpandChart(key) {
                  data: RACES.slice(0,rd).map((_,i) => d.rank[i] ?? null) },
     avgRunPos: { label:'Avg Running Position', type:'line', reversed:true,
                  data: RACES.slice(0,rd).map((_,i) => (d.avgRunPos||[])[i] ?? null) },
-    s1AvgPos:  { label:'Stage 1 Avg Running Pos', type:'line', reversed:true,
-                 data: RACES.slice(0,rd).map((_,i) => (d.s1AvgPos||[])[i] ?? null) },
-    s2AvgPos:  { label:'Stage 2 Avg Running Pos', type:'line', reversed:true,
-                 data: RACES.slice(0,rd).map((_,i) => (d.s2AvgPos||[])[i] ?? null) },
-    s3AvgPos:  { label:'Stage 3 Avg Running Pos', type:'line', reversed:true,
-                 data: RACES.slice(0,rd).map((_,i) => (d.s3AvgPos||[])[i] ?? null) },
+
     pctLed:    { label:'% Laps Led',  type:'bar', reversed:false,
                  data: RACES.slice(0,rd).map((_,i) => (d.pctLed||[])[i] ?? null) },
     pctT5:     { label:'% Laps T5',   type:'bar', reversed:false,
@@ -1097,7 +1085,7 @@ function buildMetricsTable() {
   const cut=CUTLINE(), ldr=DATA.leaderPts;
   document.getElementById('metrics-tbody').innerHTML = DRIVERS.map(d=>{
     const pts=lPts(d), rank=lRank(d), diff=pts-cut;
-    const p24=projP(d,24), p33=projP(d,33);
+    const p26=projP(d,26), p33=projP(d,33);
     const isC=rank&&rank<=12;
     return `<tr>
       <td><div class="mt-d"><div class="mt-sw" style="background:${d.color};"></div>#${d.car} ${d.last}</div></td>
@@ -1117,7 +1105,8 @@ function buildMetricsTable() {
       <td class="${lapsLedTotal(d)>0?'mv-g':''}">${lapsLedTotal(d)}</td>
       <td class="${parseFloat(seasonPctLed(d))>0?'mv-g':''}">${seasonPctLed(d)}</td>
       <td class="${parseFloat(seasonPctT5(d))>0?'mv-g':''}">${seasonPctT5(d)}</td>
-      <td class="${typeof p24==='number'&&p24>=cut?'mv-gr':'mv-r'}">${p24}</td>
+      <td>${(() => { const v=(d.avgRunPos||[]).filter(x=>x!==null); return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):'—'; })()}</td>
+      <td class="${typeof p26==='number'&&p26>=cut?'mv-gr':'mv-r'}">${p26}</td>
       <td>${p33}</td>
     </tr>`;
   }).join('');
@@ -1127,7 +1116,7 @@ function buildMetricsPage() {
   const cut=CUTLINE(), ldr=DATA.leaderPts, rd=DATA.racesDone;
   document.getElementById('metrics-page-grid').innerHTML = DRIVERS.map(d=>{
     const pts=lPts(d), rank=driverRank(d), diff=pts-cut;
-    const p24=projP(d,24), p33=projP(d,33), isC=rank&&rank<=12;
+    const p26=projP(d,26), p33=projP(d,33), isC=rank&&rank<=12;
     const rows=[
       {k:'Current Points',v:pts||'—',c:''},
       {k:'Driver Pts Pos',v:rank?`P${rank}`:'—',c:isC?'green':'red'},
@@ -1146,7 +1135,7 @@ function buildMetricsPage() {
       {k:'Laps Led',v:lapsLedTotal(d),c:lapsLedTotal(d)>0?'gold':''},
       {k:'vs Chase Cutline',v:pts?(diff>0?'+':'')+diff:'—',c:diff>=0?'green':'red'},
       {k:'vs Series Leader',v:pts?pts-ldr:'—',c:'red'},
-      {k:'Projected at Race 24',v:p24,c:typeof p24==='number'&&p24>=cut?'green':'red'},
+      {k:'Projected at Race 24',v:p26,c:typeof p26==='number'&&p26>=cut?'green':'red'},
       {k:'Projected at Race 33',v:p33,c:''},
       {k:'Pts/race needed for cutline',v:pts&&nRaced(d)?((cut-pts)/(24-rd)).toFixed(1):'—',c:''},
     ];
@@ -1161,7 +1150,6 @@ function buildMetricsPage() {
 // CHARTS
 // ─────────────────────────────────────────
 
-
 function getMetricData(d, key, i) {
   switch(key) {
     case 'pts':        return d.pts[i] ?? null;
@@ -1172,9 +1160,6 @@ function getMetricData(d, key, i) {
     case 'lapsLed':    return (d.lapsLed||[])[i] ?? null;
     case 'rank':       return d.rank[i] ?? null;
     case 'avgRunPos':  return (d.avgRunPos||[])[i] ?? null;
-    case 's1AvgPos':   return (d.s1AvgPos||[])[i] ?? null;
-    case 's2AvgPos':   return (d.s2AvgPos||[])[i] ?? null;
-    case 's3AvgPos':   return (d.s3AvgPos||[])[i] ?? null;
     case 'pctLed':     return (d.pctLed||[])[i] ?? null;
     case 'pctT5':      return (d.pctT5||[])[i] ?? null;
     default: return null;
@@ -1234,7 +1219,6 @@ function buildMainChartButtons() {
 
 function buildMainMetricBtns(){buildMainChartButtons();}
 
-
 function getMainData(d, key, rd, cutoff) {
   switch(key) {
     case 'pts':       return d.pts.slice(0,cutoff).map(v=>v??null);
@@ -1245,9 +1229,6 @@ function getMainData(d, key, rd, cutoff) {
     case 'lapsLed':   return Array.from({length:rd},(_,i)=>(d.lapsLed||[])[i]??null);
     case 'rank':      return Array.from({length:rd},(_,i)=>d.rank[i]??null);
     case 'arp':        return (d.arp||[]).slice(0,rd).map(v=>v??null);
-    case 'arpS1':      return (d.arpS1||[]).slice(0,rd).map(v=>v??null);
-    case 'arpS2':      return (d.arpS2||[]).slice(0,rd).map(v=>v??null);
-    case 'arpS3':      return (d.arpS3||[]).slice(0,rd).map(v=>v??null);
     case 'pctLapsLed': return Array.from({length:rd},(_,i)=>{
       const gl=GREEN_LAPS[i]; if(!gl) return null;
       return +((( d.lapsLed||[])[i]||0)/gl*100).toFixed(1);
@@ -1364,7 +1345,6 @@ function buildStandingsChart() {
 }
 
 function rebuildCharts(){buildMainChart(); buildStandingsChart();}
-
 
 function updateCharts() {
   rebuildCharts();
@@ -2130,7 +2110,6 @@ function qualMetric(finish, ownerRank) {
   return Math.round((0.7 * finish + 0.3 * ownerRank) * 100) / 100;
 }
 
-
 // ─────────────────────────────────────────
 // MOMENTUM PANEL
 // ─────────────────────────────────────────
@@ -2231,7 +2210,6 @@ function buildMomentumDash() {
 }
 
 function buildMomentum(){buildMomentumDash();}
-
 
 // ─────────────────────────────────────────
 // COMPARE TAB
