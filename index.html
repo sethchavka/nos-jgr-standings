@@ -8,28 +8,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;0,700;0,900;1,400&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600;700&display=swap');
-
 :root {
-  --red:#E8192C; --red-dim:rgba(232,25,44,0.1); --red-glow:rgba(232,25,44,0.25);
-  --gold:#F5A623; --gold-dim:rgba(245,166,35,0.1);
-  --green:#00C37A; --green-dim:rgba(0,195,122,0.08);
+  --red:#E8192C; --red-dim:rgba(232,25,44,0.1); --line-red:rgba(232,25,44,0.2);
+  --gold:#F5A623;
+  --green:#00C37A;
 
   --bg:#080A10; --bg2:#0E1018; --bg3:#141720; --bg4:#1B1E2A;
   --bg5:#202430; --bg6:#262B38;
 
-  --line:rgba(255,255,255,0.07); --line2:rgba(255,255,255,0.13);
-  --line3:rgba(255,255,255,0.28); --line-red:rgba(232,25,44,0.2);
+  --line:rgba(255,255,255,0.07); --line2:rgba(255,255,255,0.13); --line3:rgba(255,255,255,0.28);
 
   --text:#F4F5F8; --text2:#B8BCCB; --text3:#6E7280;
 
   --font-d:'Barlow Condensed',sans-serif;
-  --font-b:'Barlow',sans-serif;
-  --font-mono:'JetBrains Mono',monospace;
+  --font-b:'Inter',sans-serif;
 
-  --hdr:52px; --sidebar:288px; --radius:6px; --gap:10px;
+  --hdr:52px; --sidebar:288px; --gap:10px;
+  --transition:0.12s ease;
 }
-
 html.light {
   --bg:#ECEEF3; --bg2:#F7F8FB; --bg3:#E4E7EE; --bg4:#D8DCE8;
   --bg5:#CDD2E0; --bg6:#C2C8D8;
@@ -37,11 +33,9 @@ html.light {
   --line-red:rgba(232,25,44,0.18);
   --text:#0C0D14; --text2:#444C60; --text3:#9099AE;
 }
-
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
-body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:14px;line-height:1.5;}
-
+body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased;}
 *{scrollbar-width:thin;scrollbar-color:var(--bg5) transparent;}
 ::-webkit-scrollbar{width:2px;height:2px;}
 ::-webkit-scrollbar-thumb{background:var(--bg6);border-radius:1px;}
@@ -53,46 +47,25 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:
   background:var(--bg2);border-bottom:1px solid var(--line2);
   box-shadow:inset 3px 0 0 var(--red);
 }
-html.light .top-bar{background:var(--bg2);}
-.tb-brand{
-  display:flex;align-items:center;gap:14px;
-  padding:0 18px 0 16px;flex-shrink:0;border-right:1px solid var(--line2);
-}
-.tb-logo{
-  width:32px;height:32px;background:var(--red);
-  clip-path:polygon(0 0,100% 0,100% 75%,75% 100%,0 100%);
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--font-d);font-weight:900;font-size:11px;
-  color:#fff;letter-spacing:0.5px;margin-right:4px;flex-shrink:0;
-  box-shadow:0 2px 12px rgba(232,25,44,0.4);
-}
-.tb-wordmark{display:flex;flex-direction:column;gap:1px;}
-.tb-title{font-family:var(--font-d);font-weight:900;font-size:15px;letter-spacing:3px;text-transform:uppercase;color:var(--text);line-height:1;}
-.tb-sub{font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;}
+.tb-brand{display:flex;align-items:center;padding:0 20px;flex-shrink:0;border-right:1px solid var(--line2);}
+.tb-title{font-family:var(--font-d);font-weight:900;font-size:18px;letter-spacing:2px;text-transform:uppercase;color:var(--text);white-space:nowrap;}
 .tb-pills{display:flex;align-items:stretch;flex:1;overflow:hidden;}
-.live-badge{
-  display:flex;align-items:center;gap:7px;
-  padding:0 16px;border-right:1px solid var(--line2);
-  font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--green);flex-shrink:0;
-}
-.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 1.4s ease-in-out infinite;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
-.pill{display:flex;flex-direction:column;justify-content:center;padding:0 14px;border-right:1px solid var(--line);min-width:0;}
-.pill-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);line-height:1;margin-bottom:2px;}
-.pill-val{font-family:var(--font-mono);font-size:13px;color:var(--text);line-height:1;white-space:nowrap;}
+.pill{display:flex;flex-direction:column;justify-content:center;padding:0 14px;border-right:1px solid var(--line);min-width:0;gap:2px;}
+.pill-lbl{font-family:var(--font-b);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.2px;color:var(--text3);line-height:1;}
+.pill-val{font-family:var(--font-b);font-size:13px;font-weight:600;color:var(--text);line-height:1;white-space:nowrap;}
 .pill-val.accent{color:var(--gold);}
 .tb-right{display:flex;align-items:stretch;flex-shrink:0;}
 .tb-nav{display:flex;align-items:stretch;border-left:1px solid var(--line2);}
 .nav-btn{
-  font-family:var(--font-d);font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
-  padding:0 20px;border:none;border-right:1px solid var(--line);
-  background:transparent;color:var(--text2);cursor:pointer;transition:all 0.12s;position:relative;white-space:nowrap;
+  font-family:var(--font-b);font-size:12px;font-weight:600;letter-spacing:0.3px;
+  padding:0 18px;border:none;border-right:1px solid var(--line);
+  background:transparent;color:var(--text2);cursor:pointer;transition:var(--transition);position:relative;white-space:nowrap;
 }
 .nav-btn::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--red);transform:scaleX(0);transition:transform 0.15s;}
 .nav-btn.active{color:var(--text);background:var(--red-dim);}
 .nav-btn.active::after{transform:scaleX(1);}
-.nav-btn:hover:not(.active){color:var(--text2);background:var(--bg3);}
-.theme-btn{width:52px;border:none;border-left:1px solid var(--line2);background:transparent;color:var(--text3);cursor:pointer;font-size:14px;transition:all 0.12s;}
+.nav-btn:hover:not(.active){color:var(--text);background:var(--bg3);}
+.theme-btn{width:48px;border:none;border-left:1px solid var(--line2);background:transparent;color:var(--text3);cursor:pointer;font-size:16px;line-height:var(--hdr);transition:var(--transition);}
 .theme-btn:hover{background:var(--bg3);color:var(--text);}
 
 /* SHELL */
@@ -101,79 +74,85 @@ html.light .top-bar{background:var(--bg2);}
 /* SIDEBAR */
 .sidebar{background:var(--bg2);border-right:1px solid var(--line2);overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;}
 .sb-sec{padding:14px 16px;border-bottom:1px solid var(--line);flex-shrink:0;}
-.sb-lbl{font-family:var(--font-mono);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text2);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.sb-lbl{font-family:var(--font-b);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
 .sb-lbl::after{content:'';flex:1;height:1px;background:var(--line2);}
 .prog-row{margin-bottom:10px;}
 .prog-row:last-child{margin-bottom:0;}
 .prog-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
-.prog-label{font-size:12px;color:var(--text);}
-.prog-val{font-family:var(--font-mono);font-weight:700;font-size:12px;color:var(--text);}
+.prog-label{font-size:12px;color:var(--text2);}
+.prog-val{font-family:var(--font-b);font-weight:700;font-size:12px;color:var(--text);}
 .prog-track{height:3px;background:var(--bg5);}
 .prog-fill{height:100%;transition:width 0.6s cubic-bezier(.4,0,.2,1);}
 .chase-list{list-style:none;}
 .chase-item{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);}
 .chase-item:last-child{border-bottom:none;}
-.ci-pos{font-family:var(--font-mono);font-weight:700;font-size:11px;color:var(--text2);text-align:right;}
+.ci-pos{font-family:var(--font-b);font-weight:700;font-size:11px;color:var(--text3);text-align:right;}
 .ci-name{font-size:13px;color:var(--text);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:6px;}
 .ci-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;display:inline-block;}
-.ci-pts{font-family:var(--font-mono);font-weight:700;font-size:13px;color:var(--text);}
-.chase-cutline-sep{padding:4px 0;margin:2px 0;border-top:1px solid var(--line-red);border-bottom:1px solid var(--line-red);background:var(--red-dim);font-family:var(--font-mono);font-size:9px;font-weight:700;text-align:center;letter-spacing:2px;text-transform:uppercase;color:var(--red);}
+.ci-pts{font-family:var(--font-b);font-weight:700;font-size:12px;color:var(--text);}
+.chase-cutline-sep{padding:4px 0;margin:2px 0;border-top:1px solid var(--line-red);border-bottom:1px solid var(--line-red);background:var(--red-dim);font-family:var(--font-b);font-size:9px;font-weight:700;text-align:center;letter-spacing:2px;text-transform:uppercase;color:var(--red);}
 
 /* MAIN */
 .main-content{overflow-y:auto;overflow-x:hidden;background:var(--bg);display:flex;flex-direction:column;}
-.page{display:none;flex-direction:column;gap:var(--gap);padding:14px 16px 24px;}
+.page{display:none;flex-direction:column;gap:var(--gap);padding:12px 14px 24px;}
 .page.active{display:flex;}
 
 /* DRIVER CARDS */
-.driver-card{background:var(--bg2);border:1px solid var(--line2);border-top:2px solid transparent;overflow:hidden;cursor:pointer;transition:all 0.2s;position:relative;}
-.driver-card:hover{border-color:var(--line3);transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,0.4);}
+.driver-card{background:var(--bg2);border:1px solid var(--line2);border-top:2px solid transparent;overflow:hidden;cursor:pointer;transition:all 0.15s;position:relative;}
+.driver-card:hover{border-color:var(--line3);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,0.5);}
 .driver-card.active-card{border-top-width:2px;}
+.driver-card.dimmed{opacity:0.18;transform:none !important;filter:grayscale(1);}
 .dc-top{display:flex;align-items:flex-start;gap:10px;padding:10px 12px 0;}
-.dc-num{font-family:var(--font-d);font-weight:900;font-size:44px;line-height:0.9;letter-spacing:-2px;opacity:0.9;flex-shrink:0;}
+.dc-num{font-family:var(--font-d);font-weight:900;font-size:48px;line-height:0.9;letter-spacing:-2px;opacity:0.85;flex-shrink:0;}
 .dc-info{flex:1;min-width:0;padding-top:4px;}
 .dc-name{font-family:var(--font-d);font-weight:700;font-size:17px;line-height:1;letter-spacing:0.5px;text-transform:uppercase;}
-.dc-meta{font-family:var(--font-mono);font-size:9px;color:var(--text2);letter-spacing:0.5px;margin-top:3px;}
+.dc-car{font-family:var(--font-b);font-size:9px;color:var(--text3);letter-spacing:0.5px;margin-top:3px;}
 .dc-badges{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;}
-.badge{font-family:var(--font-mono);font-size:9px;font-weight:400;padding:2px 6px;letter-spacing:1px;text-transform:uppercase;border:1px solid currentColor;}
-.b-out{color:var(--gold);}
-.b-rookie{color:var(--text3);}
-.dc-stats{display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:10px;border-top:1px solid var(--line);}
-.dc-stat{padding:8px 10px;text-align:center;border-right:1px solid var(--line);}
+.badge{font-family:var(--font-b);font-size:9px;padding:2px 6px;letter-spacing:1px;text-transform:uppercase;border:1px solid currentColor;}
+.b-out{color:var(--text3);border-color:var(--line2);}
+.dc-pts-row{display:flex;align-items:baseline;gap:8px;padding:8px 12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg3);}
+.dc-pts-big{font-family:var(--font-b);font-weight:700;font-size:28px;line-height:1;letter-spacing:-1px;}
+.dc-pts-lbl{font-family:var(--font-b);font-size:10px;color:var(--text3);}
+.dc-pts-gap{font-family:var(--font-b);font-size:12px;font-weight:700;margin-left:auto;}
+.dc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:none;}
+.dc-stat{padding:7px 8px;text-align:center;border-right:1px solid var(--line);background:var(--bg2);}
 .dc-stat:last-child{border-right:none;}
-.dc-stat-l{font-family:var(--font-mono);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:3px;}
-.dc-stat-v{font-family:var(--font-mono);font-weight:700;font-size:18px;line-height:1;}
-.dc-stat-v.red{color:var(--red);}
+.dc-stat-l{font-family:var(--font-b);font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);margin-bottom:3px;}
+.dc-stat-v{font-family:var(--font-b);font-weight:700;font-size:16px;line-height:1;}
 .dc-stat-v.gold{color:var(--gold);}
 .dc-stat-v.green{color:var(--green);}
-.driver-card.dimmed{opacity:0.25;transform:none !important;filter:grayscale(0.8);}
+.dc-stat-v.red{color:var(--red);}
+
+
 
 /* PANEL */
 .panel{background:var(--bg2);border:1px solid var(--line2);flex-shrink:0;overflow:hidden;}
 .panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--bg3);}
-.panel-title{font-family:var(--font-mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text);}
-.panel-note{font-size:11px;color:var(--text2);}
+.panel-title{font-family:var(--font-b);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text);}
+.panel-note{font-family:var(--font-b);font-size:10px;color:var(--text3);}
 .panel-body{padding:12px;}
 
-/* SECTION HEADER */
-.sec-hdr{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid var(--line2);flex-shrink:0;}
-.sec-title{font-family:var(--font-d);font-weight:900;font-size:16px;text-transform:uppercase;letter-spacing:2px;}
-.sec-note{font-size:11px;color:var(--text3);}
-.sec-marker{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;border:1px solid var(--line-red);color:var(--red);background:var(--red-dim);margin-left:10px;vertical-align:middle;}
+/* CHARTS */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);flex-shrink:0;}
+.chart-wrap{position:relative;width:100%;}
+.legend{display:flex;gap:12px;flex-wrap:wrap;}
+.leg-item{display:flex;align-items:center;gap:6px;font-family:var(--font-b);font-size:10px;color:var(--text2);}
+.leg-dot{width:6px;height:6px;flex-shrink:0;}
 
 /* METRIC BUTTONS */
-.metric-btns-wrap{display:flex;flex-wrap:wrap;gap:2px;padding:8px 10px;border-bottom:1px solid var(--line);}
-.metric-btn{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;padding:4px 10px;border:1px solid transparent;background:transparent;color:var(--text2);cursor:pointer;transition:all 0.12s;}
-.metric-btn.active{background:var(--red-dim);color:var(--red);border-color:var(--line-red);}
-.metric-btn:hover:not(.active){color:var(--text2);background:var(--bg4);}
+.metric-btns-wrap,.de-metric-btns-wrap{display:flex;flex-wrap:wrap;gap:2px;padding:6px 10px;border-bottom:1px solid var(--line);}
+.de-metric-btn,.metric-btn{font-family:var(--font-b);font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;padding:4px 10px;border:1px solid transparent;background:transparent;color:var(--text3);cursor:pointer;transition:var(--transition);}
+.de-metric-btn.active,.metric-btn.active{background:var(--red-dim);color:var(--red);border-color:var(--line-red);}
+.de-metric-btn:hover:not(.active),.metric-btn:hover:not(.active){color:var(--text2);background:var(--bg4);}
 
 /* TABLES */
 .mt{width:100%;border-collapse:collapse;font-size:12px;}
-.mt th{font-family:var(--font-mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);padding:7px 10px;border-bottom:1px solid var(--line2);text-align:right;white-space:nowrap;background:var(--bg3);}
+.mt th{font-family:var(--font-b);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);padding:7px 10px;border-bottom:1px solid var(--line2);text-align:right;white-space:nowrap;background:var(--bg3);position:sticky;top:0;z-index:1;}
 .mt th:first-child{text-align:left;}
-.mt td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:right;color:var(--text);white-space:nowrap;font-family:var(--font-mono);font-size:12px;}
+.mt td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:right;color:var(--text2);white-space:nowrap;font-family:var(--font-b);font-size:11px;}
 .mt td:first-child{text-align:left;color:var(--text);font-family:var(--font-b);font-size:13px;}
 .mt tr:last-child td{border-bottom:none;}
-.mt tr:hover td{background:var(--bg3);}
+.mt tr:hover td{background:var(--bg4);}
 .mt-d{display:flex;align-items:center;gap:8px;}
 .mt-sw{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .mv-r{color:var(--red);}
@@ -188,87 +167,102 @@ html.light .top-bar{background:var(--bg2);}
 .mc-name{font-family:var(--font-d);font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:1px;}
 .mc-row{display:flex;justify-content:space-between;align-items:baseline;padding:6px 14px;border-bottom:1px solid var(--line);}
 .mc-row:last-child{border-bottom:none;}
-.mc-key{font-size:11px;color:var(--text2);}
-.mc-val{font-family:var(--font-mono);font-weight:700;font-size:14px;}
+.mc-key{font-size:11px;color:var(--text3);}
+.mc-val{font-family:var(--font-b);font-weight:700;font-size:13px;}
 .mc-val.red{color:var(--red);}
 .mc-val.gold{color:var(--gold);}
 .mc-val.green{color:var(--green);}
 
-/* LEGEND */
-.legend{display:flex;gap:14px;flex-wrap:wrap;}
-.leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text);}
-.leg-dot{width:6px;height:6px;flex-shrink:0;}
-.chart-wrap{position:relative;width:100%;}
-
-/* PROJ BTN */
-.proj-btn{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border:1px solid var(--line2);background:var(--bg4);color:var(--text3);cursor:pointer;transition:all 0.12s;}
-.proj-btn:hover{border-color:var(--line3);color:var(--text2);}
-
-/* DRIVER EXPAND */
+/* EXPAND PANEL */
 .de-wrap{position:relative;}
 .driver-expand{display:none;background:var(--bg2);border:1px solid var(--line2);border-left:3px solid transparent;overflow:hidden;}
 .driver-expand.open{display:grid;grid-template-columns:190px 1fr 1fr;}
-.de-stats{padding:12px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:5px;overflow-y:auto;}
+.de-stats{padding:12px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px;overflow-y:auto;}
 .de-stat{padding:7px 9px;border:1px solid var(--line);background:var(--bg3);}
-.de-stat-l{font-family:var(--font-mono);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:2px;}
-.de-stat-v{font-family:var(--font-mono);font-weight:700;font-size:16px;line-height:1.1;color:var(--text);}
-.de-stat-s{font-size:9px;color:var(--text3);margin-top:1px;}
-.de-chart{padding:12px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:10px;}
-.de-chart-hdr{font-family:var(--font-mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text);}
+.de-stat-l{font-family:var(--font-b);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:2px;}
+.de-stat-v{font-family:var(--font-b);font-weight:700;font-size:15px;line-height:1.1;color:var(--text);}
+.de-stat-s{font-family:var(--font-b);font-size:9px;color:var(--text3);margin-top:1px;}
+.de-chart{padding:12px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:8px;}
+.de-chart-hdr{font-family:var(--font-b);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text2);}
 .de-log{padding:12px;overflow-y:auto;}
-.de-log-hdr{font-family:var(--font-mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text);margin-bottom:8px;}
+.de-log-hdr{font-family:var(--font-b);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text2);margin-bottom:8px;}
 .de-table{width:100%;border-collapse:collapse;}
-.de-table th{font-family:var(--font-mono);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text2);padding:4px 7px;border-bottom:1px solid var(--line2);text-align:right;white-space:nowrap;position:sticky;top:0;background:var(--bg2);}
+.de-table th{font-family:var(--font-b);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);padding:4px 7px;border-bottom:1px solid var(--line2);text-align:right;white-space:nowrap;position:sticky;top:0;background:var(--bg2);}
 .de-table th:first-child,.de-table th:nth-child(2){text-align:left;}
-.de-table td{padding:4px 7px;border-bottom:1px solid var(--line);text-align:right;color:var(--text);white-space:nowrap;font-family:var(--font-mono);font-size:11px;}
+.de-table td{padding:4px 7px;border-bottom:1px solid var(--line);text-align:right;color:var(--text2);white-space:nowrap;font-family:var(--font-b);font-size:11px;}
 .de-table td:first-child{text-align:left;color:var(--text3);}
 .de-table td:nth-child(2){text-align:left;color:var(--text);font-family:var(--font-b);}
 .de-table tr:last-child td{border-bottom:none;}
-.de-table tr:hover td{background:var(--bg3);}
-.de-metric-btn{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;padding:3px 8px;border:1px solid var(--line2);background:var(--bg4);color:var(--text3);cursor:pointer;transition:all 0.12s;}
-.de-metric-btn.active{border-color:currentColor;background:var(--bg5);}
-.de-metric-btn:hover:not(.active){background:var(--bg3);color:var(--text2);}
-.de-close{position:absolute;top:8px;right:10px;width:22px;height:22px;font-size:12px;color:var(--text3);cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;border:1px solid var(--line2);background:var(--bg4);transition:all 0.12s;}
+.de-table tr:hover td{background:var(--bg4);}
+.de-close{position:absolute;top:8px;right:10px;width:22px;height:22px;font-size:12px;color:var(--text3);cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;border:1px solid var(--line2);background:var(--bg4);transition:var(--transition);}
 .de-close:hover{color:var(--text);border-color:var(--line3);}
 
-/* SELECT */
-select{font-family:var(--font-mono);font-size:11px;font-weight:600;background:var(--bg4);color:var(--text2);border:1px solid var(--line2);padding:5px 10px;cursor:pointer;outline:none;}
-select:focus{border-color:var(--line3);}
+.proj-btn{font-family:var(--font-b);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border:1px solid var(--line2);background:var(--bg4);color:var(--text3);cursor:pointer;transition:var(--transition);}
+.proj-btn:hover{border-color:var(--line3);color:var(--text2);}
 
-/* LOADING */
-.loading-overlay{display:none;}
-.loading-overlay.show{display:flex;position:fixed;inset:0;background:rgba(5,6,8,0.85);z-index:2000;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
-.loading-spinner{width:32px;height:32px;border:2px solid var(--line2);border-top-color:var(--red);border-radius:50%;animation:spin 0.6s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.loading-text{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--text3);letter-spacing:2px;text-transform:uppercase;}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid var(--line2);flex-shrink:0;}
+.sec-title{font-family:var(--font-d);font-weight:900;font-size:16px;text-transform:uppercase;letter-spacing:2px;}
+.sec-note{font-family:var(--font-b);font-size:10px;color:var(--text3);}
+.sec-marker{font-family:var(--font-b);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;border:1px solid var(--line-red);color:var(--red);background:var(--red-dim);margin-left:10px;vertical-align:middle;}
+
+/* DRIVER CARDS GRID */
+.driver-cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--gap);flex-shrink:0;}
+
+/* MOBILE SUMMARY STRIP */
+.mobile-summary{display:none;background:var(--bg2);border:1px solid var(--line2);overflow:hidden;}
+.ms-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);}
+.ms-cell{background:var(--bg3);padding:10px 13px;}
+.ms-label{font-family:var(--font-b);font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:3px;}
+.ms-val{font-family:var(--font-b);font-weight:700;font-size:17px;line-height:1;color:var(--text);}
+.ms-sub{font-family:var(--font-b);font-size:9px;color:var(--text3);margin-top:2px;}
+.ms-prog{padding:10px 13px;border-top:1px solid var(--line);}
+.ms-prog-row{display:flex;justify-content:space-between;margin-bottom:4px;font-family:var(--font-b);font-size:10px;color:var(--text2);}
+.ms-prog-track{height:3px;background:var(--bg5);margin-bottom:6px;}
+.ms-prog-fill{height:100%;background:var(--red);}
 
 /* RESPONSIVE */
-@media(max-width:1200px){:root{--sidebar:240px;}.pill-lbl{display:none;}.pill{padding:0 10px;}}
-@media(max-width:900px){:root{--sidebar:0px;}.sidebar{display:none;}.shell{grid-template-columns:1fr;}#driver-cards-dash{grid-template-columns:repeat(2,1fr) !important;}.metrics-grid{grid-template-columns:repeat(2,1fr);}.driver-expand.open{grid-template-columns:1fr;}.tb-pills{display:none;}}
-@media(max-width:600px){:root{--hdr:44px;}#driver-cards-dash{grid-template-columns:1fr !important;}.metrics-grid{grid-template-columns:1fr;}.tb-sub{display:none;}.nav-btn{padding:0 12px;font-size:10px;letter-spacing:1px;}}
+@media(max-width:1200px){:root{--sidebar:240px;}}
+@media(max-width:900px){
+  :root{--sidebar:0px;}
+  .shell{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .driver-cards-grid{grid-template-columns:repeat(2,1fr)!important;}
+  .metrics-grid{grid-template-columns:repeat(2,1fr);}
+  .driver-expand.open{grid-template-columns:1fr;}
+  .driver-expand.open .de-chart{border-right:none;border-bottom:1px solid var(--line);}
+  .driver-expand.open .de-stats{border-right:none;border-bottom:1px solid var(--line);}
+  .charts-row{grid-template-columns:1fr;}
+  .mobile-summary{display:block;}
+  .tb-pills{display:none;}
+}
+@media(max-width:600px){
+  :root{--hdr:44px;}
+  .driver-cards-grid{grid-template-columns:1fr!important;}
+  .metrics-grid{grid-template-columns:1fr;}
+  .dc-num{font-size:38px;}
+  .dc-pts-big{font-size:22px;}
+  .dc-stats{grid-template-columns:repeat(2,1fr);}
+  .tb-sub{display:none;}
+  .nav-btn{padding:0 12px;font-size:10px;letter-spacing:1px;}
+  .page{padding:8px 8px 20px;}
+}
 </style>
 </head>
 <body>
 
 <header class="top-bar">
   <div class="tb-brand">
-    <div class="tb-logo">JGR</div>
-    <div class="tb-wordmark">
-      <div class="tb-title">2026 NOS · JGR Points</div>
-      <div class="tb-sub">O'Reilly Auto Parts Series · Joe Gibbs Racing</div>
-    </div>
+    <div class="tb-title">2026 NOS · JGR</div>
   </div>
-  <div class="tb-divider"></div>
   <div class="tb-pills">
-    <div class="live-badge"><div class="live-dot"></div>Live</div>
-    <div class="pill"><span class="pill-lbl">Race</span><span class="pill-val accent" id="hdr-race">—</span><span class="pill-lbl">/ 33</span></div>
+    <div class="pill"><span class="pill-lbl">Race</span><span class="pill-val accent" id="hdr-race">—</span></div>
     <div class="pill"><span class="pill-lbl">Last</span><span class="pill-val" id="hdr-last">—</span></div>
     <div class="pill"><span class="pill-lbl">Next</span><span class="pill-val" id="hdr-next">—</span></div>
     <div class="pill"><span class="pill-lbl">Leader</span><span class="pill-val accent" id="hdr-leader">—</span></div>
-    <div class="pill"><span class="pill-lbl">P12</span><span class="pill-val" id="hdr-cutline">—</span></div>
+    <div class="pill"><span class="pill-lbl">P12 Cutline</span><span class="pill-val" id="hdr-cutline">—</span></div>
   </div>
   <div class="tb-right">
-    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
     <div class="tb-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">Dashboard</button>
       <button class="nav-btn" onclick="showPage('metrics',this)">Metrics</button>
@@ -278,8 +272,9 @@ select:focus{border-color:var(--line3);}
   </div>
 </header>
 
-
 <div class="shell">
+
+  <!-- ── SIDEBAR ── -->
   <aside class="sidebar">
     <div class="sb-sec">
       <div class="sb-lbl">Season Progress</div>
@@ -291,24 +286,28 @@ select:focus{border-color:var(--line3);}
         <div class="prog-top"><span class="prog-label">Full Season</span><span class="prog-val" id="sb-full-prog">—</span></div>
         <div class="prog-track"><div class="prog-fill" id="sb-full-fill" style="background:var(--red);"></div></div>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3px;">
         <span style="font-size:11px;color:var(--text3);">Races to cutoff: <b style="color:var(--text2);" id="sb-to-cutoff">—</b></span>
-        <span style="font-size:11px;color:var(--red);font-family:var(--font-d);font-weight:700;letter-spacing:0.5px;">R24 CUTOFF</span>
+        <span style="font-family:var(--font-b);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--red);text-transform:uppercase;">R26 CUTOFF</span>
       </div>
     </div>
+
     <div class="sb-sec">
-      <div class="sb-lbl">Chase Standings · Top 20</div>
+      <div class="sb-lbl">Driver Standings · Top 20</div>
       <ul class="chase-list" id="chase-list"></ul>
     </div>
   </aside>
 
+  <!-- ── MAIN CONTENT ── -->
   <div class="main-content">
+
+    <!-- DASHBOARD PAGE -->
     <div class="page active" id="page-dashboard">
 
-      <!-- Driver Cards -->
-      <div id="driver-cards-dash" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex-shrink:0;"></div>
+      <!-- 4 driver cards — fixed layout -->
+      <div class="driver-cards-grid" id="driver-cards-dash"></div>
 
-      <!-- MOMENTUM PANEL -->
+      <!-- Momentum panel — NOS-style -->
       <div class="panel" id="momentum-panel">
         <div class="panel-hdr">
           <div class="panel-title">Momentum <span class="sec-marker">5-Race Rolling Avg vs Season Avg</span></div>
@@ -318,8 +317,6 @@ select:focus{border-color:var(--line3);}
           <div id="momentum-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;"></div>
         </div>
       </div>
-
-      <!-- Driver Expand Panel -->
       <div class="de-wrap">
         <div class="driver-expand" id="driver-expand">
           <div class="de-stats" id="de-stats"></div>
@@ -333,14 +330,12 @@ select:focus{border-color:var(--line3);}
               </div>
               <div style="display:flex;gap:4px;flex-wrap:wrap;" id="de-metric-btns"></div>
             </div>
-            <div style="flex:1;position:relative;min-height:190px;"><canvas id="de-canvas"></canvas></div>
+            <div style="flex:1;position:relative;min-height:180px;"><canvas id="de-canvas"></canvas></div>
           </div>
           <div class="de-log">
             <div class="de-log-hdr">Race Log</div>
             <table class="de-table">
-              <thead><tr>
-                <th>#</th><th>Track</th><th>Str</th><th>Fin</th><th>ARP</th><th>Pts</th><th>Stg</th><th>Bon</th><th>Led</th><th>Total</th><th>Rank</th>
-              </tr></thead>
+              <thead><tr><th>#</th><th>Track</th><th>Str</th><th>Fin</th><th>ARP</th><th>Pts</th><th>Stg</th><th>Bon</th><th>Led</th><th>Total</th><th>Rank</th></tr></thead>
               <tbody id="de-tbody"></tbody>
             </table>
           </div>
@@ -348,122 +343,121 @@ select:focus{border-color:var(--line3);}
         </div>
       </div>
 
-      <!-- Charts row -->
-      <div class="charts-row">
-        <div class="panel">
-          <div class="panel-hdr">
-            <div class="panel-title" id="main-chart-title">Cumulative Points</div>
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-              <button id="proj-toggle" class="proj-btn" onclick="toggleProjections()">Proj Off</button>
-              <div id="legend-points" class="legend"></div>
-            </div>
-          </div>
-          <div style="padding:6px 13px;border-bottom:1px solid var(--line);background:var(--bg3);display:flex;gap:4px;flex-wrap:wrap;" id="main-metric-btns"></div>
-          <div class="panel-body">
-            <div class="chart-wrap" style="height:260px;"><canvas id="chart-points"></canvas></div>
+      <!-- Main multi-metric chart — all 4 drivers -->
+      <div class="panel">
+        <div class="panel-hdr">
+          <div class="panel-title" id="main-chart-title">Cumulative Points</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <button id="proj-toggle" class="proj-btn" onclick="toggleProjections()">Proj Off</button>
+            <div id="legend-points" class="legend"></div>
           </div>
         </div>
-        <div class="panel">
-          <div class="panel-hdr">
-            <div class="panel-title">Chase Standings — Top 20</div>
-            <div class="panel-note">JGR highlighted · gold line = cutline</div>
-          </div>
-          <div class="panel-body">
-            <div class="chart-wrap" style="height:240px;"><canvas id="chart-standings"></canvas></div>
-          </div>
+        <div style="padding:6px 13px;border-bottom:1px solid var(--line2);background:var(--bg3);display:flex;gap:4px;flex-wrap:wrap;" id="main-metric-btns"></div>
+        <div class="panel-body">
+          <div class="chart-wrap" style="height:260px;"><canvas id="chart-points"></canvas></div>
         </div>
       </div>
 
-      <!-- Metrics table -->
+      <!-- Chase Standings — full width -->
+      <div class="panel">
+        <div class="panel-hdr">
+          <div class="panel-title">Chase Standings — Top 20</div>
+          <div class="panel-note">JGR cars highlighted · gold line = P12 cutline</div>
+        </div>
+        <div class="panel-body">
+          <div class="chart-wrap" style="height:300px;"><canvas id="chart-standings" role="img" ></canvas></div>
+        </div>
+      </div>
+
+      <!-- Key metrics table -->
       <div class="panel" style="flex-shrink:0;">
         <div class="panel-hdr">
           <div class="panel-title">Key Metrics Comparison</div>
           <div class="panel-note" id="metrics-note">Through Race —</div>
         </div>
-        <div class="panel-body" style="padding:0;">
+        <div class="panel-body" style="padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch;">
           <table class="mt">
             <thead><tr>
               <th>Driver</th><th>Points</th><th>Rank</th><th>vs Cutline</th>
-              <th>vs Leader</th><th>Avg Pts</th><th>Avg Start</th><th>Avg Fin</th>
+              <th>vs Leader</th><th>Avg Pts</th><th>Avg Start</th><th>Avg Finish</th>
               <th>Poles</th><th>Wins</th><th>Stg Wins</th><th>Stg Pts</th>
-              <th>Top 5</th><th>Top 10</th><th>DNF</th><th>Out 20</th><th>Laps Led</th><th>% Led</th><th>% T5</th>
-              <th>Proj R24</th><th>Proj R33</th>
+              <th>Top 5</th><th>Top 10</th><th>DNF</th><th>Out 20</th><th>Laps Led</th>
+              <th>% Led</th><th>% T5</th>
+              <th>Avg RP</th><th>Avg RP S1</th><th>Avg RP S2</th><th>Avg RP S3</th>
+              <th>Proj R26</th><th>Proj R33</th>
             </tr></thead>
             <tbody id="metrics-tbody"></tbody>
           </table>
         </div>
       </div>
 
-    </div>
+    </div><!-- /dashboard -->
 
+    <!-- METRICS PAGE -->
     <div class="page" id="page-metrics">
       <div class="sec-hdr">
         <div class="sec-title">Driver Season Metrics <span class="sec-marker" id="metrics-marker">Through Race —</span></div>
-        <div class="sec-note">All stats from official NASCAR points reports · projections based on current avg pts/race</div>
+        <div class="sec-note">Official NASCAR stats · projections at current avg pts/race pace</div>
       </div>
       <div class="metrics-grid" id="metrics-page-grid"></div>
     </div>
 
+    <!-- ── QUAL ORDER PAGE ── -->
     <div class="page" id="page-qualorder">
       <div class="sec-hdr">
-        <div class="sec-title">Qualifying Order Metric <span class="sec-marker" id="qual-marker">Race — Preview</span></div>
-        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <div class="sec-note">Formula: (0.7 × previous race finish) + (0.3 × owner points rank) · Lower score = better qualifying position</div>
-          <select id="qual-race-select" onchange="buildQualOrder()" style="font-family:var(--font-d);font-size:12px;font-weight:700;background:var(--bg4);color:var(--text2);border:1px solid var(--line2);border-radius:4px;padding:4px 8px;cursor:pointer;"></select>
-        </div>
+        <div class="sec-title">Qualifying Order <span class="sec-marker" id="qual-marker">Next Race Preview</span></div>
+        <div class="sec-note">Formula: (0.7 × previous race finish) + (0.3 × owner pts rank) · Lower = better qualifying position</div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr;gap:16px;">
-        <!-- Next race metric table -->
-        <div class="panel">
-          <div class="panel-hdr">
-            <div class="panel-title" id="qual-next-title">Next Race Qualifying Metric</div>
-            <div class="panel-note">Based on most recent race results</div>
-          </div>
-          <div class="panel-body" style="padding:0;">
-            <table class="mt" style="width:100%;">
-              <thead><tr>
-                <th>Pos</th><th>Car</th><th>Driver</th><th>R12 Finish</th><th>Owner Rank</th><th>Metric</th>
-              </tr></thead>
-              <tbody id="qual-next-tbody"></tbody>
-            </table>
+      <div class="panel">
+        <div class="panel-hdr">
+          <div class="panel-title" id="qual-title">Projected Qualifying Order</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select id="qual-race-select" onchange="buildQualOrder()" style="font-family:var(--font-b);font-size:11px;background:var(--bg4);color:var(--text2);border:1px solid var(--line2);padding:4px 8px;cursor:pointer;outline:none;"></select>
           </div>
         </div>
+        <div class="panel-body" style="padding:0;">
+          <table class="mt">
+            <thead><tr><th>~Pos</th><th>Car</th><th>Driver</th><th>Last Fin</th><th>Owner Rank</th><th>Metric</th></tr></thead>
+            <tbody id="qual-tbody"></tbody>
+          </table>
+        </div>
       </div>
-
     </div>
+
+    <!-- ── COMPARE PAGE ── -->
     <div class="page" id="page-compare">
       <div class="sec-hdr">
         <div>
           <div class="sec-title">Field Comparison <span class="sec-marker" id="cmp-marker">—</span></div>
-          <div class="sec-note">Plot any driver against JGR · race-by-race data</div>
+          <div class="sec-note">Plot JGR cars against top field drivers · race-by-race cumulative points</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-          <select id="cmp-metric" onchange="buildCompare()" style="font-family:var(--font-d);font-size:12px;font-weight:700;background:var(--bg4);color:var(--text2);border:1px solid var(--line2);border-radius:5px;padding:5px 10px;cursor:pointer;">
+          <select id="cmp-metric" onchange="buildCompare()" style="font-family:var(--font-b);font-size:11px;background:var(--bg4);color:var(--text2);border:1px solid var(--line2);padding:5px 10px;cursor:pointer;outline:none;">
             <option value="pts">Cumulative Points</option>
             <option value="finish">Finish Position</option>
-            <option value="momentum">Momentum (5-Race Rolling Avg)</option>
+            <option value="momentum">5-Race Momentum</option>
           </select>
         </div>
       </div>
       <div class="panel">
         <div class="panel-hdr">
-          <div class="panel-title">Select Drivers to Compare</div>
-          <div class="panel-note">JGR drivers always shown · click to add/remove field drivers</div>
+          <div class="panel-title">Select Field Drivers</div>
+          <div class="panel-note">JGR always on · click to add/remove</div>
         </div>
         <div class="panel-body" style="padding:10px 12px;">
           <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
-            <div style="font-family:var(--font-d);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);width:100%;margin-bottom:2px;">JGR (always on)</div>
-            <div id="cmp-jgr-toggles" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+            <div style="font-family:var(--font-b);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);width:100%;margin-bottom:2px;">JGR (always on)</div>
+            <div id="cmp-jgr-toggles" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
           </div>
           <div style="display:flex;flex-wrap:wrap;gap:6px;">
-            <div style="font-family:var(--font-d);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);width:100%;margin-bottom:2px;">Field</div>
-            <div id="cmp-field-toggles" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+            <div style="font-family:var(--font-b);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);width:100%;margin-bottom:2px;">Field</div>
+            <div id="cmp-field-toggles" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
           </div>
         </div>
       </div>
       <div class="panel">
         <div class="panel-hdr">
-          <div class="panel-title" id="cmp-chart-title">Points — All Drivers</div>
+          <div class="panel-title" id="cmp-chart-title">Cumulative Points</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;" id="cmp-legend"></div>
         </div>
         <div class="panel-body">
@@ -471,22 +465,16 @@ select:focus{border-color:var(--line3);}
         </div>
       </div>
       <div class="panel">
-        <div class="panel-hdr">
-          <div class="panel-title">Season Snapshot</div>
-          <div class="panel-note">Selected drivers only</div>
-        </div>
+        <div class="panel-hdr"><div class="panel-title">Season Snapshot</div><div class="panel-note">Selected drivers only</div></div>
         <div class="panel-body" style="padding:0;overflow-x:auto;">
-          <table class="mt" style="width:100%;">
-            <thead><tr>
-              <th>Driver</th><th>Pos</th><th>Points</th><th>vs Cutline</th><th>Wins</th><th>Top 5</th><th>Top 10</th><th>Avg Finish</th>
-            </tr></thead>
-            <tbody id="cmp-table-body"></tbody>
-          </table>
+          <table class="mt"><thead><tr><th>Driver</th><th>Pos</th><th>Points</th><th>vs Cutline</th><th>Wins</th><th>Top 5</th><th>Top 10</th><th>Avg Finish</th></tr></thead>
+          <tbody id="cmp-table-body"></tbody></table>
         </div>
       </div>
     </div>
-  </div>
-</div>
+
+  </div><!-- /main-content -->
+</div><!-- /shell -->
 
 <script>
 // ─────────────────────────────────────────
@@ -570,7 +558,7 @@ const DRIVER_META = [
   // ────────────────────────────────────────────────────────────────────────────
               {id:'sawalich',first:'William',last:'Sawalich',car:'18',color:'#7B2FBE',finish:[26,23,7,37,9,17,20,1,7,20,28,15,36,4,4,3],wins:1,starts:[4,5,15,15,14,7,16,14,1,7,16,16,14,8,7,7],stageWins:0,stagePts:72,stagePtsPerRace:[11,0,0,0,0,4,7,15,10,0,0,1,0,6,7,11],lapsLed:[2,5,0,0,0,0,0,80,27,0,0,0,0,15,0,0],bonusPts:[0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0],avgRunPos:[8.42,12.94,16.82,14.79,12.06,11.88,15.74,4.22,5.58,18.07,21.35,15.36,11.53,4.8,9.42,4.66],s1AvgPos:[8.67,12.49,16.7,16.44,17.04,9.47,11.85,9.92,3.36,13.89,14.72,23.2,11.53,6.44,12.21,6.13],s2AvgPos:[7.1,14.78,25.9,12.27,12.31,8.47,13.4,2.98,6.45,25.36,15.04,11.16,null,7.27,6.43,4.51],s3AvgPos:[9.22,12.06,9.64,15.25,9.92,16.49,18.62,2.17,6.45,16.77,26.56,13.86,null,3.13,null,4.01],pctLed:[1.7,3.1,0.0,0.0,0.0,0.0,0.0,32.0,9.0,0.0,1.8,0.0,0.0,7.5,0.0,0.0],pctT5:[34.2,14.1,0.0,0.0,0.0,1.4,5.2,76.0,37.7,0.0,1.8,0.0,0.0,50.5,27.5,76.1],dnf:['ACC',null,null,'ACC',null,null,null,null,null,null,null,null,'ACC',null,null,null]},
 
-              {id:'crews',first:'Brent',last:'Crews',car:'19',color:'#E87722',finish:[null,null,6,18,null,null,10,26,3,5,2,4,6,22,37,2],wins:0,rookie:true,starts:[null,null,7,5,null,null,4,10,17,5,18,5,4,16,18,10],stageWins:1,stagePts:78,stagePtsPerRace:[0,0,0,9,0,0,7,10,6,3,0,15,19,0,2,7],lapsLed:[0,0,5,0,0,0,0,30,3,0,0,2,32,0,0,45],bonusPts:[0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0],avgRunPos:[null,null,7.31,8.15,null,null,8.19,7.19,8.71,7.39,15.42,3.5,5.11,16.59,10.56,6.05],s1AvgPos:[null,null,9.45,6.91,null,null,3.77,10.15,15.94,7.44,18.6,4.89,1.2,21.29,9.79,13.77],s2AvgPos:[null,null,6.4,5.76,null,null,11.23,4.27,7.18,10.6,16.8,3.42,3.3,16.18,17.8,6.6],s3AvgPos:[null,null,6.32,9.64,null,null,8.83,7.17,4.98,6.05,13.62,2.96,7.83,14.84,null,1.93],pctLed:[null,null,7.7,0.0,null,null,0.0,12.0,1.0,0.0,0.0,1.0,39.0,0.0,0.0,23.9],pctT5:[null,null,32.3,23.5,null,null,35.2,60.0,46.7,36.0,5.3,96.5,67.1,0.0,2.2,60.1],dnf:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,'ACC',null]},
+              {id:'crews',first:'Brent',last:'Crews',car:'19',color:'#E87722',finish:[null,null,6,18,null,null,10,26,3,5,2,4,6,22,37,2],wins:0,starts:[null,null,7,5,null,null,4,10,17,5,18,5,4,16,18,10],stageWins:1,stagePts:78,stagePtsPerRace:[0,0,0,9,0,0,7,10,6,3,0,15,19,0,2,7],lapsLed:[0,0,5,0,0,0,0,30,3,0,0,2,32,0,0,45],bonusPts:[0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0],avgRunPos:[null,null,7.31,8.15,null,null,8.19,7.19,8.71,7.39,15.42,3.5,5.11,16.59,10.56,6.05],s1AvgPos:[null,null,9.45,6.91,null,null,3.77,10.15,15.94,7.44,18.6,4.89,1.2,21.29,9.79,13.77],s2AvgPos:[null,null,6.4,5.76,null,null,11.23,4.27,7.18,10.6,16.8,3.42,3.3,16.18,17.8,6.6],s3AvgPos:[null,null,6.32,9.64,null,null,8.83,7.17,4.98,6.05,13.62,2.96,7.83,14.84,null,1.93],pctLed:[null,null,7.7,0.0,null,null,0.0,12.0,1.0,0.0,0.0,1.0,39.0,0.0,0.0,23.9],pctT5:[null,null,32.3,23.5,null,null,35.2,60.0,46.7,36.0,5.3,96.5,67.1,0.0,2.2,60.1],dnf:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,'ACC',null]},
 
               {id:'jones',first:'Brandon',last:'Jones',car:'20',color:'#E8192C',finish:[30,10,15,16,13,2,18,2,19,8,8,8,5,6,35,5],wins:0,starts:[15,15,4,3,5,8,3,8,4,14,22,2,7,2,7,29],stageWins:3,stagePts:120,stagePtsPerRace:[1,6,10,1,1,15,9,14,10,20,0,12,7,10,4,0],lapsLed:[0,0,0,0,4,8,1,0,2,67,0,0,0,31,0,1],bonusPts:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],avgRunPos:[9.83,9.68,13.14,10.6,9.7,3.93,12.77,4.34,7.73,4.36,13.66,4.71,9.09,6.26,11.05,10.87],s1AvgPos:[13.7,12.8,5.9,5.71,7.24,5.42,2.7,6.83,3.66,2.69,17.4,3.09,6.85,1.38,5.53,18.89],s2AvgPos:[7.63,8.13,14.1,8.16,9.36,3.31,15.63,2.67,5.09,1.96,11.44,5.98,10.35,9.53,28.33,11.85],s3AvgPos:[8.3,8.71,18.16,13.59,10.85,3.23,16.1,3.96,12.12,6.03,13.06,4.86,9.55,6.93,null,6.36],pctLed:[0.8,0.0,0.0,0.0,2.0,5.4,0.8,0.0,0.7,33.5,0.0,0.0,0.0,15.5,0.0,0.5],pctT5:[15.0,15.3,10.8,13.5,8.5,85.7,36.0,70.8,41.7,70.5,11.5,69.0,25.6,37.0,25.3,4.8],dnf:['ACC',null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]},
 
@@ -755,41 +743,51 @@ const CUTLINE = () => DATA.cutlineByRace[DATA.racesDone-1] || 0;
 // RENDER ALL
 // ─────────────────────────────────────────
 function renderAll() {
-  try { updateHeaderPills(); } catch(e) { console.error('updateHeaderPills:', e); }
-  try { updateSidebar(); } catch(e) { console.error('updateSidebar:', e); }
-  try { buildDriverCards(); } catch(e) { console.error('buildDriverCards:', e); }
-  try { buildChaseList(); } catch(e) { console.error('buildChaseList:', e); }
-  try { buildMetricsTable(); } catch(e) { console.error('buildMetricsTable:', e); }
-  try { buildMetricsPage(); } catch(e) { console.error('buildMetricsPage:', e); }
-  try { buildMainMetricBtns(); } catch(e) { console.error('buildMainMetricBtns:', e); }
-  try { rebuildCharts(); } catch(e) { console.error('rebuildCharts:', e); }
-  try { buildQualOrder(); } catch(e) { console.error('buildQualOrder:', e); }
-  try { initCompareToggles(); } catch(e) { console.error('initCompareToggles:', e); }
-  try { buildMomentum(); } catch(e) { console.error('buildMomentum:', e); }
+  const run = (name, fn) => { try { fn(); } catch(e) { console.error(name+':', e); } };
+  run('updateHeaderPills', updateHeaderPills);
+  run('updateSidebar', updateSidebar);
+  run('buildDriverCards', buildDriverCards);
+  run('buildChaseList', buildChaseList);
+  run('buildMetricsTable', buildMetricsTable);
+  run('buildMetricsPage', buildMetricsPage);
+  run('buildMainChartButtons', buildMainChartButtons);
+  run('rebuildCharts', rebuildCharts);
+  run('buildQualOrder', buildQualOrder);
+  run('initCompareToggles', initCompareToggles);
+  run('buildMomentumDash', buildMomentumDash);
 }
 
 function updateHeaderPills() {
   const rd = DATA.racesDone;
   document.getElementById('hdr-race').textContent = rd;
-  const lastRaceIdx = DATA.racesDone - 1;
-  const lastRaceTrack = lastRaceIdx >= 0 && RACES[lastRaceIdx] ? RACES[lastRaceIdx].track : (DATA.lastRace || '—').split('·')[0].trim();
-  document.getElementById('hdr-last').textContent = lastRaceTrack;
-  const nextRace = DATA.racesDone < 33 ? RACES[DATA.racesDone] : null;
-  document.getElementById('hdr-next').textContent = nextRace ? nextRace.track : '—';
-  document.getElementById('hdr-leader').textContent = `${DATA.leaderName} ${DATA.leaderPts} pts`;
-  document.getElementById('hdr-cutline').textContent = `P12 · ${CUTLINE()} pts`;
+  document.getElementById('hdr-last').textContent = rd>0&&RACES[rd-1]?RACES[rd-1].track:'—';
+  const next = RACES[rd]; document.getElementById('hdr-next').textContent = next?next.track:'—';
+  document.getElementById('hdr-leader').textContent = `${DATA.leaderName} ${DATA.leaderPts}`;
+  document.getElementById('hdr-cutline').textContent = `${CUTLINE()} pts`;
   document.getElementById('metrics-note').textContent = `Through Race ${rd} · projections at current pace`;
   document.getElementById('metrics-marker').textContent = `Through Race ${rd}`;
 }
 
 function updateSidebar() {
   const rd = DATA.racesDone;
+  document.getElementById('sb-reg-prog').textContent = `${rd} / 26`;
+  document.getElementById('sb-full-prog').textContent = `${rd} / 36`;
+  document.getElementById('sb-reg-fill').style.width = `${Math.min((rd/26)*100,100)}%`;
+  document.getElementById('sb-full-fill').style.width = `${(rd/36)*100}%`;
+  document.getElementById('sb-to-cutoff').textContent = Math.max(0,26-rd);
 
-  document.getElementById('sb-reg-prog').textContent = `${rd} / 24`;
-  document.getElementById('sb-full-prog').textContent = `${rd} / 33`;
-  document.getElementById('sb-reg-fill').style.width = `${Math.min((rd/24)*100,100)}%`;
-  document.getElementById('sb-full-fill').style.width = `${(rd/33)*100}%`;
-  document.getElementById('sb-to-cutoff').textContent = Math.max(0, 24 - rd);
+  // Mobile summary strip
+  const setEl = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  const setW  = (id,w) => { const el=document.getElementById(id); if(el) el.style.width=w; };
+  setEl('ms-race', rd);
+  setEl('ms-leader', DATA.leaderName);
+  setEl('ms-leader-pts', `${DATA.leaderPts} pts`);
+  setEl('ms-cutline', CUTLINE());
+  setEl('ms-to-cutoff', Math.max(0,26-rd));
+  setEl('ms-reg-prog', `${rd} / 26`);
+  setEl('ms-full-prog', `${rd} / 36`);
+  setW('ms-reg-fill',  `${Math.min((rd/26)*100,100)}%`);
+  setW('ms-full-fill', `${(rd/36)*100}%`);
 }
 
 function buildDriverCards() {
@@ -799,7 +797,7 @@ function buildDriverCards() {
     // Use driver points rank from standings array, not owner rank
     const standingEntry = (DATA.standings||[]).find(s=>s.dId===d.id);
     const rank = standingEntry ? standingEntry.pos : lRank(d);
-    const isC=rank&&rank<=12, isBub=rank===12;
+    const isC=rank&&rank<=12, isBub = rank===12;
     const diff=pts-cut;
     let badges='';
     if(isBub) badges+=`<span class="badge" style="background:${d.color}33;color:${d.color};border:1px solid ${d.color}66;">On Cutline</span>`;
@@ -812,12 +810,18 @@ function buildDriverCards() {
     return `<div class="driver-card" data-id="${d.id}" onclick="expandDriver('${d.id}')" style="border-left:5px solid ${d.color};background:linear-gradient(105deg,${d.color}12 0%,var(--bg3) 40%);cursor:pointer;">
       <div class="dc-top">
         <div class="dc-num" style="color:${d.color}cc;">#${d.car}</div>
-        <div><div class="dc-name">${d.first} ${d.last}</div><div class="dc-meta">JGR #${d.car} · Toyota GR Supra</div><div class="dc-badges">${badges}</div></div>
+        <div><div class="dc-name">${d.first} ${d.last}</div><div class="dc-car">JGR · Toyota GR Supra</div><div class="dc-badges">${badges}</div></div>
+      </div>
+      <div class="dc-pts-row" style="border-top-color:${d.color}33;">
+        <span class="dc-pts-big" style="color:${d.color};">${pts||'—'}</span>
+        <span class="dc-pts-lbl">PTS · ${rank?`P${rank}`:'—'}</span>
+        <span class="dc-pts-gap dc-stat-v ${dc}">${pts?dt:'—'}</span>
       </div>
       <div class="dc-stats">
-        <div class="dc-stat"><div class="dc-stat-l">Points</div><div class="dc-stat-v" style="color:${d.color};">${pts||'—'}</div></div>
-        <div class="dc-stat"><div class="dc-stat-l">Rank</div><div class="dc-stat-v ${isC?'red':''}">${rank?`P${rank}`:'—'}</div></div>
-        <div class="dc-stat"><div class="dc-stat-l">vs Cut</div><div class="dc-stat-v ${dc}">${pts?dt:'—'}</div></div>
+        <div class="dc-stat"><div class="dc-stat-l">Wins</div><div class="dc-stat-v ${d.wins?'gold':''}">${d.wins||0}</div></div>
+        <div class="dc-stat"><div class="dc-stat-l">Stg W</div><div class="dc-stat-v ${d.stageWins?'gold':''}">${d.stageWins||0}</div></div>
+        <div class="dc-stat"><div class="dc-stat-l">Top 5</div><div class="dc-stat-v ${top5(d)?'green':''}">${top5(d)}</div></div>
+        <div class="dc-stat"><div class="dc-stat-l">Laps Led</div><div class="dc-stat-v">${lapsLedTotal(d)||0}</div></div>
       </div>
     </div>`;
   }).join('');
@@ -1070,24 +1074,23 @@ function closeExpand() {
 }
 
 function buildChaseList() {
-  const el = document.getElementById('chase-list');
-  const standings = DATA.standings || [];
-  let html = '';
-  standings.forEach((s,i) => {
+  const standings=DATA.standings||[];
+  const p16pts=standings[11]?.pts||0;
+  let html='';
+  standings.forEach((s,i)=>{
     if(i===12) html+=`<div class="chase-cutline-sep">── Chase Cutline ──</div>`;
-    const d = s.jgr ? DRIVERS.find(dr=>dr.id===s.dId) : null;
-    const color = d ? d.color : 'var(--text3)';
-    const p12pts = standings[11]?.pts || 0;
-    const diff = s.pts - p12pts;
-    const dTxt = i<12 ? (i===11?'cutline':`+${diff}`) : `${diff}`;
-    const dClr = i<12 ? 'var(--text3)' : (i===12?'var(--gold)':'var(--red)');
+    const d=s.jgr?DRIVERS.find(dr=>dr.id===s.dId):null;
+    const color=d?d.color:'var(--text3)';
+    const diff=s.pts-p16pts;
+    const dTxt=i<12?(i===11?'cut':`+${diff}`):diff+'';
+    const dClr=i<12?'var(--text3)':(i===11?'var(--gold)':'var(--red)');
     html+=`<li class="chase-item">
       <span class="ci-pos">${s.pos}</span>
-      <span class="ci-name"><span class="ci-dot" style="background:${color};"></span>${s.name}${s.jgr?` <span style="color:${color};font-size:9px;">JGR</span>`:''}</span>
-      <span class="ci-pts" style="${s.jgr?`color:${color};`:''}">${s.pts} <span style="font-size:10px;color:${dClr};">${dTxt}</span></span>
+      <span class="ci-name"><span class="ci-dot" style="background:${color};"></span>${(()=>{const p=s.name.split(' ');return p[p.length-1]==='Jr.'?p.slice(-2).join(' '):p.slice(-1)[0];})()}${s.jgr?` <span style="color:${color};font-size:9px;font-family:var(--font-d);font-weight:700;">JGR</span>`:''}</span>
+      <span class="ci-pts" style="color:${s.jgr?color:''}">${s.pts} <span style="font-size:10px;color:${dClr};">${dTxt}</span></span>
     </li>`;
   });
-  el.innerHTML = html;
+  document.getElementById('chase-list').innerHTML = html;
 }
 
 function buildMetricsTable() {
@@ -1157,21 +1160,7 @@ function buildMetricsPage() {
 // ─────────────────────────────────────────
 // CHARTS
 // ─────────────────────────────────────────
-const MAIN_METRICS = [
-  { key:'pts',        label:'Cum. Points',   reversed:false, cumulative:true  },
-  { key:'finish',     label:'Finish Pos',    reversed:true,  cumulative:false },
-  { key:'start',      label:'Start Pos',     reversed:true,  cumulative:false },
-  { key:'ptsGained',  label:'Pts / Race',    reversed:false, cumulative:false },
-  { key:'stagePts',   label:'Stage Pts',     reversed:false, cumulative:false },
-  { key:'lapsLed',    label:'Laps Led',      reversed:false, cumulative:false },
-  { key:'rank',       label:'Driver Pts Pos',    reversed:true,  cumulative:false },
-  { key:'avgRunPos',  label:'Avg Run Pos',   reversed:true,  cumulative:false },
-  { key:'s1AvgPos',   label:'S1 Avg Pos',    reversed:true,  cumulative:false },
-  { key:'s2AvgPos',   label:'S2 Avg Pos',    reversed:true,  cumulative:false },
-  { key:'s3AvgPos',   label:'S3 Avg Pos',    reversed:true,  cumulative:false },
-  { key:'pctLed',     label:'% Laps Led',    reversed:false, cumulative:false },
-  { key:'pctT5',      label:'% Laps T5',     reversed:false, cumulative:false },
-];
+
 
 function getMetricData(d, key, i) {
   switch(key) {
@@ -1205,196 +1194,177 @@ function setMainMetric(key) {
   rebuildCharts();
 }
 
-function buildMainMetricBtns() {
+let mainMetricKey = 'pts';
+
+const MAIN_METRICS = [
+  {key:'pts',        label:'Cum. Points',   reversed:false, cumulative:true},
+  {key:'finish',     label:'Finish Pos',    reversed:true,  cumulative:false},
+  {key:'start',      label:'Start Pos',     reversed:true,  cumulative:false},
+  {key:'ptsGained',  label:'Pts / Race',    reversed:false, cumulative:false},
+  {key:'stagePts',   label:'Stage Pts',     reversed:false, cumulative:false},
+  {key:'lapsLed',    label:'Laps Led',      reversed:false, cumulative:false},
+  {key:'arp',        label:'Avg Run Pos',   reversed:true,  cumulative:false},
+  {key:'pctLapsLed', label:'% Laps Led',    reversed:false, cumulative:false},
+  {key:'pctLapsT5',  label:'% in T5',       reversed:false, cumulative:false},
+];
+
+function setMainMetric(key) {
+  mainMetricKey = key;
+  document.querySelectorAll('.main-metric-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.key === key);
+  });
+  updateProjToggleVisibility();
+  buildMainChart();
+}
+
+function updateProjToggleVisibility() {
+  const btn=document.getElementById('proj-toggle');
+  if(btn) btn.style.display=mainMetricKey==='pts'?'':'none';
+}
+
+function buildMainChartButtons() {
   const container = document.getElementById('main-metric-btns');
   if(!container) return;
   container.innerHTML = MAIN_METRICS.map(m =>
-    `<button class="de-metric-btn main-metric-btn${m.key===mainMetric?' active':''}" data-key="${m.key}"
+    `<button class="de-metric-btn main-metric-btn${m.key===mainMetricKey?' active':''}" data-key="${m.key}"
       onclick="setMainMetric('${m.key}')">${m.label}</button>`
   ).join('');
+  updateProjToggleVisibility();
 }
 
-function rebuildCharts() {
-  if(chartPts) { chartPts.destroy(); chartPts=null; }
-  if(chartStandings) { chartStandings.destroy(); chartStandings=null; }
+function buildMainMetricBtns(){buildMainChartButtons();}
 
-  const rd=DATA.racesDone;
-  const tt={backgroundColor:isLight?'#ffffff':'#18181e',borderColor:isLight?'rgba(0,0,0,0.15)':'rgba(255,255,255,0.1)',borderWidth:1,titleColor:isLight?'#111118':'#f0f0f0',bodyColor:isLight?'#3a3a52':'#8a8a9a',padding:8};
-  const gc=isLight?'rgba(0,0,0,0.06)':'rgba(255,255,255,0.05)', tc=isLight?'#9090a8':'#707080';
 
-  const mCfg = MAIN_METRICS.find(m => m.key === mainMetric) || MAIN_METRICS[0];
+function getMainData(d, key, rd, cutoff) {
+  switch(key) {
+    case 'pts':       return d.pts.slice(0,cutoff).map(v=>v??null);
+    case 'finish':    return Array.from({length:rd},(_,i)=>(d.finish||[])[i]??null);
+    case 'start':     return Array.from({length:rd},(_,i)=>(d.starts||[])[i]??null);
+    case 'ptsGained': return Array.from({length:rd},(_,i)=>gain(d,i));
+    case 'stagePts':  return Array.from({length:rd},(_,i)=>(d.stagePtsPerRace||[])[i]??null);
+    case 'lapsLed':   return Array.from({length:rd},(_,i)=>(d.lapsLed||[])[i]??null);
+    case 'rank':      return Array.from({length:rd},(_,i)=>d.rank[i]??null);
+    case 'arp':        return (d.arp||[]).slice(0,rd).map(v=>v??null);
+    case 'arpS1':      return (d.arpS1||[]).slice(0,rd).map(v=>v??null);
+    case 'arpS2':      return (d.arpS2||[]).slice(0,rd).map(v=>v??null);
+    case 'arpS3':      return (d.arpS3||[]).slice(0,rd).map(v=>v??null);
+    case 'pctLapsLed': return Array.from({length:rd},(_,i)=>{
+      const gl=GREEN_LAPS[i]; if(!gl) return null;
+      return +((( d.lapsLed||[])[i]||0)/gl*100).toFixed(1);
+    });
+    case 'pctLapsT5':  return Array.from({length:rd},(_,i)=>{
+      const gl=GREEN_LAPS[i]; if(!gl) return null;
+      return +((( d.lapsT5||[])[i]||0)/gl*100).toFixed(1);
+    });
+    default: return [];
+  }
+}
 
-  // Update panel title
-  const titleEl = document.getElementById('main-chart-title');
-  if(titleEl) titleEl.textContent = mCfg.label;
+function buildMainChart() {
+  if(chartPts){chartPts.destroy();chartPts=null;}
+  const rd=DATA.racesDone, key=mainMetricKey, cutoff=26;
+  const tt={backgroundColor:isLight?'#F7F8FB':'#0D0F14',borderColor:isLight?'rgba(0,0,0,0.1)':'rgba(255,255,255,0.08)',borderWidth:1,titleColor:isLight?'#0C0D14':'#F4F5F8',bodyColor:isLight?'#444C60':'#8892A4',padding:10,cornerRadius:0,displayColors:false};
+  const gc=isLight?'rgba(0,0,0,0.06)':'rgba(255,255,255,0.06)', tc=isLight?'#9099AE':'#6E7280';
+  const meta = MAIN_METRICS.find(m=>m.key===key);
+  const reversed = ['finish','start','arp'].includes(key);
+  const extendToCutoff = key==='pts';
+
+  document.getElementById('main-chart-title').textContent = meta.label;
+
+  const labels = extendToCutoff
+    ? RACES.slice(0,cutoff).map(r=>r.short)
+    : RACES.slice(0,rd).map(r=>r.short);
 
   // Legend
-  const isCumulative = mCfg.cumulative;
-  const cutlineVisible = mainMetric === 'pts';
-  const legendHtml =
-    DRIVERS.map(d=>`<div class="leg-item"><div class="leg-dot" style="background:${d.color};"></div>#${d.car} ${d.last}</div>`).join('') +
-    (cutlineVisible ? `<div class="leg-item"><div style="width:14px;height:2px;border-top:2px dashed #D4A017;margin-top:3px;"></div>Cutline</div>` : '');
-  document.getElementById('legend-points').innerHTML = legendHtml;
+  let legHtml = DRIVERS.map(d=>`<div class="leg-item"><div class="leg-dot" style="background:${d.color};"></div>#${d.car} ${d.last}</div>`).join('');
+  if(key==='pts') legHtml += `<div class="leg-item"><div style="width:14px;height:2px;border-top:2px dashed #F5A623;margin-top:3px;"></div>P12 cut</div>`;
+  document.getElementById('legend-points').innerHTML = legHtml;
 
-  const cutoffRace = isCumulative ? 24 : rd;
-  const labels = RACES.slice(0, cutoffRace).map(r => r.short);
-
-  // Build datasets for each driver
-  const datasets = DRIVERS.map(d => ({
-    label: `#${d.car} ${d.last}`,
-    data: RACES.slice(0, cutoffRace).map((_,i) => getMetricData(d, mainMetric, i)),
-    borderColor: d.color, backgroundColor: d.color+'18',
-    borderWidth: 2.5, pointRadius: 4, pointHoverRadius: 6,
-    tension: 0.35, fill: false, spanGaps: false,
-  }));
-
-  // Projection lines (pts only)
-  if(mainMetric === 'pts') {
-    DRIVERS.forEach(d => {
-      const lastPts = lPts(d), n = nRaced(d);
-      if(!n || !lastPts) { datasets.push({label:`#${d.car} proj`, data:Array(cutoffRace).fill(null), hidden:true, borderColor:d.color}); return; }
-      const rate = lastPts / n;
-      const lastIdx = (() => { for(let j=rd-1;j>=0;j--) if(d.pts[j]!==null) return j; return -1; })();
-      const arr = Array(cutoffRace).fill(null);
-      if(lastIdx >= 0) for(let j=lastIdx; j<cutoffRace; j++) arr[j] = Math.round(lastPts + rate*(j-lastIdx));
-      datasets.push({
-        label:`#${d.car} proj`, data: arr,
-        borderColor:d.color, borderDash:[5,5], borderWidth:1.5,
-        pointRadius:0, pointHoverRadius:0, tension:0, fill:false, spanGaps:false,
-        hidden: !showProjections,
-      });
-    });
-    // Cutline
+  const datasets = [];
+  DRIVERS.forEach(d=>{
     datasets.push({
-      label:'Cutline (P12)',
-      data: [...DATA.cutlineByRace.slice(0,rd), ...Array(cutoffRace-rd).fill(null)],
-      borderColor:'#F5A623', borderDash:[8,4], borderWidth:2,
-      pointRadius:3, pointBackgroundColor:'#F5A623', fill:false, spanGaps:false,
+      label:`#${d.car} ${d.last}`, data:getMainData(d,key,rd,cutoff),
+      borderColor:d.color, backgroundColor:d.color+'15',
+      borderWidth:2.5, pointRadius:3, pointHoverRadius:5,
+      tension:0.35, fill:false, spanGaps:false,
     });
-  }
-
-  // Y-axis config
-  const yOpts = { grid:{color:gc}, ticks:{color:tc, font:{size:13}},
-    title:{display:true, text:mCfg.label, color:tc, font:{size:12}} };
-  if(mCfg.reversed) {
-    const allVals = DRIVERS.flatMap(d => RACES.slice(0,rd).map((_,i) => getMetricData(d,mainMetric,i))).filter(v=>v!==null);
-    if(allVals.length) { yOpts.min = 1; yOpts.max = Math.max(...allVals) + 2; }
-  } else if(mainMetric === 'pts') {
-    yOpts.min = 0;
-  }
-
-  chartPts = new Chart(document.getElementById('chart-points').getContext('2d'), {
-    type:'line',
-    data:{labels, datasets},
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:tt },
-      scales:{ x:{grid:{color:gc}, ticks:{color:tc, font:{size:13}}}, y:yOpts }
-    }
   });
-
-  // "Now" vertical line custom plugin — register once
-  if(!Chart.registry.plugins.get('vertLine')) {
-    Chart.register({
-      id:'vertLine',
-      afterDraw(chart) {
-        if(chart.canvas.id !== 'chart-points') return;
-        if(rd < 1 || rd >= cutoffRace) return;
-        const {ctx, scales:{x, y}} = chart;
-        const px = x.getPixelForValue(rd - 1);
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(px, y.top);
-        ctx.lineTo(px, y.bottom);
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-        ctx.setLineDash([4,4]);
-        ctx.stroke();
-        ctx.setLineDash([]);
-        ctx.fillStyle = 'rgba(255,255,255,0.4)';
-        ctx.font = '11px "Barlow Condensed", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('Now', px, y.top - 4);
-        ctx.restore();
-      }
+  if(key==='pts') {
+    DRIVERS.forEach(d=>{
+      const lastPts=lPts(d), n=nRaced(d);
+      if(!n||!lastPts){datasets.push({label:`#${d.car} proj`,data:Array(cutoff).fill(null),hidden:true,borderColor:d.color});return;}
+      const rate=lastPts/n;
+      const lastIdx=(()=>{for(let j=rd-1;j>=0;j--)if(d.pts[j]!=null)return j;return -1;})();
+      const arr=Array(cutoff).fill(null);
+      if(lastIdx>=0)for(let j=lastIdx;j<cutoff;j++)arr[j]=Math.round(lastPts+rate*(j-lastIdx));
+      datasets.push({label:`#${d.car} proj`,data:arr,borderColor:d.color,borderDash:[5,5],borderWidth:1.5,pointRadius:0,tension:0,fill:false,spanGaps:false,hidden:!showProjections});
     });
+    datasets.push({label:'P12 Cutline',data:[...DATA.cutlineByRace.slice(0,rd),...Array(cutoff-rd).fill(null)],borderColor:'#F5A623',borderDash:[8,4],borderWidth:2,pointRadius:3,pointBackgroundColor:'#F5A623',fill:false,spanGaps:false});
   }
 
-  // ── Chase standings horizontal bar chart ──
-  const standings = DATA.standings || [];
-  const cutlinePts = CUTLINE();
-  const jgrIds = new Set(DRIVERS.map(d=>d.id));
+  const allVals=datasets.flatMap(ds=>ds.data||[]).filter(v=>v!=null);
+  const maxVal=allVals.length?Math.max(...allVals):40;
+  const isPct = ['pctLapsLed','pctLapsT5'].includes(key);
+  const yOpts={grid:{color:gc},
+    ticks:{color:tc,font:{size:11},callback: isPct ? v=>v+'%' : undefined},
+    title:{display:true,text:meta.label,color:tc,font:{size:11}}};
+  if(reversed){yOpts.min=1;yOpts.max=maxVal+2;}
+  else if(key==='pts'){yOpts.min=0;}
+  else if(isPct){yOpts.min=0;yOpts.max=100;}
 
-  const barLabels = standings.map(s=>`${s.pos}. ${s.name}`);
-  const barData   = standings.map(s=>s.pts);
-  const barColors = standings.map(s=>{
-    if(s.jgr) {
-      const d = DRIVERS.find(dr=>dr.id===s.dId);
-      return d ? d.color : '#E8192C';
-    }
-    return s.pos <= 12 ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.06)';
-  });
-  const barBorders = standings.map(s=>{
-    if(s.jgr) {
-      const d = DRIVERS.find(dr=>dr.id===s.dId);
-      return d ? d.color : '#E8192C';
-    }
-    return s.pos <= 12 ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.08)';
-  });
-
-  chartStandings = new Chart(document.getElementById('chart-standings').getContext('2d'),{
-    type:'bar',
-    data:{
-      labels: standings.map(s=>`P${s.pos}`),
-      datasets:[
-        {
-          label:'Points',
-          data: barData,
-          backgroundColor: barColors,
-          borderColor: barBorders,
-          borderWidth: 1,
-          borderRadius: 3,
-        },
-        {
-          label:'Cutline',
-          data: Array(standings.length).fill(cutlinePts),
-          type:'line',
-          borderColor:'#F5A623',
-          borderDash:[6,4],
-          borderWidth:2,
-          pointRadius:0,
-          fill:false,
-        }
-      ]
-    },
-    options:{
-      indexAxis:'x',
-      responsive:true,
-      maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{
-          ...tt,
-          callbacks:{
-            title: ctx => `P${standings[ctx[0].dataIndex].pos} — ${standings[ctx[0].dataIndex].name}`,
-            label: ctx => ctx.dataset.label==='Cutline' ? `Cutline: ${cutlinePts} pts` : `${ctx.parsed.y} pts`,
-          }
-        }
-      },
+  chartPts=new Chart(document.getElementById('chart-points').getContext('2d'),{
+    type:'line', data:{labels,datasets},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+      tooltip:{...tt,callbacks:{
+        title:ctx=>RACES[ctx[0].dataIndex]?`R${RACES[ctx[0].dataIndex].n} ${RACES[ctx[0].dataIndex].track}`:'',
+        label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y??'—'}`,
+      }}},
       scales:{
-        x:{
-          grid:{color:'rgba(255,255,255,0.03)'},
-          ticks:{color:tc,font:{size:13}},
-        },
-        y:{
-          grid:{color:gc},
-          ticks:{color:tc,font:{size:13}},
-          title:{display:true,text:'Points',color:tc,font:{size:12}},
-        }
-      }
+        x:{grid:{color:gc},ticks:{color:tc,font:{size:window.innerWidth<540?7:9},autoSkip:false,maxRotation:45,minRotation:45}},
+        y:yOpts,
+      },
     }
+  });
+
+  if(!Chart.registry.plugins.get('jgrNowLine')){
+    Chart.register({id:'jgrNowLine',afterDraw(chart){
+      if(chart.canvas.id!=='chart-points')return;
+      const rd2=DATA.racesDone; if(rd2<1)return;
+      const{ctx,scales:{x,y}}=chart;
+      const px=x.getPixelForValue(rd2-1);
+      ctx.save();ctx.beginPath();ctx.moveTo(px,y.top);ctx.lineTo(px,y.bottom);
+      ctx.lineWidth=1.5;ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='11px "Barlow Condensed",sans-serif';ctx.textAlign='center';ctx.fillText('Now',px,y.top-4);ctx.restore();
+    }});
+  }
+}
+
+function buildStandingsChart() {
+  if(chartStandings){chartStandings.destroy();chartStandings=null;}
+  const standings=DATA.standings||[];
+  const barColors=standings.map(s=>{if(!s.jgr)return'rgba(255,255,255,0.1)';const d=DRIVERS.find(dr=>dr.id===s.dId);return d?d.color:'var(--red)';});
+  const barBorders=standings.map(s=>{if(!s.jgr)return'rgba(255,255,255,0.15)';const d=DRIVERS.find(dr=>dr.id===s.dId);return d?d.color:'var(--red)';});
+  const p16pts = CUTLINE(); // P12 cutline for NOS
+  const isL=isLight, gc=isL?'rgba(0,0,0,0.05)':'rgba(255,255,255,0.06)', tc=isL?'#9099AE':'#6E7280';
+  const tt={backgroundColor:isL?'#F7F8FB':'#0D0F14',borderColor:isL?'rgba(0,0,0,0.1)':'rgba(255,255,255,0.08)',borderWidth:1,titleColor:isL?'#0C0D14':'#F4F5F8',bodyColor:isL?'#444C60':'#B8BCCB',padding:10,cornerRadius:0,displayColors:false};
+  chartStandings=new Chart(document.getElementById('chart-standings').getContext('2d'),{
+    type:'bar',
+    data:{labels:standings.map(s=>`P${s.pos}`),datasets:[
+      {label:'Points',data:standings.map(s=>s.pts),backgroundColor:barColors,borderColor:barBorders,borderWidth:1,borderRadius:3},
+      {label:'P12 Cutline',data:Array(standings.length).fill(p16pts),type:'line',borderColor:'#F5A623',borderDash:[6,4],borderWidth:2,pointRadius:0,fill:false},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...tt,callbacks:{
+      title:ctx=>`P${standings[ctx[0].dataIndex].pos} — ${standings[ctx[0].dataIndex].name}`,
+      label:ctx=>ctx.dataset.label==='P12 Cutline'?`Cutline: ${p16pts} pts`:`${ctx.parsed.y} pts`,
+    }}},scales:{
+      x:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{color:tc,font:{size:11}}},
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:11}},title:{display:true,text:'Points',color:tc,font:{size:11}}},
+    }}
   });
 }
+
+function rebuildCharts(){buildMainChart(); buildStandingsChart();}
+
 
 function updateCharts() {
   rebuildCharts();
@@ -2124,14 +2094,14 @@ function buildQualOrder() {
   const prevRace = selectedRace - 1;
 
   document.getElementById('qual-marker').textContent = isNext ? `Race ${selectedRace} Preview` : `Race ${selectedRace} · ${track}`;
-  document.getElementById('qual-next-title').textContent = `Race ${selectedRace} · ${track} — Projected Starting Order`;
+  document.getElementById('qual-title').textContent = `Race ${selectedRace} · ${track} — Projected Starting Order`;
 
   // Update finish column header to reflect which race
   const thead = document.querySelector('#qual-next-tbody')?.closest('table')?.querySelector('thead tr');
   if(thead) thead.innerHTML = `<th>Pos</th><th>Car</th><th>Driver</th><th>R${prevRace} Finish</th><th>Owner Rank</th><th>Metric</th>`;
 
   const field = QUAL_FIELDS[selectedRace] || [];
-  const tbody = document.getElementById('qual-next-tbody');
+  const tbody = document.getElementById('qual-tbody');
   tbody.innerHTML = field.map((r, i) => {
     const jgrD = r.jgr ? DRIVERS.find(d => d.car === r.car) : null;
     const color = jgrD ? jgrD.color : 'var(--text2)';
@@ -2166,7 +2136,7 @@ function qualMetric(finish, ownerRank) {
 // ─────────────────────────────────────────
 const momentumCharts = {};
 
-function buildMomentum() {
+function buildMomentumDash() {
   if(!DATA || !DRIVERS || !DRIVERS.length) return;
   const rd = DATA.racesDone;
   const isL = isLight;
@@ -2179,21 +2149,22 @@ function buildMomentum() {
     const scoreStr = (score>=0?'+':'')+score.toFixed(1);
     const scoreCol = score>=0?'var(--green)':'var(--red)';
     const avg = avgP(d);
-    return `<div style="padding:14px 16px;border-right:1px solid var(--line);border-bottom:none;position:relative;">
+    return `<div style="padding:14px 16px;border-right:1px solid var(--line);position:relative;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
         <div>
           <div style="font-family:var(--font-d);font-weight:900;font-size:15px;color:${d.color};letter-spacing:0.5px;text-transform:uppercase;">#${d.car} ${d.last}</div>
-          <div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-top:2px;letter-spacing:1px;">AVG ${avg} pts/race</div>
+          <div style="font-family:var(--font-b);font-size:9px;color:var(--text3);margin-top:2px;letter-spacing:1px;">AVG ${avg} pts/race</div>
         </div>
         <div style="text-align:right;">
-          <div style="font-family:var(--font-mono);font-weight:700;font-size:20px;color:${scoreCol};line-height:1;">${scoreStr}</div>
-          <div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:1px;">MOMENTUM</div>
+          <div style="font-family:var(--font-b);font-weight:700;font-size:20px;color:${scoreCol};line-height:1;">${scoreStr}</div>
+          <div style="font-family:var(--font-b);font-size:9px;color:var(--text3);letter-spacing:1px;">MOMENTUM</div>
         </div>
       </div>
       <div style="position:relative;height:72px;"><canvas id="mom-chart-${d.id}"></canvas></div>
     </div>`;
   }).join('');
-  // last card no border
+
+  // Remove border from last card
   const cells = document.querySelectorAll('#momentum-grid > div');
   if(cells.length) cells[cells.length-1].style.borderRight='none';
 
@@ -2202,7 +2173,7 @@ function buildMomentum() {
 
   // Build sparklines
   DRIVERS.forEach(d => {
-    const rolling = rollingAvgSeries(d, 5);
+    const rolling = Array.from({length:rd}, (_,i) => rollingAvg(d,i,5));
     const avg = seasonAvgPts(d);
     const avgLine = Array(rd).fill(avg);
     const canvas = document.getElementById(`mom-chart-${d.id}`);
@@ -2252,15 +2223,15 @@ function buildMomentum() {
         },
         scales: {
           x: {display:false},
-          y: {
-            display: false,
-            // give a little padding so avg line is visible
-          }
+          y: {display:false}
         }
       }
     });
   });
 }
+
+function buildMomentum(){buildMomentumDash();}
+
 
 // ─────────────────────────────────────────
 // COMPARE TAB
@@ -2300,6 +2271,23 @@ function toggleCmpDriver(id) {
     btn.style.color='var(--text3)'; dot.style.background='var(--text3)';
   }
   buildCompare();
+}
+
+function getFieldDrivers() {
+  const jgrIds = new Set(DRIVERS.map(d=>d.id));
+  return (DATA.standings||[])
+    .filter(s=>!s.jgr)
+    .slice(0,16)
+    .map(s => ({
+      id: s.name.toLowerCase().replace(/[^a-z]/g,''),
+      first: s.name.split(' ')[0],
+      last: s.name.split(' ').slice(1).join(' '),
+      car: s.car,
+      pts: (DATA.cmpPts||{})[s.name] || Array(DATA.racesDone).fill(null),
+      rank: Array(DATA.racesDone).fill(null),
+      finish: Array(DATA.racesDone).fill(null),
+      color: '#' + Math.abs(s.name.split('').reduce((h,c)=>(h*31+c.charCodeAt(0))|0,0)).toString(16).slice(0,6).padStart(6,'0'),
+    }));
 }
 
 function buildCompare() {
