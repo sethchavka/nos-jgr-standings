@@ -310,7 +310,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:
           <div class="panel-note">pts/race · positive = trending above season avg</div>
         </div>
         <div class="panel-body" style="padding:0;">
-          <div id="momentum-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;"></div>
+          <div id="momentum-grid" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;overflow:hidden;"></div>
         </div>
       </div>
       <div class="de-wrap">
@@ -2255,18 +2255,18 @@ function buildMomentumDash() {
     const scoreStr = (score>=0?'+':'')+score.toFixed(1);
     const scoreCol = score>=0?'var(--green)':'var(--red)';
     const avg = avgP(d);
-    return `<div style="padding:14px 16px;border-right:1px solid var(--line);position:relative;">
+    return `<div style="padding:14px 16px;border-right:1px solid var(--line);position:relative;overflow:hidden;min-width:0;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-        <div>
-          <div style="font-family:var(--font-d);font-weight:900;font-size:15px;color:${d.color};letter-spacing:0.5px;text-transform:uppercase;">#${d.car} ${d.last}</div>
+        <div style="min-width:0;overflow:hidden;">
+          <div style="font-family:var(--font-d);font-weight:900;font-size:15px;color:${d.color};letter-spacing:0.5px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">#${d.car} ${d.last}</div>
           <div style="font-family:var(--font-b);font-size:9px;color:var(--text3);margin-top:2px;letter-spacing:1px;">AVG ${avg} pts/race</div>
         </div>
-        <div style="text-align:right;">
+        <div style="text-align:right;flex-shrink:0;margin-left:8px;">
           <div style="font-family:var(--font-b);font-weight:700;font-size:20px;color:${scoreCol};line-height:1;">${scoreStr}</div>
           <div style="font-family:var(--font-b);font-size:9px;color:var(--text3);letter-spacing:1px;">MOMENTUM</div>
         </div>
       </div>
-      <div style="position:relative;height:72px;"><canvas id="mom-chart-${d.id}"></canvas></div>
+      <div style="position:relative;height:72px;width:100%;"><canvas id="mom-chart-${d.id}" style="max-width:100%;"></canvas></div>
     </div>`;
   }).join('');
 
@@ -2449,7 +2449,7 @@ function buildCompare() {
     datasets.push({
       label:'Cutline',
       data:RACES.slice(0,rd).map((_,i)=>DATA.cutlineByRace[i]??null),
-      borderColor:'rgba(232,25,44,0.45)',borderWidth:1.5,borderDash:[6,4],
+      borderColor:'#F5A623',borderWidth:1.5,borderDash:[6,4],
       pointRadius:0,fill:false,spanGaps:true,
     });
   }
