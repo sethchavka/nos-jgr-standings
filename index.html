@@ -243,6 +243,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:
   .page{padding:8px 8px 20px;}
 }
 </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -258,6 +259,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:
     <div class="pill"><span class="pill-lbl">P12 Cutline</span><span class="pill-val" id="hdr-cutline">—</span></div>
   </div>
   <div class="tb-right">
+    <button class="theme-btn" id="capture-btn" onclick="captureScreen()" title="Copy screenshot to clipboard" style="font-size:14px;">📋</button>
     <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
     <div class="tb-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">Dashboard</button>
@@ -2526,6 +2528,39 @@ function initTheme() {
 // ─────────────────────────────────────────
 // INIT — load from shared storage
 // ─────────────────────────────────────────
+
+// ─────────────────────────────────────────
+// SCREEN CAPTURE
+// ─────────────────────────────────────────
+async function captureScreen() {
+  const btn = document.getElementById('capture-btn');
+  const activePage = document.querySelector('.page.active') || document.querySelector('.shell');
+  btn.textContent = '⏳';
+  btn.disabled = true;
+  try {
+    const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#07080B';
+    const canvas = await html2canvas(activePage, {
+      backgroundColor: bgColor,
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      scrollX: 0,
+      scrollY: -window.scrollY,
+      windowWidth: document.documentElement.scrollWidth,
+    });
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = `jgr-dashboard-${new Date().toISOString().slice(0,10)}.png`;
+    a.click();
+    btn.textContent = '✅';
+    setTimeout(() => { btn.textContent = '📋'; btn.disabled = false; }, 2000);
+  } catch(e) {
+    console.error('Capture failed:', e);
+    btn.textContent = '❌';
+    setTimeout(() => { btn.textContent = '📋'; btn.disabled = false; }, 2000);
+  }
+}
+
 initTheme();
 loadData();
 </script>
