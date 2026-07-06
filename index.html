@@ -1201,8 +1201,8 @@ const MAIN_METRICS = [
   {key:'finish',     label:'Finish Pos',    reversed:true,  cumulative:false},
   {key:'start',      label:'Start Pos',     reversed:true,  cumulative:false},
   {key:'ptsGained',  label:'Pts / Race',    reversed:false, cumulative:false},
-  {key:'stagePts',   label:'Stage Pts',     reversed:false, cumulative:false},
-  {key:'lapsLed',    label:'Laps Led',      reversed:false, cumulative:false},
+  {key:'stagePts',   label:'Cum. Stage Pts', reversed:false, cumulative:true},
+  {key:'lapsLed',    label:'Cum. Laps Led',  reversed:false, cumulative:true},
   {key:'rank',       label:'Driver Pts Pos',reversed:true,  cumulative:false},
   {key:'avgRunPos',  label:'Avg Run Pos',   reversed:true,  cumulative:false},
   {key:'pctLed',     label:'% Laps Led',    reversed:false, cumulative:false},
@@ -1241,8 +1241,8 @@ function getMainData(d, key, rd, cutoff) {
     case 'finish':    return Array.from({length:rd},(_,i)=>(d.finish||[])[i]??null);
     case 'start':     return Array.from({length:rd},(_,i)=>(d.starts||[])[i]??null);
     case 'ptsGained': return Array.from({length:rd},(_,i)=>gain(d,i));
-    case 'stagePts':  return Array.from({length:rd},(_,i)=>(d.stagePtsPerRace||[])[i]??null);
-    case 'lapsLed':   return Array.from({length:rd},(_,i)=>(d.lapsLed||[])[i]??null);
+    case 'stagePts':  { const arr=Array.from({length:rd},(_,i)=>(d.stagePtsPerRace||[])[i]??0); let s=0; return arr.map(v=>{s+=v;return s;}); }
+    case 'lapsLed':   { const arr=Array.from({length:rd},(_,i)=>(d.lapsLed||[])[i]??0); let s=0; return arr.map(v=>{s+=v;return s;}); }
     case 'rank':      return Array.from({length:rd},(_,i)=>d.rank[i]??null);
     case 'avgRunPos': return Array.from({length:rd},(_,i)=>(d.avgRunPos||[])[i]??null);
     case 'pctLed':    return Array.from({length:rd},(_,i)=>(d.pctLed||[])[i]??null);
