@@ -347,7 +347,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:
           <div class="panel-title" id="main-chart-title">Cumulative Points</div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <button id="proj-toggle" class="proj-btn" onclick="toggleProjections()">Proj Off</button>
-            <div id="legend-points" class="legend"></div>
+            <div id="legend-points" class="legend"></div><button id="proj-toggle" class="proj-btn" onclick="toggleProjections()">Proj Off</button>
           </div>
         </div>
         <div style="padding:6px 13px;border-bottom:1px solid var(--line2);background:var(--bg3);display:flex;gap:4px;flex-wrap:wrap;" id="main-metric-btns"></div>
@@ -377,7 +377,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:
           <table class="mt">
             <thead><tr>
               <th>Driver</th><th>Points</th><th>Rank</th><th>vs Cutline</th>
-              <th>vs Leader</th><th>Avg Pts</th><th style="font-size:9px;white-space:nowrap;">Avg Pts<br>(no DNF)</th><th>Avg Start</th><th>Avg Finish</th>
+              <th>vs Leader</th><th>Avg Pts</th><th>Avg Pts (no DNF)</th><th>Avg Start</th><th>Avg Finish</th>
               <th>Poles</th><th>Wins</th><th>Stg Wins</th><th>Stg Pts</th><th>Stg Pts/Race</th>
               <th>Top 5</th><th>Top 10</th><th>DNF</th><th>Out 20</th><th>Laps Led</th>
               <th>% Led</th><th>% T5</th><th>Avg RP</th>
@@ -485,18 +485,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:
 // FIELD DRIVERS (non-JGR comparison data)
 // ─────────────────────────────────────────
 const FIELD_DRIVERS = [
-  {id:'allgaier',first:'Justin',last:'Allgaier',car:'7',color:'#3B82F6',pts:[50, 69, 115, 184, 237, 306, 373, 422, 470, 520, 544, 598, 640, 679, 696, 770, 842, 847, 858,898,966,1016,1048,1090],finish:[2, 33, 8, 1, 4, 1, 1, 3, 4, 3, 23, 2, 10, 2, 29, 1, 1, 32, 26,6,1,2,24,6],rank:[2, 6, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1,1,1,1],stagePtsPerRace:[15,15,17,14,0,0,11,15,0,16,20,18,15,4,9,18,16,0,2,9,13,14,19,11]},
-  {id:'love',first:'Jesse',last:'Love',car:'2',color:'#8B5CF6',pts:[37, 80, 126, 181, 224, 254, 281, 296, 324, 371, 403, 431, 479, 502, 551, 591, 592, 623, 651,703,726,747,749,785],finish:[9, 5, 4, 2, 6, 11, 12, 27, 12, 2, 7, 9, 2, 23, 2, 16, 37, 6, 9,3,26,16,35,20],rank:[9, 5, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2,2,2,3,4,4],stagePtsPerRace:[9,11,13,19,0,0,2,5,0,14,0,0,13,9,14,19,0,0,0,18,12,0,0,3]},
-  {id:'day',first:'Corey',last:'Day',car:'17',color:'#F97316',pts:[10, 50, 86, 118, 154, 210, 251, 272, 304, 344, 399, 400, 422, 484, 529, 574, 575, 609, 645,674,689,719,727,735],finish:[27, 4, 5, 9, 8, 6, 2, 10, 8, 12, 1, 37, 15, 1, 5, 6, 38, 10, 7,19,32,7,null,29],rank:[27, 4, 5, 9, 8, 8, 4, 4, 8, 4, 4, 4, 5, 4, 3, 3, 3, 3, 3,3,4,5,5,6],stagePtsPerRace:[0,7,4,4,0,0,2,20,0,15,0,0,0,7,13,14,0,7,6,11,10,0,0,0]},
-  {id:'creed',first:'Sheldon',last:'Creed',car:'00',color:'#06B6D4',pts:[18, 80, 106, 143, 188, 218, 257, 291, 340, 389, 439, 477, 485, 504, 510, 532, 569, 607, 642,673,693,733,782,831],finish:[24, 1, 11, 4, 3, 7, 4, 6, 6, 2, 3, 6, 29, 18, 32, 15, 5, 3, 10,16,25,8,5,10],rank:[24, 1, 4, 4, 5, 4, 4, 4, 3, 2, 2, 2, 4, 2, 4, 4, 4, 4, 4,4,3,4,3,3],stagePtsPerRace:[5,7,0,4,0,0,6,3,0,13,13,7,0,0,4,0,5,4,9,10,8,11,17,5]},
-  {id:'hill',first:'Austin',last:'Hill',car:'21',color:'#84CC16',pts:[6, 29, 50, 75, 120, 210, 251, 277, 293, 296, 321, 357, 392, 424, 466, 499, 523, 591, 611,643,659,688,716,761],finish:[31, 12, 2, 12, 10, 35, 6, 11, 21, 7, 13, 7, 11, 5, 3, 11, 14, 1, 22,5,22,10,11,2],rank:[31, 12, 2, 12, 10, 8, 6, 6, 6, 8, 8, 7, 7, 7, 6, 6, 6, 5, 5,5,7,7,7,5],stagePtsPerRace:[20,4,15,0,0,0,10,0,0,0,4,6,9,0,8,7,1,13,5,0,1,2,2,10]},
-  {id:'kvapil',first:'Carson',last:'Kvapil',car:'',color:'#EC4899',pts:[47, 64, 80, 131, 164, 213, 225, 258, 300, 301, 331, 357, 380, 420, 450, 493, 523, 567, 604,630,682,751,810,870],finish:[7, 32, 19, 3, 11, 5, 28, 5, 1, 7, 7, 8, 14, 7, 9, 7, 10, 4, 6,11,2,1,1,3],rank:[7, 8, 10, 6, 7, 5, 8, 8, 4, 7, 7, 8, 8, 8, 8, 7, 7, 7, 6,7,5,2,2,2],stagePtsPerRace:[0,0,7,0,0,0,3,1,0,0,14,19,10,10,15,13,5,10,10,12,17,14,26,17]},
-  {id:'smith',first:'Sammy',last:'Smith',car:'8',color:'#F59E0B',pts:[36, 48, 86, 132, 164, 231, 270, 284, 310, 352, 399, 376, 399, 427, 453, 482, 504, 543, 578,602,639,658,692,726],finish:[5, 30, 3, 6, 5, 9, 3, 12, 13, 16, 4, 13, 16, 9, 11, 10, 19, 5, 11,13,18,19,17,36],rank:[5, 8, 7, 5, 6, 6, 6, 7, 7, 6, 6, 6, 6, 6, 7, 8, 8, 8, 7,8,8,8,8,8],stagePtsPerRace:[4,5,4,15,0,0,5,4,0,5,0,0,2,0,0,2,4,7,9,0,18,1,14,6]},
-  {id:'retzlaff',first:'Parker',last:'Retzlaff',car:'99',color:'#14B8A6',pts:[28, 74, 81, 104, 129, 169, 195, 229, 257, 258, 292, 329, 362, 363, 388, 416, 446, 494, 533,556,593,619,643,667],finish:[14, 2, 30, 14, 12, 8, 11, 8, 9, 5, 10, 9, 7, 38, 12, 12, 15, 7, 5,14,3,11,13,14],rank:[14, 2, 9, 11, 10, 11, 11, 10, 10, 11, 10, 9, 9, 11, 9, 10, 10, 9, 9,9,9,9,9,9],stagePtsPerRace:[5,11,0,0,0,0,0,5,0,0,7,5,3,0,0,3,8,18,7,0,3,0,0,0]},
-  {id:'mayer',first:'Sam',last:'Mayer',car:'41',color:'#A78BFA',pts:[6, 36, 78, 110, 122, 149, 172, 173, 195, 225, 241, 285, 321, 369, 376, 413, 459, 476, 510,549,555,589,616,639],finish:[31, 7, 14, 5, 35, 10, 23, 38, 20, 9, 14, 12, 13, 3, 36, 4, 4, 34, 8,8,31,13,21,25],rank:[32, 7, 11, 10, 12, 10, 12, 15, 14, 14, 14, 12, 12, 9, 11, 11, 9, 11, 10,10,10,10,10,10],stagePtsPerRace:[0,0,19,0,0,0,9,0,0,2,4,10,12,14,6,4,13,14,5,10,0,10,11,4]},
-  {id:'sieg',first:'Ryan',last:'Sieg',car:'39',color:'#FB923C',pts:[34, 35, 57, 77, 81, 105, 140, 168, 202, 229, 254, 277, 292, 322, 356, 384, 395, 421, 446,452,473,493,514,569],finish:[3, 37, 16, 17, 33, 13, 9, 9, 11, 10, 21, 14, 23, 8, 7, 13, 26, 11, 15,31,16,17,33,1],rank:[7, 37, 18, 16, 20, 13, 9, 16, 14, 13, 13, 13, 15, 15, 14, 15, 15, 15, 15,15,15,15,15,15],stagePtsPerRace:[0,0,1,0,0,0,7,0,0,0,9,0,1,1,4,4,0,0,3,0,0,0,10,0]},
-  {id:'caruth',first:'Rajah',last:'Caruth',car:'',color:'#6366F1',pts:[34, 65, 90, 124, 156, 156, 162, 178, 201, 254, 268, 271, 300, 338, 369, 387, 424, 439, 466,479,522,547,583,606],finish:[4, 9, 9, 8, 19, 23, 31, 13, 14, 21, 30, 34, 19, 14, 13, 19, 7, 22, 14,24,9,22,2,32],rank:[4, 7, 5, 8, 9, 12, 14, 14, 15, 12, 12, 15, 13, 14, 13, 13, 14, 14, 14,14,13,14,14,12],stagePtsPerRace:[0,1,2,0,0,0,0,0,0,0,0,0,2,0,4,8,14,0,4,17,15,1,1,18]},
-  {id:'poole',first:'Brennan',last:'Poole',car:'44',color:'#78716C',pts:[21, 19, 70, 80, 110, 110, 116, 137, 181, 199, 221, 238, 257, 283, 293, 309, 328, 341, 354,366,386,394,421,451],finish:[12, 19, 10, 27, 20, 18, 14, 14, 15, 19, 15, 20, 18, 11, 27, 21, 18, 24, 24,25,17,29,10,7],rank:[12, 19, 13, 15, 16, 17, 18, 17, 18, 17, 16, 16, 16, 16, 16, 16, 16, 16, 17,17,17,17,17,17],stagePtsPerRace:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+  {id:'allgaier',first:'Justin',last:'Allgaier',car:'7',color:'#3B82F6',pts:[50, 69, 115, 184, 237, 306, 373, 422, 470, 520, 544, 598, 640, 679, 696, 770, 842, 847, 858,898,966,1016,1048,1090,2135],finish:[2, 33, 8, 1, 4, 1, 1, 3, 4, 3, 23, 2, 10, 2, 29, 1, 1, 32, 26,6,1,2,24,6,17],rank:[2, 6, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1,1,1,1,1],stagePtsPerRace:[15,15,17,14,0,0,11,15,0,16,20,18,15,4,9,18,16,0,2,9,13,14,19,11,11]},
+  {id:'love',first:'Jesse',last:'Love',car:'2',color:'#8B5CF6',pts:[37, 80, 126, 181, 224, 254, 281, 296, 324, 371, 403, 431, 479, 502, 551, 591, 592, 623, 651,703,726,747,749,769,2087],finish:[9, 5, 4, 2, 6, 11, 12, 27, 12, 2, 7, 9, 2, 23, 2, 16, 37, 6, 9,3,26,16,35,20,13],rank:[9, 5, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2,2,2,3,4,4,6],stagePtsPerRace:[9,11,13,19,0,0,2,5,0,14,0,0,13,9,14,19,0,0,0,18,12,0,0,3,3]},
+  {id:'day',first:'Corey',last:'Day',car:'17',color:'#F97316',pts:[10, 50, 86, 118, 154, 210, 251, 272, 304, 344, 399, 400, 422, 484, 529, 574, 575, 609, 645,674,689,719,727,735,2089],finish:[27, 4, 5, 9, 8, 6, 2, 10, 8, 12, 1, 37, 15, 1, 5, 6, 38, 10, 7,19,32,7,null,29,2],rank:[27, 4, 5, 9, 8, 8, 4, 4, 8, 4, 4, 4, 5, 4, 3, 3, 3, 3, 3,3,4,5,5,6,5],stagePtsPerRace:[0,7,4,4,0,0,2,20,0,15,0,0,0,7,13,14,0,7,6,11,10,0,0,0,9]},
+  {id:'creed',first:'Sheldon',last:'Creed',car:'00',color:'#06B6D4',pts:[18, 80, 106, 143, 188, 218, 257, 291, 340, 389, 439, 477, 485, 504, 510, 532, 569, 607, 642,673,693,733,782,814,2128],finish:[24, 1, 11, 4, 3, 7, 4, 6, 6, 2, 3, 6, 29, 18, 32, 15, 5, 3, 10,16,25,8,5,10,1],rank:[24, 1, 4, 4, 5, 4, 4, 4, 3, 2, 2, 2, 4, 2, 4, 4, 4, 4, 4,4,3,4,3,3,2],stagePtsPerRace:[5,7,0,4,0,0,6,3,0,13,13,7,0,0,4,0,5,4,9,10,8,11,17,5,9]},
+  {id:'hill',first:'Austin',last:'Hill',car:'21',color:'#84CC16',pts:[6, 29, 50, 75, 120, 210, 251, 277, 293, 296, 321, 357, 392, 424, 466, 499, 523, 591, 611,643,659,688,716,761,2099],finish:[31, 12, 2, 12, 10, 35, 6, 11, 21, 7, 13, 7, 11, 5, 3, 11, 14, 1, 22,5,22,10,11,2,5],rank:[31, 12, 2, 12, 10, 8, 6, 6, 6, 8, 8, 7, 7, 7, 6, 6, 6, 5, 5,5,7,7,7,5,4],stagePtsPerRace:[20,4,15,0,0,0,10,0,0,0,4,6,9,0,8,7,1,13,5,0,1,2,2,10,12]},
+  {id:'kvapil',first:'Carson',last:'Kvapil',car:'',color:'#EC4899',pts:[47, 64, 80, 131, 164, 213, 225, 258, 300, 301, 331, 357, 380, 420, 450, 493, 523, 567, 604,630,682,751,810,861,2116],finish:[7, 32, 19, 3, 11, 5, 28, 5, 1, 7, 7, 8, 14, 7, 9, 7, 10, 4, 6,11,2,1,1,3,12],rank:[7, 8, 10, 6, 7, 5, 8, 8, 4, 7, 7, 8, 8, 8, 8, 7, 7, 7, 6,7,5,2,2,2,3],stagePtsPerRace:[0,0,7,0,0,0,3,1,0,0,14,19,10,10,15,13,5,10,10,12,17,14,26,17,7]},
+  {id:'smith',first:'Sammy',last:'Smith',car:'8',color:'#F59E0B',pts:[36, 48, 86, 132, 164, 231, 270, 284, 310, 352, 399, 376, 399, 427, 453, 482, 504, 543, 578,602,639,658,692,699,2080],finish:[5, 30, 3, 6, 5, 9, 3, 12, 13, 16, 4, 13, 16, 9, 11, 10, 19, 5, 11,13,18,19,17,36,4],rank:[5, 8, 7, 5, 6, 6, 6, 7, 7, 6, 6, 6, 6, 6, 7, 8, 8, 8, 7,8,8,8,8,8,7],stagePtsPerRace:[4,5,4,15,0,0,5,4,0,5,0,0,2,0,0,2,4,7,9,0,18,1,14,6,7]},
+  {id:'retzlaff',first:'Parker',last:'Retzlaff',car:'99',color:'#14B8A6',pts:[28, 74, 81, 104, 129, 169, 195, 229, 257, 258, 292, 329, 362, 363, 388, 416, 446, 494, 533,556,593,619,643,666,2057],finish:[14, 2, 30, 14, 12, 8, 11, 8, 9, 5, 10, 9, 7, 38, 12, 12, 15, 7, 5,14,3,11,13,14,21],rank:[14, 2, 9, 11, 10, 11, 11, 10, 10, 11, 10, 9, 9, 11, 9, 10, 10, 9, 9,9,9,9,9,9,12],stagePtsPerRace:[5,11,0,0,0,0,0,5,0,0,7,5,3,0,0,3,8,18,7,0,3,0,0,0,6]},
+  {id:'mayer',first:'Sam',last:'Mayer',car:'41',color:'#A78BFA',pts:[6, 36, 78, 110, 122, 149, 172, 173, 195, 225, 241, 285, 321, 369, 376, 413, 459, 476, 510,549,555,589,616,633,2069],finish:[31, 7, 14, 5, 35, 10, 23, 38, 20, 9, 14, 12, 13, 3, 36, 4, 4, 34, 8,8,31,13,21,25,8],rank:[32, 7, 11, 10, 12, 10, 12, 15, 14, 14, 14, 12, 12, 9, 11, 11, 9, 11, 10,10,10,10,10,10,9],stagePtsPerRace:[0,0,19,0,0,0,9,0,0,2,4,10,12,14,6,4,13,14,5,10,0,10,11,4,3]},
+  {id:'sieg',first:'Ryan',last:'Sieg',car:'39',color:'#FB923C',pts:[34, 35, 57, 77, 81, 105, 140, 168, 202, 229, 254, 277, 292, 322, 356, 384, 395, 421, 446,452,473,493,514,569,588],finish:[3, 37, 16, 17, 33, 13, 9, 9, 11, 10, 21, 14, 23, 8, 7, 13, 26, 11, 15,31,16,17,33,1,19],rank:[7, 37, 18, 16, 20, 13, 9, 16, 14, 13, 13, 13, 15, 15, 14, 15, 15, 15, 15,15,15,15,15,15,15],stagePtsPerRace:[0,0,1,0,0,0,7,0,0,0,9,0,1,1,4,4,0,0,3,0,0,0,10,0,0]},
+  {id:'caruth',first:'Rajah',last:'Caruth',car:'',color:'#6366F1',pts:[34, 65, 90, 124, 156, 156, 162, 178, 201, 254, 268, 271, 300, 338, 369, 387, 424, 439, 466,479,522,547,583,606,2031],finish:[4, 9, 9, 8, 19, 23, 31, 13, 14, 21, 30, 34, 19, 14, 13, 19, 7, 22, 14,24,9,22,2,32,26],rank:[4, 7, 5, 8, 9, 12, 14, 14, 15, 12, 12, 15, 13, 14, 13, 13, 14, 14, 14,14,13,14,14,12,7],stagePtsPerRace:[0,1,2,0,0,0,0,0,0,0,0,0,2,0,4,8,14,0,4,17,15,1,1,18,0]},
+  {id:'poole',first:'Brennan',last:'Poole',car:'44',color:'#78716C',pts:[21, 19, 70, 80, 110, 110, 116, 137, 181, 199, 221, 238, 257, 283, 293, 309, 328, 341, 354,366,386,394,421,451,473],finish:[12, 19, 10, 27, 20, 18, 14, 14, 15, 19, 15, 20, 18, 11, 27, 21, 18, 24, 24,25,17,29,10,7,15],rank:[12, 19, 13, 15, 16, 17, 18, 17, 18, 17, 16, 16, 16, 16, 16, 16, 16, 16, 17,17,17,17,17,17,17],stagePtsPerRace:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
 ];
 
 const RACES = [
@@ -556,13 +556,13 @@ const DRIVER_META = [
   //   DEFAULT_DATA.lastRace           — update to current race name + date
   //   DEFAULT_DATA.leaderName/Pts     — update series leader
   // ────────────────────────────────────────────────────────────────────────────
-                              {id:'sawalich',first:'William',last:'Sawalich',car:'18',color:'#7B2FBE',finish:[26,23,7,37,9,17,20,1,7,20,28,15,36,4,4,3,21,36,13,29,4,5,3,37],wins:1,starts:[4,5,15,15,14,7,16,14,1,7,16,16,14,8,7,5,10,9,12,13,4,9,17,7],stageWins:1,stagePts:95,stagePtsPerRace:[11,0,0,0,0,4,7,15,10,0,0,1,0,6,7,11,0,2,0,3,2,10,4,2],lapsLed:[2,5,0,0,0,0,0,80,27,0,0,0,0,15,0,0,0,0,0,0,0,2,0,0],bonusPts:[0,0,0,0,0,0,0,16,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0],avgRunPos:[8.42,12.94,16.82,14.79,12.06,11.88,15.74,4.22,5.58,18.07,21.35,15.36,11.53,4.8,9.42,4.66,21.68,13.03,15.35,15.1,10.05,7.06,11.25,8.8],s1AvgPos:[8.67,12.49,16.7,16.44,17.04,9.47,11.85,9.92,3.36,13.89,14.72,23.2,11.53,6.44,12.21,6.13,17.19,12.41,17.86,10.02,6.56,7.44,11.23,9.06],s2AvgPos:[7.1,14.78,25.9,12.27,12.31,8.47,13.4,2.98,6.45,25.36,15.04,11.16,null,7.27,6.43,4.51,23.38,14.33,16.28,20.09,10.34,6.17,8.95,7.9],s3AvgPos:[9.22,12.06,9.64,15.25,9.92,16.49,18.62,2.17,6.45,16.77,26.56,13.86,null,3.13,null,4.01,23.19,8.5,12.91,15.24,11.92,7.45,12.27,null],pctLed:[1.7,3.1,0.0,0.0,0.0,0.0,0.0,32.0,9.0,0.0,1.8,0.0,0.0,7.5,0.0,0.0,0.0,0.0,0.0,0.0,0.0,2.0,0.0,0.0],pctT5:[34.2,14.1,0.0,0.0,0.0,1.4,5.2,76.0,37.7,0.0,1.8,0.0,0.0,50.5,27.5,76.1,0.0,0.0,0.0,12.4,11.6,21.0,0.8,7.6],dnf:['ACC',null,null,'ACC',null,null,null,null,null,null,null,null,'ACC',null,null,null,null,'ACC',null,null,null,null,null,'ACC']},
+                                {id:'sawalich',first:'William',last:'Sawalich',car:'18',color:'#7B2FBE',finish:[26,23,7,37,9,17,20,1,7,20,28,15,36,4,4,3,21,36,13,29,4,5,3,37,30],wins:1,starts:[4,5,15,15,14,7,16,14,1,7,16,16,14,8,7,5,10,9,12,13,4,9,17,7,22],stageWins:1,stagePts:95,stagePtsPerRace:[11,0,0,0,0,4,7,15,10,0,0,1,0,6,7,11,0,2,0,3,2,10,4,2,0],lapsLed:[2,5,0,0,0,0,0,80,27,0,0,0,0,15,0,0,0,0,0,0,0,2,0,0,0],bonusPts:[0,0,0,0,0,0,0,16,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],avgRunPos:[8.42,12.94,16.82,14.79,12.06,11.88,15.74,4.22,5.58,18.07,21.35,15.36,11.53,4.8,9.42,4.66,21.68,13.03,15.35,15.1,10.05,7.06,11.25,8.8,21.29],s1AvgPos:[8.67,12.49,16.7,16.44,17.04,9.47,11.85,9.92,3.36,13.89,14.72,23.2,11.53,6.44,12.21,6.13,17.19,12.41,17.86,10.02,6.56,7.44,11.23,9.06,14.78],s2AvgPos:[7.1,14.78,25.9,12.27,12.31,8.47,13.4,2.98,6.45,25.36,15.04,11.16,null,7.27,6.43,4.51,23.38,14.33,16.28,20.09,10.34,6.17,8.95,7.9,26.33],s3AvgPos:[9.22,12.06,9.64,15.25,9.92,16.49,18.62,2.17,6.45,16.77,26.56,13.86,null,3.13,null,4.01,23.19,8.5,12.91,15.24,11.92,7.45,12.27,null,30.38],pctLed:[1.7,3.1,0.0,0.0,0.0,0.0,0.0,32.0,9.0,0.0,1.8,0.0,0.0,7.5,0.0,0.0,0.0,0.0,0.0,0.0,0.0,2.0,0.0,0.0,0.0],pctT5:[34.2,14.1,0.0,0.0,0.0,1.4,5.2,76.0,37.7,0.0,1.8,0.0,0.0,50.5,27.5,76.1,0.0,0.0,0.0,12.4,11.6,21.0,0.8,7.6,2.0],dnf:['ACC',null,null,'ACC',null,null,null,null,null,null,null,null,'ACC',null,null,null,null,'ACC',null,null,null,null,null,'ACC','ACC']},
 
-                              {id:'crews',first:'Brent',last:'Crews',car:'19',color:'#E87722',finish:[null,null,6,18,null,null,10,26,3,5,2,4,6,22,37,2,2,31,3,4,24,6,16,35],wins:0,starts:[null,null,7,5,null,null,4,10,17,5,18,5,4,16,18,33,8,1,2,2,7,15,18,17],stageWins:2,stagePts:119,stagePtsPerRace:[0,0,0,9,0,0,7,10,6,3,0,15,19,0,2,7,13,5,16,1,0,2,4,0],lapsLed:[0,0,5,0,0,0,0,30,3,0,0,2,32,0,0,45,9,11,1,0,5,0,0,0],bonusPts:[0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],avgRunPos:[null,null,7.31,8.15,null,null,8.19,7.19,8.71,7.39,15.42,3.5,5.11,16.59,10.56,6.05,8.23,10.43,6.16,7.75,11.16,12.95,11.36,27.62],s1AvgPos:[null,null,9.45,6.91,null,null,3.77,10.15,15.94,7.44,18.6,4.89,1.2,21.29,9.79,13.77,8.58,7.65,2.32,6.89,17.6,13.75,15.35,21.63],s2AvgPos:[null,null,6.4,5.76,null,null,11.23,4.27,7.18,10.6,16.8,3.42,3.3,16.18,17.8,6.6,7.0,6.07,8.68,8.73,10.1,14.07,12.45,35.69],s3AvgPos:[null,null,6.32,9.64,null,null,8.83,7.17,4.98,6.05,13.62,2.96,7.83,14.84,null,1.93,8.71,19.83,6.84,7.72,7.02,11.39,9.09,null],pctLed:[null,null,7.7,0.0,null,null,0.0,12.0,1.0,0.0,0.0,1.0,39.0,0.0,0.0,23.9,9.0,18.3,1.3,0.0,2.9,0.0,0.0,0.0],pctT5:[null,null,32.3,23.5,null,null,35.2,60.0,46.7,36.0,5.3,96.5,67.1,0.0,2.2,60.1,26.0,31.7,46.8,22.9,20.9,0.0,1.5,0.0],dnf:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,'ACC',null,null,'ENG',null,null,'ACC',null,null,null]},
+                                {id:'crews',first:'Brent',last:'Crews',car:'19',color:'#E87722',finish:[null,null,6,18,null,null,10,26,3,5,2,4,6,22,37,2,2,31,3,4,24,6,16,35,3],wins:0,starts:[null,null,7,5,null,null,4,10,17,5,18,5,4,16,18,33,8,1,2,2,7,15,18,17,8],stageWins:2,stagePts:119,stagePtsPerRace:[0,0,0,9,0,0,7,10,6,3,0,15,19,0,2,7,13,5,16,1,0,2,4,0,0],lapsLed:[0,0,5,0,0,0,0,30,3,0,0,2,32,0,0,45,9,11,1,0,5,0,0,0,0],bonusPts:[0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0],avgRunPos:[null,null,7.31,8.15,null,null,8.19,7.19,8.71,7.39,15.42,3.5,5.11,16.59,10.56,6.05,8.23,10.43,6.16,7.75,11.16,12.95,11.36,27.62,14.37],s1AvgPos:[null,null,9.45,6.91,null,null,3.77,10.15,15.94,7.44,18.6,4.89,1.2,21.29,9.79,13.77,8.58,7.65,2.32,6.89,17.6,13.75,15.35,21.63,22.84],s2AvgPos:[null,null,6.4,5.76,null,null,11.23,4.27,7.18,10.6,16.8,3.42,3.3,16.18,17.8,6.6,7.0,6.07,8.68,8.73,10.1,14.07,12.45,35.69,12.41],s3AvgPos:[null,null,6.32,9.64,null,null,8.83,7.17,4.98,6.05,13.62,2.96,7.83,14.84,null,1.93,8.71,19.83,6.84,7.72,7.02,11.39,9.09,null,7.86],pctLed:[null,null,7.7,0.0,null,null,0.0,12.0,1.0,0.0,0.0,1.0,39.0,0.0,0.0,23.9,9.0,18.3,1.3,0.0,2.9,0.0,0.0,0.0,0.0],pctT5:[null,null,32.3,23.5,null,null,35.2,60.0,46.7,36.0,5.3,96.5,67.1,0.0,2.2,60.1,26.0,31.7,46.8,22.9,20.9,0.0,1.5,0.0,12.2],dnf:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,'ACC',null,null,'ENG',null,null,'ACC',null,null,null,null]},
 
-                              {id:'jones',first:'Brandon',last:'Jones',car:'20',color:'#C8102E',finish:[30,10,15,16,13,2,18,2,19,8,8,8,5,6,35,5,8,12,36,1,7,9,14,5],wins:1,starts:[15,15,4,3,5,8,3,8,4,14,22,2,7,2,4,29,1,33,14,29,12,6,15,13],stageWins:3,stagePts:138,stagePtsPerRace:[1,6,10,1,1,15,9,14,10,20,0,12,7,10,4,0,6,0,0,5,0,0,3,4],lapsLed:[0,0,0,0,4,8,1,0,2,67,0,0,0,31,0,1,1,0,0,10,0,0,0,5],bonusPts:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0],avgRunPos:[9.83,9.68,13.14,10.6,9.7,3.93,12.77,4.34,7.73,4.36,13.66,4.71,9.09,6.26,11.05,10.87,11.0,19.33,33.18,7.93,15.64,8.94,12.91,9.52],s1AvgPos:[13.7,12.8,5.9,5.71,7.24,5.42,2.7,6.83,3.66,2.69,17.4,3.09,6.85,1.38,5.53,18.89,3.23,25.12,27.0,18.91,11.25,8.25,8.89,12.0],s2AvgPos:[7.63,8.13,14.1,8.16,9.36,3.31,15.63,2.67,5.09,1.96,11.44,5.98,10.35,9.53,28.33,11.85,17.54,19.6,36.24,8.53,19.83,8.47,11.62,7.74],s3AvgPos:[8.3,8.71,18.16,13.59,10.85,3.23,16.1,3.96,12.12,6.03,13.06,4.86,9.55,6.93,null,6.36,11.67,15.68,36.0,2.94,16.11,9.89,15.28,8.83],pctLed:[0.8,0.0,0.0,0.0,2.0,5.4,0.8,0.0,0.7,33.5,0.0,0.0,0.0,15.5,0.0,0.5,0.0,0.0,0.0,6.0,0.0,0.0,0.0,4.8],pctT5:[15.0,15.3,10.8,13.5,8.5,85.7,36.0,70.8,41.7,70.5,11.5,69.0,25.6,37.0,25.3,4.8,26.0,0.0,0.0,49.3,0.6,12.0,3.1,13.3],dnf:['ACC',null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]},
+                                {id:'jones',first:'Brandon',last:'Jones',car:'20',color:'#C8102E',finish:[30,10,15,16,13,2,18,2,19,8,8,8,5,6,35,5,8,12,36,1,7,9,14,5,10],wins:1,starts:[15,15,4,3,5,8,3,8,4,14,22,2,7,2,4,29,1,33,14,29,12,6,15,13,3],stageWins:3,stagePts:134,stagePtsPerRace:[1,6,10,1,1,15,9,14,10,20,0,12,7,10,4,0,6,0,0,5,0,0,3,4,0],lapsLed:[0,0,0,0,4,8,1,0,2,67,0,0,0,31,0,1,1,0,0,10,0,0,0,5,3],bonusPts:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0],avgRunPos:[9.83,9.68,13.14,10.6,9.7,3.93,12.77,4.34,7.73,4.36,13.66,4.71,9.09,6.26,11.05,10.87,11.0,19.33,33.18,7.93,15.64,8.94,12.91,9.52,10.69],s1AvgPos:[13.7,12.8,5.9,5.71,7.24,5.42,2.7,6.83,3.66,2.69,17.4,3.09,6.85,1.38,5.53,18.89,3.23,25.12,27.0,18.91,11.25,8.25,8.89,12.0,5.39],s2AvgPos:[7.63,8.13,14.1,8.16,9.36,3.31,15.63,2.67,5.09,1.96,11.44,5.98,10.35,9.53,28.33,11.85,17.54,19.6,36.24,8.53,19.83,8.47,11.62,7.74,15.04],s3AvgPos:[8.3,8.71,18.16,13.59,10.85,3.23,16.1,3.96,12.12,6.03,13.06,4.86,9.55,6.93,null,6.36,11.67,15.68,36.0,2.94,16.11,9.89,15.28,8.83,11.63],pctLed:[0.8,0.0,0.0,0.0,2.0,5.4,0.8,0.0,0.7,33.5,0.0,0.0,0.0,15.5,0.0,0.5,0.0,0.0,0.0,6.0,0.0,0.0,0.0,4.8,2.0],pctT5:[15.0,15.3,10.8,13.5,8.5,85.7,36.0,70.8,41.7,70.5,11.5,69.0,25.6,37.0,25.3,4.8,26.0,0.0,0.0,49.3,0.6,12.0,3.1,13.3,27.9],dnf:['ACC',null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],playoffPts:[2050,2077]},
 
-                              {id:'gray',first:'Taylor',last:'Gray',car:'54',color:'#1D9E3E',finish:[28,9,12,15,37,15,13,7,10,1,29,33,3,32,31,9,17,2,29,7,33,12,7,26],wins:1,starts:[9,3,14,1,6,15,13,6,6,10,26,12,25,5,25,27,2,11,3,25,9,5,13,10],stageWins:2,stagePts:118,stagePtsPerRace:[0,7,0,3,15,0,8,9,0,9,0,0,5,15,0,0,10,12,8,13,0,3,0,1],lapsLed:[0,2,0,10,21,0,0,6,0,48,6,0,0,1,0,0,24,16,0,55,0,0,0,0],bonusPts:[0,0,0,0,0,0,0,0,0,15,0,0,0,0,0,0,0,0,0,0,0,0,0,0],avgRunPos:[12.3,11.55,13.49,8.57,3.52,19.13,16.94,9.8,12.8,3.96,16.89,29.51,9.84,12.98,14.55,12.43,11.16,5.77,7.71,4.83,14.89,13.76,11.9,18.05],s1AvgPos:[14.1,3.64,17.6,4.89,5.47,17.78,17.5,3.9,9.59,3.44,19.24,26.47,15.5,3.87,16.96,14.06,1.08,10.41,4.82,10.85,12.96,8.22,13.16,8.34],s2AvgPos:[8.43,15.82,12.25,7.44,2.76,21.71,5.37,16.78,16.71,7.09,12.08,22.93,8.25,2.56,10.19,17.21,16.23,5.47,12.8,4.8,15.41,21.37,12.42,19.03],s3AvgPos:[13.9,13.78,11.2,10.55,2.6,18.16,22.03,9.31,12.35,2.88,17.89,33.92,7.9,22.44,null,9.21,13.88,3.11,5.72,2.25,18.0,12.42,11.1,26.77],pctLed:[0.0,1.2,0.0,5.0,10.5,0.0,0.0,2.4,0.0,24.0,3.5,0.0,0.0,0.5,0.0,0.0,24.0,26.7,0.0,27.4,0.0,0.0,0.0,0.0],pctT5:[5.8,28.2,0.0,28.5,64.5,0.0,22.8,26.8,3.3,79.0,10.6,0.0,29.3,57.0,0.0,0.0,29.0,56.7,57.0,59.2,0.0,7.0,0.0,8.6],dnf:[null,null,null,null,'ACC',null,null,null,null,null,null,'ACC',null,'SUS','ACC',null,null,null,null,null,'ACC',null,null,null]},
+                                {id:'gray',first:'Taylor',last:'Gray',car:'54',color:'#1D9E3E',finish:[28,9,12,15,37,15,13,7,10,1,29,33,3,32,31,9,17,2,29,7,33,12,7,26,7],wins:1,starts:[9,3,14,1,6,15,13,6,6,10,26,12,25,5,25,27,2,11,3,25,9,5,13,10,7],stageWins:2,stagePts:118,stagePtsPerRace:[0,7,0,3,15,0,8,9,0,9,0,0,5,15,0,0,10,12,8,13,0,3,0,1,1],lapsLed:[0,2,0,10,21,0,0,6,0,48,6,0,0,1,0,0,24,16,0,55,0,0,0,0,0],bonusPts:[0,0,0,0,0,0,0,0,0,15,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],avgRunPos:[12.3,11.55,13.49,8.57,3.52,19.13,16.94,9.8,12.8,3.96,16.89,29.51,9.84,12.98,14.55,12.43,11.16,5.77,7.71,4.83,14.89,13.76,11.9,18.05,9.95],s1AvgPos:[14.1,3.64,17.6,4.89,5.47,17.78,17.5,3.9,9.59,3.44,19.24,26.47,15.5,3.87,16.96,14.06,1.08,10.41,4.82,10.85,12.96,8.22,13.16,8.34,9.98],s2AvgPos:[8.43,15.82,12.25,7.44,2.76,21.71,5.37,16.78,16.71,7.09,12.08,22.93,8.25,2.56,10.19,17.21,16.23,5.47,12.8,4.8,15.41,21.37,12.42,19.03,9.22],s3AvgPos:[13.9,13.78,11.2,10.55,2.6,18.16,22.03,9.31,12.35,2.88,17.89,33.92,7.9,22.44,null,9.21,13.88,3.11,5.72,2.25,18.0,12.42,11.1,26.77,10.63],pctLed:[0.0,1.2,0.0,5.0,10.5,0.0,0.0,2.4,0.0,24.0,3.5,0.0,0.0,0.5,0.0,0.0,24.0,26.7,0.0,27.4,0.0,0.0,0.0,0.0,0.0],pctT5:[5.8,28.2,0.0,28.5,64.5,0.0,22.8,26.8,3.3,79.0,10.6,0.0,29.3,57.0,0.0,0.0,29.0,56.7,57.0,59.2,0.0,7.0,0.0,8.6,0.0],dnf:[null,null,null,null,'ACC',null,null,null,null,null,null,'ACC',null,'SUS','ACC',null,null,null,null,null,'ACC',null,null,null,null],playoffPts:[2025,2056]},
 
 ];
 
@@ -570,39 +570,39 @@ const DRIVER_META = [
 // DEFAULT DATA (seed if storage empty)
 // ─────────────────────────────────────────
 const DEFAULT_DATA = {
-  racesDone: 24,
-  lastRace: 'Daytona · Aug 28',
+  racesDone: 25,
+  lastRace: 'Darlington · Sep 5',
   leaderName: 'Allgaier',
-  leaderPts: 1090,
-  updatedAt: 'Aug 28, 2026',
-  cutlineByRace: [26,43,70,94,110,132,164,203,230,254,268,285,321,344,371,399,432,448,492,527,539,567,598,606],
+  leaderPts: 2135,
+  updatedAt: 'Sep 5, 2026',
+  cutlineByRace: [26,43,70,94,110,132,164,203,230,254,268,285,321,344,371,399,432,448,492,527,539,567,598,606,633],
   drivers: {
-    sawalich: {pts:[22,36,66,67,95,119,143,214,254,271,280,303,304,344,384,429,445,448,472,483,518,560,598,601], rank:[26,23,14,18,15,13,14,11,10,10,11,11,13,12,10,9,11,12,13,13,14,13,11,13]},
-    crews:    {pts:[null,null,31,59,null,null,93,114,155,190,225,273,324,339,342,384,432,443,493,527,540,573,598,600], rank:[null,null,28,20,null,null,21,20,18,16,15,14,11,13,15,14,12,13,11,12,11,11,12,14]},
-    jones:    {pts:[8,41,73,95,120,170,198,247,275,324,353,394,433,474,480,512,547,572,573,633,664,692,718,754], rank:[30,16,11,11,11,8,8,8,8,5,5,5,4,5,5,5,5,6,8,6,6,6,6,6]},
-    gray:     {pts:[9,44,69,94,110,132,164,203,230,294,302,306,345,365,371,399,429,476,492,535,539,567,597,609], rank:[28,11,13,13,12,12,12,12,12,9,9,10,10,12,14,12,13,10,12,11,12,12,13,11]},
+    sawalich: {pts:[22,36,66,67,95,119,143,214,254,271,280,303,304,344,384,429,445,448,472,483,518,560,598,601,608], rank:[26,23,14,18,15,13,14,11,10,10,11,11,13,12,10,9,11,12,13,13,14,13,11,13,14]},
+    crews:    {pts:[null,null,31,59,null,null,93,114,155,190,225,273,324,339,342,384,432,443,493,527,540,573,598,600,634], rank:[null,null,28,20,null,null,21,20,18,16,15,14,11,13,15,14,12,13,11,12,11,11,12,14,13]},
+    jones:    {pts:[8,41,73,95,120,170,198,247,275,324,353,394,433,474,480,512,547,572,573,633,664,692,718,750,777], rank:[30,16,11,11,11,8,8,8,8,5,5,5,4,5,5,5,5,6,8,6,6,6,6,6,8]},
+    gray:     {pts:[9,44,69,94,110,132,164,203,230,294,302,306,345,365,371,399,429,476,492,535,539,567,597,609,640], rank:[28,11,13,13,12,12,12,12,12,9,9,10,10,12,14,12,13,10,12,11,12,12,13,11,11]},
   },
   standings: [
-    {pos:1,  name:'Justin Allgaier',  car:'7',  pts:1090, jgr:false},
-    {pos:2,  name:'Carson Kvapil',    car:'1',  pts:870, jgr:false},
-    {pos:3,  name:'Sheldon Creed',    car:'00', pts:831, jgr:false},
-    {pos:4,  name:'Jesse Love',       car:'2',  pts:785, jgr:false},
-    {pos:5,  name:'Austin Hill',      car:'21', pts:761, jgr:false},
-    {pos:6,  name:'Brandon Jones',    car:'20', pts:754,  jgr:true, dId:'jones'},
-    {pos:7,  name:'Corey Day',        car:'17', pts:735, jgr:false},
-    {pos:8,  name:'Sammy Smith',      car:'8',  pts:726, jgr:false},
-    {pos:9,  name:'Parker Retzlaff',  car:'99', pts:667, jgr:false},
-    {pos:10, name:'Sam Mayer',        car:'41', pts:639, jgr:false},
-    {pos:11, name:'Taylor Gray',      car:'54', pts:609,  jgr:true, dId:'gray'},
-    {pos:12, name:'Rajah Caruth',     car:'88', pts:606,  jgr:false},
-    {pos:13, name:'William Sawalich', car:'18', pts:601,  jgr:true, dId:'sawalich'},
-    {pos:14, name:'Brent Crews',      car:'19', pts:600,  jgr:true, dId:'crews'},
-    {pos:15, name:'Ryan Sieg',        car:'38', pts:569,  jgr:false},
-    {pos:16, name:'Anthony Alfredo',  car:'96', pts:513,  jgr:false},
-    {pos:17, name:'Brennan Poole',    car:'44', pts:451,  jgr:false},
-    {pos:18, name:'Dean Thompson',    car:'26', pts:428,  jgr:false},
-    {pos:19, name:'Harrison Burton',  car:'24', pts:400,  jgr:false},
-    {pos:20, name:'Jeremy Clements',  car:'51', pts:384,  jgr:false},
+    {pos:1,  name:'Justin Allgaier',  car:'7',  pts:2135, jgr:false, playoffPts:2135},
+    {pos:2,  name:'Sheldon Creed',    car:'00', pts:2128, jgr:false, playoffPts:2128},
+    {pos:3,  name:'Carson Kvapil',    car:'1',  pts:2116, jgr:false, playoffPts:2116},
+    {pos:4,  name:'Austin Hill',      car:'21', pts:2099, jgr:false, playoffPts:2099},
+    {pos:5,  name:'Corey Day',        car:'17', pts:2089, jgr:false, playoffPts:2089},
+    {pos:6,  name:'Jesse Love',       car:'2',  pts:2087, jgr:false, playoffPts:2087},
+    {pos:7,  name:'Sammy Smith',      car:'8',  pts:2080, jgr:false, playoffPts:2080},
+    {pos:8,  name:'Brandon Jones',    car:'20', pts:777,  jgr:true,  dId:'jones', playoffPts:2077},
+    {pos:9,  name:'Sam Mayer',        car:'41', pts:2069, jgr:false, playoffPts:2069},
+    {pos:10, name:'Parker Retzlaff',  car:'99', pts:2057, jgr:false, playoffPts:2057},
+    {pos:11, name:'Taylor Gray',      car:'54', pts:640,  jgr:true,  dId:'gray',  playoffPts:2056},
+    {pos:12, name:'Rajah Caruth',     car:'88', pts:2031, jgr:false, playoffPts:2031},
+    {pos:13, name:'Brent Crews',      car:'19', pts:634,  jgr:true,  dId:'crews'},
+    {pos:14, name:'William Sawalich', car:'18', pts:608,  jgr:true,  dId:'sawalich'},
+    {pos:15, name:'Ryan Sieg',        car:'39', pts:588,  jgr:false},
+    {pos:16, name:'Anthony Alfredo',  car:'96', pts:559,  jgr:false},
+    {pos:17, name:'Brennan Poole',    car:'44', pts:473,  jgr:false},
+    {pos:18, name:'Dean Thompson',    car:'26', pts:454,  jgr:false},
+    {pos:19, name:'Harrison Burton',  car:'24', pts:417,  jgr:false},
+    {pos:20, name:'Jeremy Clements',  car:'51', pts:416,  jgr:false},
   ],
 };
 
@@ -718,6 +718,38 @@ const momentumScore = d => {
 const gain  = (d,i) => { if(d.pts[i]===null) return null; let prev=0; for(let j=i-1;j>=0;j--){if(d.pts[j]!==null){prev=d.pts[j];break;}} return d.pts[i]-prev; };
 const nRaced= d => d.pts.filter((p,i) => i<DATA.racesDone && p!==null).length;
 const avgP  = d => { const n=nRaced(d); return n ? (lPts(d)/n).toFixed(1) : '—'; };
+
+// ─────────────────────────────────────────
+// HELPER FUNCTIONS (NCS parity)
+// ─────────────────────────────────────────
+const arrAvg    = arr => { const v=arr.filter(x=>x!=null); return v.length ? (v.reduce((a,b)=>a+b,0)/v.length).toFixed(2) : '—'; };
+const avgARP    = d => arrAvg((d.avgRunPos||[]).slice(0,DATA.racesDone));
+const avgARP_S1 = d => arrAvg((d.s1AvgPos||[]).slice(0,DATA.racesDone));
+const avgARP_S2 = d => arrAvg((d.s2AvgPos||[]).slice(0,DATA.racesDone));
+const avgARP_S3 = d => arrAvg((d.s3AvgPos||[]).slice(0,DATA.racesDone));
+// Season % laps led / % in top 5 (weighted by laps per race)
+const seasonPctLed = d => {
+  let ledLaps=0, totalLaps=0;
+  (d.pctLed||[]).forEach((p,i) => {
+    if(i>=DATA.racesDone || (d.starts||[])[i]===null) return;
+    const raceLaps = (RACES[i]||{}).laps||0;
+    if(!raceLaps) return;
+    ledLaps   += (p||0)/100 * raceLaps;
+    totalLaps += raceLaps;
+  });
+  return totalLaps ? (ledLaps/totalLaps*100).toFixed(1)+'%' : '—';
+};
+const seasonPctT5 = d => {
+  let t5Laps=0, totalLaps=0;
+  (d.pctT5||[]).forEach((p,i) => {
+    if(i>=DATA.racesDone || (d.starts||[])[i]===null) return;
+    const raceLaps = (RACES[i]||{}).laps||0;
+    if(!raceLaps) return;
+    t5Laps    += (p||0)/100 * raceLaps;
+    totalLaps += raceLaps;
+  });
+  return totalLaps ? (t5Laps/totalLaps*100).toFixed(1)+'%' : '—';
+};
 const avgPNoDNF = d => {
   const rd = DATA.racesDone;
   const vals = [];
@@ -738,30 +770,6 @@ const top10 = d => (d.finish||[]).filter(f=>f!==null && f<=10).length;
 const dnf   = d => (d.dnf||[]).filter((v,i)=>i<DATA.racesDone && v!==null).length;
 const out20 = d => (d.finish||[]).filter(f=>f!==null && f>20).length;
 const lapsLedTotal = d => (d.lapsLed||[]).reduce((a,b)=>a+b,0);
-const seasonPctLed = d => {
-  const rd = DATA.racesDone;
-  const totalLed = (d.lapsLed||[]).slice(0,rd).reduce((s,v)=>s+(v||0),0);
-  // Only count laps from races the driver actually started (non-null starts)
-  const totalLaps = RACES.slice(0,rd).reduce((s,r,i)=>{
-    if((d.starts||[])[i]===null||(d.starts||[])[i]===undefined) return s;
-    return s+(r.laps||200);
-  },0);
-  return totalLaps > 0 ? (totalLed/totalLaps*100).toFixed(1)+'%' : '—';
-};
-const seasonPctT5  = d => {
-  const rd = DATA.racesDone;
-  // Sum (pctT5 * laps) / total laps started — weighted by race length
-  let totalWeighted = 0, totalLaps = 0;
-  RACES.slice(0,rd).forEach((r,i) => {
-    if((d.starts||[])[i]===null||(d.starts||[])[i]===undefined) return;
-    const pct = (d.pctT5||[])[i];
-    if(pct===null||pct===undefined) return;
-    const laps = r.laps||200;
-    totalWeighted += pct * laps;
-    totalLaps += laps;
-  });
-  return totalLaps > 0 ? (totalWeighted/totalLaps).toFixed(1)+'%' : '—';
-};
 const projP = (d,t) => { const n=nRaced(d); if(!n) return '—'; return Math.round(lPts(d)+(lPts(d)/n)*(t-DATA.racesDone)); };
 const CUTLINE = () => DATA.cutlineByRace[DATA.racesDone-1] || 0;
 
@@ -795,11 +803,11 @@ function updateHeaderPills() {
 
 function updateSidebar() {
   const rd = DATA.racesDone;
-  document.getElementById('sb-reg-prog').textContent = `${rd} / 26`;
-  document.getElementById('sb-full-prog').textContent = `${rd} / 36`;
+  document.getElementById('sb-reg-prog').textContent = `${rd} / 24`;
+  document.getElementById('sb-full-prog').textContent = `${rd} / 33`;
   document.getElementById('sb-reg-fill').style.width = `${Math.min((rd/26)*100,100)}%`;
   document.getElementById('sb-full-fill').style.width = `${(rd/36)*100}%`;
-  document.getElementById('sb-to-cutoff').textContent = Math.max(0,26-rd);
+  document.getElementById('sb-to-cutoff').textContent = Math.max(0,33-rd);
 
   // Mobile summary strip
   const setEl = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
@@ -808,9 +816,9 @@ function updateSidebar() {
   setEl('ms-leader', DATA.leaderName);
   setEl('ms-leader-pts', `${DATA.leaderPts} pts`);
   setEl('ms-cutline', CUTLINE());
-  setEl('ms-to-cutoff', Math.max(0,26-rd));
-  setEl('ms-reg-prog', `${rd} / 26`);
-  setEl('ms-full-prog', `${rd} / 36`);
+  setEl('ms-to-cutoff', Math.max(0,33-rd));
+  setEl('ms-reg-prog', `${rd} / 24`);
+  setEl('ms-full-prog', `${rd} / 33`);
   setW('ms-reg-fill',  `${Math.min((rd/26)*100,100)}%`);
   setW('ms-full-fill', `${(rd/36)*100}%`);
 }
@@ -822,12 +830,18 @@ function buildDriverCards() {
     // Use driver points rank from standings array, not owner rank
     const standingEntry = (DATA.standings||[]).find(s=>s.dId===d.id);
     const rank = standingEntry ? standingEntry.pos : lRank(d);
+    const isPlayoffEra=DATA.racesDone>24;
     const isC=rank&&rank<=12, isBub = rank===12;
     const diff=pts-cut;
     let badges='';
-    if(isBub) badges+=`<span class="badge" style="background:${d.color}33;color:${d.color};border:1px solid ${d.color}66;">On Cutline</span>`;
-    else if(isC) badges+=`<span class="badge" style="background:${d.color}33;color:${d.color};border:1px solid ${d.color}66;">In Chase</span>`;
-    else badges+=`<span class="badge b-out">Outside Chase</span>`;
+    if(isPlayoffEra){
+      if(isC) badges+=`<span class="badge" style="background:${d.color}33;color:${d.color};border:1px solid ${d.color}66;">${isBub?'Cutline':'In Playoffs'}</span>`;
+      else    badges+=`<span class="badge b-out">Missed Playoffs</span>`;
+    } else {
+      if(isBub) badges+=`<span class="badge" style="background:${d.color}33;color:${d.color};border:1px solid ${d.color}66;">On Cutline</span>`;
+      else if(isC) badges+=`<span class="badge" style="background:${d.color}33;color:${d.color};border:1px solid ${d.color}66;">In Chase</span>`;
+      else badges+=`<span class="badge b-out">Outside Chase</span>`;
+    }
     if(d.wins) badges+=`<span class="badge" style="background:${d.color};color:#fff;">Win</span>`;
     if(d.rookie) badges+=`<span class="badge b-rookie">Rookie</span>`;
     const dc=isBub?'gold':(diff>=0?'green':'red');
@@ -898,7 +912,7 @@ function expandDriver(id) {
     ${statRow('Top 5 · Top 10', `${top5(d)} · ${top10(d)}`)}
     ${statRow('Laps Led', lapsLedTotal(d)||'—')}
     ${statRow('Avg Run Pos', (() => { const v=(d.avgRunPos||[]).filter(x=>x!==null); return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):'—'; })())}
-    ${statRow('Proj R24 · R33', `${p26} · ${projP(d,33)}`, typeof p26==='number'&&p26>=cut?'#00C37A':'var(--red)')}
+    ${statRow('Proj R26 · R33', `${p26} · ${projP(d,33)}`, typeof p26==='number'&&p26>=cut?'#00C37A':'var(--red)')}
   `;
 
   // Race log
@@ -1096,10 +1110,11 @@ function closeExpand() {
 
 function buildChaseList() {
   const standings=DATA.standings||[];
+  const isPlayoffEra=DATA.racesDone>24;
   const p16pts=standings[11]?.pts||0;
   let html='';
   standings.forEach((s,i)=>{
-    if(i===12) html+=`<div class="chase-cutline-sep">── Chase Cutline ──</div>`;
+    if(i===12) html+=`<div class="chase-cutline-sep">${isPlayoffEra?'── Playoff Cutline ──':'── Chase Cutline ──'}</div>`;
     const d=s.jgr?DRIVERS.find(dr=>dr.id===s.dId):null;
     const color=d?d.color:'var(--text3)';
     const diff=s.pts-p16pts;
@@ -1219,13 +1234,15 @@ const MAIN_METRICS = [
   {key:'pts',        label:'Cum. Points',   reversed:false, cumulative:true},
   {key:'finish',     label:'Finish Pos',    reversed:true,  cumulative:false},
   {key:'start',      label:'Start Pos',     reversed:true,  cumulative:false},
-  {key:'ptsGained',      label:'Pts / Race',         reversed:false, cumulative:false},
-  {key:'stagePts',       label:'Stage Pts',           reversed:false, cumulative:true},
-  {key:'lapsLed',        label:'Laps Led',            reversed:false, cumulative:true},
+  {key:'ptsGained',  label:'Pts / Race',    reversed:false, cumulative:false},
+  {key:'stagePts',   label:'Stage Pts',     reversed:false, cumulative:true},
+  {key:'stagePtsPerRace', label:'Stage Pts/Race', reversed:false, cumulative:false},
+  {key:'lapsLed',    label:'Laps Led',      reversed:false, cumulative:true},
   {key:'rank',       label:'Driver Pts Pos',reversed:true,  cumulative:false},
   {key:'avgRunPos',  label:'Avg Run Pos',   reversed:true,  cumulative:false},
   {key:'pctLed',     label:'% Laps Led',    reversed:false, cumulative:false},
   {key:'pctT5',      label:'% in T5',       reversed:false, cumulative:false},
+  {key:'avgPnoDNF',  label:'Avg Pts (no DNF)',reversed:false,cumulative:false},
 ];
 
 function setMainMetric(key) {
@@ -1264,6 +1281,16 @@ function getMainData(d, key, rd, cutoff) {
     case 'lapsLed':         { const arr=Array.from({length:rd},(_,i)=>(d.lapsLed||[])[i]??0); let s=0; return arr.map(v=>{s+=v;return s;}); }
     case 'rank':      return Array.from({length:rd},(_,i)=>d.rank[i]??null);
     case 'avgRunPos': return Array.from({length:rd},(_,i)=>(d.avgRunPos||[])[i]??null);
+    case 'avgPnoDNF': {
+      return Array.from({length:rd},(_,i)=>{
+        let sum=0,n=0;
+        for(let j=0;j<=i;j++){
+          if((d.starts||[])[j]===null||(d.dnf||[])[j]!==null) continue;
+          const g=gain(d,j); if(g!=null){sum+=g;n++;}
+        }
+        return n?+((sum/n).toFixed(1)):null;
+      });
+    }
     case 'pctLed':    return Array.from({length:rd},(_,i)=>(d.pctLed||[])[i]??null);
     case 'pctT5':     return Array.from({length:rd},(_,i)=>(d.pctT5||[])[i]??null);
     default: return [];
@@ -1272,28 +1299,30 @@ function getMainData(d, key, rd, cutoff) {
 
 function buildMainChart() {
   if(chartPts){chartPts.destroy();chartPts=null;}
-  const rd=DATA.racesDone, key=mainMetricKey, cutoff=26;
+  const rd=DATA.racesDone, key=mainMetricKey, cutoff=24;
   const tt={backgroundColor:isLight?'#F7F8FB':'#0D0F14',borderColor:isLight?'rgba(0,0,0,0.1)':'rgba(255,255,255,0.08)',borderWidth:1,titleColor:isLight?'#0C0D14':'#F4F5F8',bodyColor:isLight?'#444C60':'#8892A4',padding:10,cornerRadius:0,displayColors:false};
   const gc=isLight?'rgba(0,0,0,0.06)':'rgba(255,255,255,0.06)', tc=isLight?'#9099AE':'#6E7280';
   const meta = MAIN_METRICS.find(m=>m.key===key);
   const reversed = ['finish','start','rank','avgRunPos'].includes(key);
   const extendToCutoff = key==='pts';
+  const isPlayoff = key==='pts' && DATA.racesDone > 24;
+  // In playoff mode, labels extend to cover playoff races
+  const labelEnd = isPlayoff ? Math.max(rd, cutoff) : (extendToCutoff ? cutoff : rd);
 
   document.getElementById('main-chart-title').textContent = meta.label;
 
-  const labels = extendToCutoff
-    ? RACES.slice(0,cutoff).map(r=>r.short)
-    : RACES.slice(0,rd).map(r=>r.short);
+  const labels = RACES.slice(0, labelEnd).map(r=>r.short);
 
   // Legend
   let legHtml = DRIVERS.map(d=>`<div class="leg-item"><div class="leg-dot" style="background:${d.color};"></div>#${d.car} ${d.last}</div>`).join('');
   if(key==='pts') legHtml += `<div class="leg-item"><div style="width:14px;height:2px;border-top:2px dashed #F5A623;margin-top:3px;"></div>P12 cut</div>`;
+  if(key==='pts'&&isPlayoff) legHtml += `<div class="leg-item" style="color:rgba(240,208,0,0.8);">&rarr; Playoff Pts (right axis)</div>`;
   document.getElementById('legend-points').innerHTML = legHtml;
 
   const datasets = [];
   DRIVERS.forEach(d=>{
     datasets.push({
-      label:`#${d.car} ${d.last}`, data:getMainData(d,key,rd,cutoff),
+      label:`#${d.car} ${d.last}`, data:getMainData(d,key,rd,labelEnd),
       borderColor:d.color, backgroundColor:d.color+'15',
       borderWidth:2.5, pointRadius:3, pointHoverRadius:5,
       tension:0.35, fill:false, spanGaps:false,
@@ -1302,37 +1331,88 @@ function buildMainChart() {
   if(key==='pts') {
     DRIVERS.forEach(d=>{
       const lastPts=lPts(d), n=nRaced(d);
-      if(!n||!lastPts){datasets.push({label:`#${d.car} proj`,data:Array(cutoff).fill(null),hidden:true,borderColor:d.color});return;}
+      if(!n||!lastPts){datasets.push({label:`#${d.car} proj`,data:Array(labelEnd).fill(null),hidden:true,borderColor:d.color});return;}
       const rate=lastPts/n;
       const lastIdx=(()=>{for(let j=rd-1;j>=0;j--)if(d.pts[j]!=null)return j;return -1;})();
-      const arr=Array(cutoff).fill(null);
-      if(lastIdx>=0)for(let j=lastIdx;j<cutoff;j++)arr[j]=Math.round(lastPts+rate*(j-lastIdx));
+      const arr=Array(labelEnd).fill(null);
+      if(lastIdx>=0)for(let j=lastIdx;j<labelEnd;j++)arr[j]=Math.round(lastPts+rate*(j-lastIdx));
       datasets.push({label:`#${d.car} proj`,data:arr,borderColor:d.color,borderDash:[5,5],borderWidth:1.5,pointRadius:0,tension:0,fill:false,spanGaps:false,hidden:!showProjections});
     });
-    datasets.push({label:'P12 Cutline',data:[...DATA.cutlineByRace.slice(0,rd),...Array(cutoff-rd).fill(null)],borderColor:'#F5A623',borderDash:[8,4],borderWidth:2,pointRadius:3,pointBackgroundColor:'#F5A623',fill:false,spanGaps:false});
+    datasets.push({label:'P12 Cutline',data:[...DATA.cutlineByRace.slice(0,rd),...Array(Math.max(0,labelEnd-rd)).fill(null)],borderColor:'#F5A623',borderDash:[8,4],borderWidth:2,pointRadius:3,pointBackgroundColor:'#F5A623',fill:false,spanGaps:false});
+
+    // Playoff pts right axis — all 12 playoff drivers
+    if(isPlayoff){
+      const playoffStandings = (DATA.standings||[]).filter(s=>s.pos<=12);
+      playoffStandings.forEach(s=>{
+        const jgrD = DRIVERS.find(d=>d.id===s.dId);
+        let ppData;
+        if(jgrD && (jgrD.playoffPts||[]).length){
+          ppData = Array(cutoff).fill(null).concat(jgrD.playoffPts);
+        } else if(s.playoffPts!=null){
+          ppData = Array(cutoff).fill(null).concat([s.playoffPts]);
+        } else return;
+        const color = jgrD ? jgrD.color : 'var(--text3)';
+        const isJgr = !!jgrD;
+        const lastName = (()=>{ const p=s.name.split(' '); return p[p.length-1]==='Jr.'?p.slice(-2).join(' '):p[p.length-1]; })();
+        datasets.push({
+          label: lastName+'\u200b',
+          data: ppData,
+          borderColor: color,
+          backgroundColor: color+'15',
+          borderWidth: isJgr ? 2.5 : 1,
+          borderDash: isJgr ? [] : [4,3],
+          pointRadius: isJgr ? 3 : 1.5,
+          pointHoverRadius: isJgr ? 5 : 3,
+          tension: 0.35, fill:false, spanGaps:false, yAxisID:'y2',
+        });
+      });
+    }
   }
 
-  const allVals=datasets.flatMap(ds=>ds.data||[]).filter(v=>v!=null);
-  const maxVal=allVals.length?Math.max(...allVals):40;
+  const allLeftVals=datasets.filter(ds=>!ds.yAxisID).flatMap(ds=>ds.data||[]).filter(v=>v!=null);
+  const maxVal=allLeftVals.length?Math.max(...allLeftVals):40;
   const isPct = ['pctLed','pctT5'].includes(key);
-  const yOpts={grid:{color:gc},
-    ticks:{color:tc,font:{size:11},callback: isPct ? v=>v+'%' : undefined},
-    title:{display:true,text:meta.label,color:tc,font:{size:11}}};
-  if(reversed){yOpts.min=1;yOpts.max=maxVal+2;}
-  else if(key==='pts'){yOpts.min=0;}
-  else if(isPct){yOpts.min=0;yOpts.max=100;}
+  const goldTick = 'rgba(240,208,0,0.8)';
+
+  const yOpts={
+    grid:{color:gc},
+    ticks:{color:tc, font:{size:11}, callback: isPct ? v=>v+'%' : undefined},
+    title:{display:true, text: isPlayoff ? 'Regular Season Pts' : meta.label, color:tc, font:{size:11}},
+  };
+  if(reversed){yOpts.min=1; yOpts.max=maxVal+2;}
+  else if(key==='pts'){yOpts.min=0; yOpts.max=isPlayoff?Math.ceil(maxVal/50)*50+50:undefined;}
+  else if(isPct){yOpts.min=0; yOpts.max=100;}
+
+  const scales = {
+    x:{grid:{color:gc},ticks:{color:tc,font:{size:window.innerWidth<540?7:9},autoSkip:false,maxRotation:45,minRotation:45}},
+    y:yOpts,
+  };
+  if(isPlayoff){
+    const playoffVals = datasets.filter(ds=>ds.yAxisID==='y2').flatMap(ds=>ds.data||[]).filter(v=>v!=null);
+    const playoffMax = playoffVals.length ? Math.max(...playoffVals) : 2110;
+    scales.y2 = {
+      position:'right',
+      min:2000, max: Math.ceil(playoffMax/10)*10+10,
+      grid:{drawOnChartArea:false},
+      ticks:{color:goldTick, font:{size:11}},
+      title:{display:true, text:'Playoff Pts', color:goldTick, font:{size:11}},
+    };
+  }
 
   chartPts=new Chart(document.getElementById('chart-points').getContext('2d'),{
     type:'line', data:{labels,datasets},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
       tooltip:{...tt,callbacks:{
         title:ctx=>RACES[ctx[0].dataIndex]?`R${RACES[ctx[0].dataIndex].n} ${RACES[ctx[0].dataIndex].track}`:'',
-        label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y??'—'}`,
+        label:ctx=>{
+          const v=ctx.parsed.y;
+          const lbl=ctx.dataset.label.replace('​','');
+          if(v==null) return null;
+          if(ctx.dataset.yAxisID==='y2') return `${lbl}: ${v} playoff pts`;
+          return `${lbl}: ${v}`;
+        },
       }}},
-      scales:{
-        x:{grid:{color:gc},ticks:{color:tc,font:{size:window.innerWidth<540?7:9},autoSkip:false,maxRotation:45,minRotation:45}},
-        y:yOpts,
-      },
+      scales,
     }
   });
 
@@ -1347,7 +1427,24 @@ function buildMainChart() {
       ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='11px "Barlow Condensed",sans-serif';ctx.textAlign='center';ctx.fillText('Now',px,y.top-4);ctx.restore();
     }});
   }
+
+  if(!Chart.registry.plugins.get('playoffLine')){
+    Chart.register({id:'playoffLine',afterDraw(chart){
+      if(chart.canvas.id!=='chart-points')return;
+      if(DATA.racesDone<=24||mainMetricKey!=='pts')return;
+      const{ctx,scales:{x,y}}=chart;
+      const idx=23;
+      if(idx>=x.ticks.length)return;
+      const xPos=x.getPixelForValue(idx);
+      ctx.save();
+      ctx.strokeStyle='rgba(240,208,0,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+      ctx.beginPath();ctx.moveTo(xPos,y.top);ctx.lineTo(xPos,y.bottom);ctx.stroke();
+      ctx.fillStyle='rgba(240,208,0,0.8)';ctx.font='bold 9px var(--font-b,sans-serif)';
+      ctx.textAlign='center';ctx.fillText('PLAYOFFS',xPos,y.top+10);ctx.restore();
+    }});
+  }
 }
+
 
 function buildStandingsChart() {
   if(chartStandings){chartStandings.destroy();chartStandings=null;}
@@ -1870,6 +1967,46 @@ const QUAL_FIELDS = {
   {car:'45',driver:'Lavar Scott',fin:24,ownerRank:100,metric:46.8,jgr:false,ineligible:false},
   {car:'74',driver:'Dawson Cram',fin:34,ownerRank:100,metric:53.8,jgr:false,ineligible:false},
   {car:'92',driver:'Josh Williams',fin:35,ownerRank:100,metric:54.5,jgr:false,ineligible:false},
+  ],
+  26: [
+  {car:'00',driver:'Sheldon Creed',fin:1,ownerRank:2,metric:1.3,jgr:false,ineligible:false},
+  {car:'17',driver:'Corey Day',fin:2,ownerRank:5,metric:2.9,jgr:false,ineligible:false},
+  {car:'21',driver:'Austin Hill',fin:5,ownerRank:4,metric:4.7,jgr:false,ineligible:false},
+  {car:'19',driver:'Brent Crews',fin:3,ownerRank:10,metric:5.1,jgr:true,ineligible:false},
+  {car:'8',driver:'Sammy Smith',fin:4,ownerRank:9,metric:5.5,jgr:false,ineligible:false},
+  {car:'54',driver:'Taylor Gray',fin:7,ownerRank:13,metric:8.8,jgr:true,ineligible:false},
+  {car:'41',driver:'Sam Mayer',fin:8,ownerRank:11,metric:8.9,jgr:false,ineligible:false},
+  {car:'1',driver:'Carson Kvapil',fin:12,ownerRank:3,metric:9.3,jgr:false,ineligible:false},
+  {car:'96',driver:'Anthony Alfredo',fin:6,ownerRank:17,metric:9.3,jgr:false,ineligible:false},
+  {car:'20',driver:'Brandon Jones',fin:10,ownerRank:8,metric:9.4,jgr:true,ineligible:false},
+  {car:'2',driver:'Jesse Love',fin:13,ownerRank:6,metric:10.9,jgr:false,ineligible:false},
+  {car:'7',driver:'Justin Allgaier',fin:17,ownerRank:1,metric:12.2,jgr:false,ineligible:false},
+  {car:'51',driver:'Jeremy Clements',fin:9,ownerRank:21,metric:12.6,jgr:false,ineligible:false},
+  {car:'26',driver:'Dean Thompson',fin:11,ownerRank:19,metric:13.4,jgr:false,ineligible:false},
+  {car:'44',driver:'Brennan Poole',fin:15,ownerRank:19,metric:16.2,jgr:false,ineligible:false},
+  {car:'87',driver:'Nick Sanchez',fin:14,ownerRank:23,metric:16.7,jgr:false,ineligible:false},
+  {car:'9',driver:'Jake Finch',fin:18,ownerRank:15,metric:17.1,jgr:false,ineligible:false},
+  {car:'39',driver:'Ryan Sieg',fin:19,ownerRank:16,metric:18.1,jgr:false,ineligible:false},
+  {car:'99',driver:'Parker Retzlaff',fin:21,ownerRank:12,metric:18.3,jgr:false,ineligible:false},
+  {car:'24',driver:'Harrison Burton',fin:20,ownerRank:21,metric:20.3,jgr:false,ineligible:false},
+  {car:'88',driver:'Rajah Caruth',fin:26,ownerRank:7,metric:20.3,jgr:false,ineligible:false},
+  {car:'31',driver:'Blaine Perkins',fin:22,ownerRank:26,metric:23.2,jgr:false,ineligible:false},
+  {car:'32',driver:'Daniel Dye(i)',fin:27,ownerRank:17,metric:24.0,jgr:false,ineligible:true},
+  {car:'0',driver:'Garrett Smithley',fin:25,ownerRank:24,metric:24.7,jgr:false,ineligible:false},
+  {car:'18',driver:'William Sawalich',fin:30,ownerRank:14,metric:25.2,jgr:true,ineligible:false},
+  {car:'92',driver:'Preston Pardus',fin:23,ownerRank:31,metric:25.4,jgr:false,ineligible:false},
+  {car:'07',driver:'Josh Bilicki',fin:24,ownerRank:29,metric:25.5,jgr:false,ineligible:false},
+  {car:'42',driver:'Logan Bearden',fin:28,ownerRank:32,metric:29.2,jgr:false,ineligible:false},
+  {car:'55',driver:'Joey Gase',fin:29,ownerRank:34,metric:30.5,jgr:false,ineligible:false},
+  {car:'27',driver:'Jeb Burton',fin:33,ownerRank:25,metric:30.6,jgr:false,ineligible:false},
+  {car:'45',driver:'Lavar Scott',fin:31,ownerRank:30,metric:30.7,jgr:false,ineligible:false},
+  {car:'48',driver:'Patrick Staropoli',fin:32,ownerRank:28,metric:30.8,jgr:false,ineligible:false},
+  {car:'91',driver:'Mason Maggio',fin:35,ownerRank:27,metric:32.6,jgr:false,ineligible:false},
+  {car:'53',driver:'Glen Reen',fin:34,ownerRank:35,metric:34.3,jgr:false,ineligible:false},
+  {car:'02',driver:'Ryan Ellis',fin:37,ownerRank:33,metric:35.8,jgr:false,ineligible:false},
+  {car:'47',driver:'Dawson Cram',fin:36,ownerRank:36,metric:36.0,jgr:false,ineligible:false},
+  {car:'38',driver:'Brad Perez',fin:38,ownerRank:37,metric:37.7,jgr:false,ineligible:false},
+  {car:'28',driver:'Kyle Sieg',fin:16,ownerRank:100,metric:41.2,jgr:false,ineligible:false},
   ],
   25: [
   {car:'1',driver:'Carson Kvapil',fin:3,ownerRank:2,metric:2.7,jgr:false,ineligible:false},
@@ -2740,6 +2877,18 @@ function buildCompare() {
 }
 
 let isLight = false;
+
+function toggleProjections() {
+  showProjections=!showProjections;
+  const btn=document.getElementById('proj-toggle');
+  if(btn){
+    btn.textContent=showProjections?'Proj On':'Proj Off';
+    btn.style.background=showProjections?'var(--red-dim)':'';
+    btn.style.borderColor=showProjections?'var(--line-red)':'';
+    btn.style.color=showProjections?'var(--red)':'';
+  }
+  buildMainChart();
+}
 
 function toggleTheme() {
   isLight = !isLight;
