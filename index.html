@@ -1376,7 +1376,7 @@ function buildMainChart() {
   const extendToCutoff = key==='pts';
   const isPlayoff = key==='pts' && DATA.racesDone > 24;
   // In playoff mode, labels extend to cover playoff races
-  const labelEnd = isPlayoff ? Math.max(rd, cutoff) : (extendToCutoff ? cutoff : rd);
+  const labelEnd = (key==='pts') ? 33 : (extendToCutoff ? cutoff : rd);
 
   document.getElementById('main-chart-title').textContent = meta.label;
 
