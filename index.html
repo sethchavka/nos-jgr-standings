@@ -66,7 +66,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:
 .std-tbl th.sort-desc::after{content:' ▼';color:var(--gold);}
 .std-tbl th:first-child,.std-tbl th:nth-child(2){text-align:left;}
 .std-tbl td{padding:4px 8px;border-bottom:1px solid var(--line);text-align:right;color:var(--text2);font-size:11px;white-space:nowrap;}
-.std-tbl td:first-child,.std-tbl td:nth-child(2){text-align:left;}
+.std-tbl td:first-child,.std-tbl td:nth-child(2){text-align:left;padding-left:6px;}
 .std-tbl tr:hover td{background:var(--bg3);}
 .std-jgr td{color:var(--text)!important;font-weight:600;}
 .std-playoff td:first-child::before{content:"★ ";color:var(--gold);}
@@ -264,7 +264,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:
 .std-tbl th.sort-desc::after{content:' ▼';color:var(--gold);}
 .std-tbl th:first-child,.std-tbl th:nth-child(2){text-align:left;}
 .std-tbl td{padding:4px 8px;border-bottom:1px solid var(--line);text-align:right;color:var(--text2);font-size:11px;white-space:nowrap;}
-.std-tbl td:first-child,.std-tbl td:nth-child(2){text-align:left;}
+.std-tbl td:first-child,.std-tbl td:nth-child(2){text-align:left;padding-left:6px;}
 .std-tbl tr:hover td{background:var(--bg3);}
 .std-jgr td{color:var(--text)!important;font-weight:600;}
 .std-playoff td:first-child::before{content:"★ ";color:var(--gold);}
@@ -3246,22 +3246,24 @@ function buildDriverStandings() {
     return `<th class="${cls}" ${onclick}>${col.label}</th>`;
   }).join('');
 
-  let html = `<table class="std-tbl"><thead><tr>${thHtml}</tr></thead><tbody>`;
+  let html = `<table class="std-tbl"><thead><tr>` + thHtml + `</tr></thead><tbody>`;
 
   sorted.forEach((s, i) => {
     const jgrD = s.jgr && s.dId ? DRIVERS.find(d=>d.id===s.dId) : null;
     const isPlay = isPlayoffEra && s.origPos <= 12;
     const isCut  = isPlayoffEra && i === 12;
     const color  = jgrD ? jgrD.color : null;
-    const rowClass = [s.jgr?'std-jgr':'', isPlay?'std-playoff':'', isCut?'std-cutline':''].filter(Boolean).join(' ');
-    const nameStyle = color ? `style="color:${color}"` : '';
+    const cutlineStyle = isCut ? 'border-top:2px solid var(--gold);' : '';
+    const rowBg = color ? `background:${color}30;` : '';
+    const rowStyle = `${rowBg}${cutlineStyle}`;
+    const nameColor = color ? `style="color:${color};font-weight:700;"` : '';
     const gapLdr = i === 0 && !state.col ? '—' : (s.pts === leaderPts ? '—' : '-'+(leaderPts-s.pts));
     const prevPts = i > 0 ? sorted[i-1].pts : null;
     const gapNxt = prevPts === null ? '—' : (s.pts === prevPts ? '—' : '-'+(prevPts-s.pts));
 
-    html += `<tr class="${rowClass}">
-      <td>${s.origPos}</td>
-      <td ${nameStyle}>${s.name.split(' ').pop()}</td>
+    html += `<tr style="${rowStyle}">
+      <td style="${color?'color:'+color+';font-weight:700;':''}">${s.origPos}</td>
+      <td ${nameColor}>${s.name.split(' ').pop()}</td>
       <td>#${s.car}</td>
       ${isPlayoffEra ? `<td>${s.champPts != null ? s.champPts : '—'}</td>` : ''}
       <td>${s.pts}</td>
@@ -3324,15 +3326,17 @@ function buildOwnerStandings() {
     return `<th class="${cls}" ${onclick}>${col.label}</th>`;
   }).join('');
 
-  let html = `<table class="std-tbl"><thead><tr>${thHtml}</tr></thead><tbody>`;
+  let html = `<table class="std-tbl"><thead><tr>` + thHtml + `</tr></thead><tbody>`;
 
   sorted.forEach((s, i) => {
     const jgrD = s.jgr && s.dId ? DRIVERS.find(d=>d.id===s.dId) : null;
     const isPlay = isPlayoffOwner({pos: s.origPos});
     const isCut  = isPlayoffEra && i === 12;
     const color  = jgrD ? jgrD.color : null;
-    const rowClass = [s.jgr?'std-jgr':'', isPlay?'std-playoff':'', isCut?'std-cutline':''].filter(Boolean).join(' ');
-    const nameStyle = color ? `style="color:${color}"` : '';
+    const cutlineStyle = isCut ? 'border-top:2px solid var(--gold);' : '';
+    const rowBg = color ? `background:${color}30;` : '';
+    const rowStyle = `${rowBg}${cutlineStyle}`;
+    const nameColor = color ? `style="color:${color};font-weight:700;"` : '';
     const prevReg = i > 0 ? sorted[i-1].reg : null;
     const gapLdr = s.reg === leaderReg ? '—' : '-'+(leaderReg - s.reg);
     const gapNxt = prevReg === null ? '—' : (s.reg === prevReg ? '—' : '-'+(prevReg - s.reg));
@@ -3341,9 +3345,9 @@ function buildOwnerStandings() {
       .replace('Haas Factory Team','HFT').replace('Viking Motorsports','Viking')
       .replace('Alpha Prime Racing','APR');
 
-    html += `<tr class="${rowClass}">
+    html += `<tr style="${rowStyle}">
       <td>${s.origPos}</td>
-      <td ${nameStyle}>${teamShort}</td>
+      <td ${nameColor}>${teamShort}</td>
       <td>#${s.car}</td>
       ${isPlayoffEra ? `<td>${isPlay ? s.pts : '—'}</td>` : ''}
       <td>${s.reg}</td>
