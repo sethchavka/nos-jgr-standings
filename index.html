@@ -3380,7 +3380,7 @@ function buildDriverStandings() {
     data:{labels:chartLabels, datasets},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{
       legend:{display:true,position:'bottom',labels:{color:tc,font:{size:9},boxWidth:14,padding:8}},
-      tooltip:{...tt,callbacks:{
+      tooltip:{...tt,itemSort:(a,b)=>b.parsed.y-a.parsed.y,callbacks:{
         title: ctx => ctx[0] ? (ctx[0].dataIndex===0 ? 'Playoff Seeding' : (RACES[PS+ctx[0].dataIndex-1]?.name||chartLabels[ctx[0].dataIndex])) : '',
         label: ctx => ctx.parsed.y!=null ? `${ctx.dataset.label}: ${ctx.parsed.y} pts` : null,
       }},
@@ -3542,7 +3542,7 @@ function buildOwnerStandings() {
     data:{labels:chartLabelsO, datasets},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{
       legend:{display:true,position:'bottom',labels:{color:tc,font:{size:9},boxWidth:14,padding:8}},
-      tooltip:{...tt,callbacks:{
+      tooltip:{...tt,itemSort:(a,b)=>b.parsed.y-a.parsed.y,callbacks:{
         title: ctx => ctx[0] ? (ctx[0].dataIndex===0 ? 'Playoff Seeding' : (RACES[PS+ctx[0].dataIndex-1]?.name||chartLabelsO[ctx[0].dataIndex])) : '',
         label: ctx => ctx.parsed.y!=null ? `${ctx.dataset.label}: ${ctx.parsed.y} pts` : null,
       }},
