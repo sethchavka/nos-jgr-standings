@@ -3199,7 +3199,7 @@ function buildFullSeasonRadarOnCanvas(canvas, selectedDrivers, rd, gc, tc, regOn
   const datasets = selectedDrivers.map(d=>({
     label:`#${d.car} ${d.last}`,
     data:FS_METRICS.map(m=>Math.round(norm(statsMap[d.id]?.[m.key]??0,m.key))),
-    borderColor:d.color,backgroundColor:d.color+'25',
+    borderColor:d.color,backgroundColor:'transparent',
     borderWidth:d.isJgr?2.5:1.5,pointRadius:3,pointHoverRadius:5,
   }));
   const chart = new Chart(canvas.getContext('2d'),{type:'radar',data:{labels:FS_METRICS.map(m=>m.label),datasets},
@@ -3741,7 +3741,7 @@ function buildDriverRadar(standings) {
     const jgrD = s.jgr&&s.dId ? DRIVERS.find(d=>d.id===s.dId) : null;
     const fd = DRIVERS.find(d=>d.car===car);
     const col = jgrD?jgrD.color:(fd?fd.color:'#888');
-    return {label:`#${car} ${s.name}`,data:METRICS.map(m=>Math.round(norm(stats[m.key],m.key))),borderColor:col,backgroundColor:col+'25',borderWidth:2,pointRadius:3,pointHoverRadius:5};
+    return {label:`#${car} ${s.name}`,data:METRICS.map(m=>Math.round(norm(stats[m.key],m.key))),borderColor:col,backgroundColor:'transparent',borderWidth:2,pointRadius:3,pointHoverRadius:5};
   }).filter(Boolean);
 
   // Destroy existing charts
@@ -4044,7 +4044,7 @@ function buildOwnerRadar(ownerStandings) {
     const jgrD = s.jgr&&s.dId ? DRIVERS.find(d=>d.id===s.dId) : null;
     const fd = DRIVERS.find(d=>d.car===car);
     const col = jgrD?jgrD.color:(fd?fd.color:'#888');
-    return {label:`#${car} ${teamSh(s.team)}`,data:METRICS.map(m=>Math.round(norm(stats[m.key],m.key))),borderColor:col,backgroundColor:col+'25',borderWidth:2,pointRadius:3,pointHoverRadius:5};
+    return {label:`#${car} ${teamSh(s.team)}`,data:METRICS.map(m=>Math.round(norm(stats[m.key],m.key))),borderColor:col,backgroundColor:'transparent',borderWidth:2,pointRadius:3,pointHoverRadius:5};
   }).filter(Boolean);
 
   const PANEL_DEFS = [
