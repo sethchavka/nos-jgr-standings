@@ -3469,6 +3469,10 @@ let stdDriverSort = {col: null, dir: 1};
 let stdOwnerSort  = {col: null, dir: 1};
 let stdDriverChart = null;
 let stdOwnerChart  = null;
+let driverChartVsLdr = false;
+let ownerChartVsLdr  = false;
+function toggleDriverChartMode() { driverChartVsLdr = !driverChartVsLdr; buildDriverStandings(); }
+function toggleOwnerChartMode()  { ownerChartVsLdr  = !ownerChartVsLdr;  buildOwnerStandings();  }
 let stdRadarChart  = null;
 let radarDrivers   = new Set();
 let radarModes = new Set(['regular','playoff','fullseason']); // all three on by default
@@ -3664,7 +3668,10 @@ function buildDriverStandings() {
   const tt = {backgroundColor:isL?'#F7F8FB':'#0D0F14',borderColor:isL?'rgba(0,0,0,0.1)':'rgba(255,255,255,0.08)',borderWidth:1,titleColor:isL?'#0C0D14':'#F4F5F8',bodyColor:isL?'#444C60':'#8892A4',padding:10,cornerRadius:0,displayColors:false};
 
   html += `<div style="margin-top:20px;">
-    <div style="font-family:var(--font-b);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);padding:0 0 8px;">Cumulative Playoff Points</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 0 8px;">
+      <div style="font-family:var(--font-b);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);" id="driver-chart-title">Cumulative Playoff Points</div>
+      <button onclick="toggleDriverChartMode()" id="driver-chart-toggle" style="font-family:var(--font-b);font-size:10px;padding:3px 10px;border:1px solid var(--line2);background:var(--bg4);color:var(--text2);cursor:pointer;letter-spacing:0.5px;">vs LDR</button>
+    </div>
     <div style="height:320px;"><canvas id="chart-std-driver"></canvas></div>
   </div>`;
 
@@ -3719,6 +3726,19 @@ function buildDriverStandings() {
     };
   });
 
+  // Apply vs-leader transform if toggled
+  const driverAllData = datasets.map(ds => ds.data.slice());
+  if(driverChartVsLdr) {
+    const ldrData = driverAllData.reduce((best, d) => d.map((v,i) => (v!=null && (best[i]==null || v>best[i])) ? v : best[i]), Array(10).fill(null));
+    datasets.forEach(ds => { ds.data = ds.data.map((v,i) => v!=null && ldrData[i]!=null ? v - ldrData[i] : null); });
+  }
+  const driverYTitle = driverChartVsLdr ? 'vs Leader (pts)' : 'Championship Pts';
+  const driverYMin = driverChartVsLdr ? undefined : 2000;
+  const driverTitleEl = document.getElementById('driver-chart-title');
+  const driverToggleEl = document.getElementById('driver-chart-toggle');
+  if(driverTitleEl) driverTitleEl.textContent = driverChartVsLdr ? 'Playoff Points vs Leader' : 'Cumulative Playoff Points';
+  if(driverToggleEl) { driverToggleEl.style.background = driverChartVsLdr ? 'var(--accent)' : 'var(--bg4)'; driverToggleEl.style.color = driverChartVsLdr ? '#fff' : 'var(--text2)'; driverToggleEl.style.borderColor = driverChartVsLdr ? 'var(--accent)' : 'var(--line2)'; }
+
   if(stdDriverChart) { stdDriverChart.destroy(); stdDriverChart=null; }
   stdDriverChart = new Chart(driverChartEl.getContext('2d'), {
     type:'line',
@@ -3727,11 +3747,11 @@ function buildDriverStandings() {
       legend:{display:true,position:'bottom',labels:{color:tc,font:{size:9},boxWidth:14,padding:8}},
       tooltip:{...tt,itemSort:(a,b)=>b.parsed.y-a.parsed.y,callbacks:{
         title: ctx => ctx[0] ? (ctx[0].dataIndex===0 ? 'Playoff Seeding' : (RACES[PS+ctx[0].dataIndex-1]?.name||chartLabels[ctx[0].dataIndex])) : '',
-        label: ctx => ctx.parsed.y!=null ? `${ctx.dataset.label}: ${ctx.parsed.y} pts` : null,
+        label: ctx => ctx.parsed.y!=null ? `${ctx.dataset.label}: ${driverChartVsLdr?(ctx.parsed.y>=0?'+':'')+ctx.parsed.y+' pts':ctx.parsed.y+' pts'}` : null,
       }},
     },scales:{
       x:{grid:{color:gc},ticks:{color:tc,font:{size:9},maxRotation:45,minRotation:45}},
-      y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},title:{display:true,text:'Championship Pts',color:tc,font:{size:10}},min:2000},
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},title:{display:true,text:driverYTitle,color:tc,font:{size:10}},min:driverYMin},
     }},
   });
 
@@ -3957,7 +3977,10 @@ function buildOwnerStandings() {
   const tt = {backgroundColor:isL?'#F7F8FB':'#0D0F14',borderColor:isL?'rgba(0,0,0,0.1)':'rgba(255,255,255,0.08)',borderWidth:1,titleColor:isL?'#0C0D14':'#F4F5F8',bodyColor:isL?'#444C60':'#8892A4',padding:10,cornerRadius:0,displayColors:false};
 
   html += `<div style="margin-top:20px;">
-    <div style="font-family:var(--font-b);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);padding:0 0 8px;">Cumulative Playoff Points</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 0 8px;">
+      <div style="font-family:var(--font-b);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);" id="owner-chart-title">Cumulative Playoff Points</div>
+      <button onclick="toggleOwnerChartMode()" id="owner-chart-toggle" style="font-family:var(--font-b);font-size:10px;padding:3px 10px;border:1px solid var(--line2);background:var(--bg4);color:var(--text2);cursor:pointer;letter-spacing:0.5px;">vs LDR</button>
+    </div>
     <div style="height:320px;"><canvas id="chart-std-owner"></canvas></div>
   </div>`;
 
@@ -4012,6 +4035,18 @@ function buildOwnerStandings() {
     };
   });
 
+  // Apply vs-leader transform if toggled
+  if(ownerChartVsLdr) {
+    const ldrDataO = datasets.map(ds => ds.data.slice()).reduce((best, d) => d.map((v,i) => (v!=null && (best[i]==null || v>best[i])) ? v : best[i]), Array(10).fill(null));
+    datasets.forEach(ds => { ds.data = ds.data.map((v,i) => v!=null && ldrDataO[i]!=null ? v - ldrDataO[i] : null); });
+  }
+  const ownerYTitle = ownerChartVsLdr ? 'vs Leader (pts)' : 'Championship Pts';
+  const ownerYMin = ownerChartVsLdr ? undefined : 2000;
+  const ownerTitleEl = document.getElementById('owner-chart-title');
+  const ownerToggleEl = document.getElementById('owner-chart-toggle');
+  if(ownerTitleEl) ownerTitleEl.textContent = ownerChartVsLdr ? 'Playoff Points vs Leader' : 'Cumulative Playoff Points';
+  if(ownerToggleEl) { ownerToggleEl.style.background = ownerChartVsLdr ? 'var(--accent)' : 'var(--bg4)'; ownerToggleEl.style.color = ownerChartVsLdr ? '#fff' : 'var(--text2)'; ownerToggleEl.style.borderColor = ownerChartVsLdr ? 'var(--accent)' : 'var(--line2)'; }
+
   if(stdOwnerChart) { stdOwnerChart.destroy(); stdOwnerChart=null; }
   stdOwnerChart = new Chart(ownerChartEl.getContext('2d'), {
     type:'line',
@@ -4020,11 +4055,11 @@ function buildOwnerStandings() {
       legend:{display:true,position:'bottom',labels:{color:tc,font:{size:9},boxWidth:14,padding:8}},
       tooltip:{...tt,itemSort:(a,b)=>b.parsed.y-a.parsed.y,callbacks:{
         title: ctx => ctx[0] ? (ctx[0].dataIndex===0 ? 'Playoff Seeding' : (RACES[PS+ctx[0].dataIndex-1]?.name||chartLabelsO[ctx[0].dataIndex])) : '',
-        label: ctx => ctx.parsed.y!=null ? `${ctx.dataset.label}: ${ctx.parsed.y} pts` : null,
+        label: ctx => ctx.parsed.y!=null ? `${ctx.dataset.label}: ${ownerChartVsLdr?(ctx.parsed.y>=0?'+':'')+ctx.parsed.y+' pts':ctx.parsed.y+' pts'}` : null,
       }},
     },scales:{
       x:{grid:{color:gc},ticks:{color:tc,font:{size:9},maxRotation:45,minRotation:45}},
-      y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},title:{display:true,text:'Championship Pts',color:tc,font:{size:10}},min:2000},
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},title:{display:true,text:ownerYTitle,color:tc,font:{size:10}},min:ownerYMin},
     }},
   });
 
