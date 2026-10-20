@@ -896,6 +896,18 @@ const out20 = d => (d.finish||[]).slice(0,DATA.racesDone).filter(f=>f!==null && 
 const lapsLedTotal = d => (d.lapsLed||[]).reduce((a,b)=>a+b,0);
 const projP = (d,t) => { const n=nRaced(d); if(!n) return '—'; return Math.round(lPts(d)+(lPts(d)/n)*(t-DATA.racesDone)); };
 const CUTLINE = () => DATA.cutlineByRace[DATA.racesDone-1] || 0;
+// Playoff-aware points + gap. Playoffs: playoff drivers vs playoff leader; non-playoff drivers vs P13.
+const IS_PO = () => DATA.racesDone > 24;
+function champPtsD(d){ const s=(DATA.standings||[]).find(x=>x.dId===d.id); return (IS_PO() && s && s.pos<=12 && s.playoffPts!=null) ? s.playoffPts : lPts(d); }
+function ldrGap(d){
+  const st=DATA.standings||[], s=st.find(x=>x.dId===d.id), p=champPtsD(d);
+  if(IS_PO()){
+    if(s && s.pos<=12) return {gap:p-(st[0].playoffPts ?? st[0].pts), ref:'Ldr'};
+    const t=st.find(x=>x.pos===13); return {gap:p-(t?t.pts:p), ref:'P13'};
+  }
+  return {gap:p-DATA.leaderPts, ref:'Ldr'};
+}
+const gapTxt = g => g.gap===0 ? (g.ref==='Ldr'?'Leader':'Top non-playoff') : `${g.gap} to ${g.ref}`;
 
 // ─────────────────────────────────────────
 // RENDER ALL
@@ -942,7 +954,7 @@ function updateSidebar() {
 function buildDriverCards() {
   const cut = CUTLINE();
   const html = DRIVERS.filter(d=>d.isJgr).map(d => {
-    const pts=lPts(d);
+    const pts=champPtsD(d);
     // Use driver points rank from standings array, not owner rank
     const standingEntry = (DATA.standings||[]).find(s=>s.dId===d.id);
     const rank = standingEntry ? standingEntry.pos : lRank(d);
@@ -960,8 +972,9 @@ function buildDriverCards() {
     }
     if(d.wins) badges+=`<span class="badge" style="background:${d.color};color:#fff;">Win</span>`;
     if(d.rookie) badges+=`<span class="badge b-rookie">Rookie</span>`;
-    const dc=isBub?'gold':(diff>=0?'green':'red');
-    const dt=isBub?'On cutline':(diff>0?`+${diff}`:`${diff}`);
+    const g=ldrGap(d);
+    const dc=isPlayoffEra?(g.gap===0?'gold':'red'):(isBub?'gold':(diff>=0?'green':'red'));
+    const dt=isPlayoffEra?gapTxt(g):(isBub?'On cutline':(diff>0?`+${diff}`:`${diff}`));
     return `<div class="driver-card" data-id="${d.id}" onclick="expandDriver('${d.id}')" style="border-left:5px solid ${d.color};background:linear-gradient(105deg,${d.color}12 0%,var(--bg3) 40%);cursor:pointer;">
       <div class="dc-top">
         <div class="dc-num" style="color:${d.color}cc;">#${d.car}</div>
@@ -1017,8 +1030,9 @@ function expandDriver(id) {
 
   document.getElementById('de-stats').innerHTML = `
     <div style="font-family:var(--font-d);font-weight:900;font-size:18px;color:${d.color};letter-spacing:1px;margin-bottom:6px;">#${d.car} · ${d.first} ${d.last}</div>
-    ${statRow('Points', pts||'—', d.color, `P${rank||'—'} · ${nRaced(d)} starts`)}
-    ${statRow('vs Cutline', pts?(diff>0?'+':'')+diff:'—', diff>=0?'#00C37A':'var(--red)', `Cutline ${cut} pts`)}
+    ${statRow('Points', champPtsD(d)||'—', d.color, `P${rank||'—'} · ${nRaced(d)} starts`)}
+    ${IS_PO() ? (g => statRow(g.ref==='Ldr'?'vs Playoff Leader':'vs P13', g.gap===0?(g.ref==='Ldr'?'Leader':'—'):g.gap, g.gap===0?'var(--gold)':'var(--red)', g.ref==='Ldr'?`Leader ${DATA.leaderName} ${DATA.leaderPts} pts`:'Top non-playoff driver'))(ldrGap(d))
+      : statRow('vs Cutline', pts?(diff>0?'+':'')+diff:'—', diff>=0?'#00C37A':'var(--red)', `Cutline ${cut} pts`)}
     ${statRow('Avg Pts / Race', avgP(d), 'var(--gold)')}
     ${statRow('Avg Pts / Race (no DNF)', avgPNoDNF(d), 'var(--gold)')}
     ${statRow('Avg Start · Finish', `${avgS(d)} · ${avgF(d)}`)}
@@ -1231,9 +1245,17 @@ function buildChaseList() {
     if(i===12) html+=`<div class="chase-cutline-sep">${isPlayoffEra?'── Playoff Cutline ──':'── Chase Cutline ──'}</div>`;
     const d=s.jgr?DRIVERS.find(dr=>dr.id===s.dId):null;
     const color=d?d.color:'var(--text3)';
-    const diff=champPts(s)-p16pts;
-    const dTxt=i<12?(i===11?'cut':`+${diff}`):diff+'';
-    const dClr=i<12?'var(--text3)':(i===11?'var(--gold)':'var(--red)');
+    let diff, dTxt, dClr;
+    if(isPlayoffEra){
+      const ref = i<12 ? champPts(standings[0]) : (standings[12]?.pts ?? s.pts);
+      diff = champPts(s)-ref;
+      dTxt = (i===0||i===12) ? (i===0?'ldr':'—') : diff+'';
+      dClr = i===0 ? 'var(--gold)' : 'var(--text3)';
+    } else {
+      diff=champPts(s)-p16pts;
+      dTxt=i<12?(i===11?'cut':`+${diff}`):diff+'';
+      dClr=i<12?'var(--text3)':(i===11?'var(--gold)':'var(--red)');
+    }
     html+=`<li class="chase-item">
       <span class="ci-pos">${s.pos}</span>
       <span class="ci-name"><span class="ci-dot" style="background:${color};"></span>${(()=>{const p=s.name.split(' ');return p[p.length-1]==='Jr.'?p.slice(-2).join(' '):p.slice(-1)[0];})()}${s.jgr?` <span style="color:${color};font-size:9px;font-family:var(--font-d);font-weight:700;">JGR</span>`:''}</span>
@@ -1246,15 +1268,16 @@ function buildChaseList() {
 function buildMetricsTable() {
   const cut=CUTLINE(), ldr=DATA.leaderPts;
   document.getElementById('metrics-tbody').innerHTML = DRIVERS.filter(d=>d.isJgr).map(d=>{
-    const pts=lPts(d), rank=lRank(d), diff=pts-cut;
+    const pts=lPts(d), rank=lRank(d), cp=champPtsD(d), diff=cp-cut, g=ldrGap(d);
     const p26=projP(d,26), p33=projP(d,33);
     const isC=rank&&rank<=12;
+    const outPO=IS_PO()&&g.ref==='P13';
     return `<tr>
       <td><div class="mt-d"><div class="mt-sw" style="background:${d.color};"></div>#${d.car} ${d.last}</div></td>
-      <td>${pts||'—'}</td>
+      <td>${cp||'—'}</td>
       <td class="${isC?'mv-r':''}">${rank?`P${rank}`:'—'}</td>
-      <td class="${diff>=0?'mv-gr':'mv-r'}">${pts?(diff>0?'+':'')+diff:'—'}</td>
-      <td class="mv-r">${pts?pts-ldr:'—'}</td>
+      <td class="${diff>=0?'mv-gr':'mv-r'}">${outPO?'—':(pts?(diff>0?'+':'')+diff:'—')}</td>
+      <td class="mv-r">${pts?(g.gap===0?'—':g.gap+(outPO?' (P13)':'')):'—'}</td>
       <td>${avgP(d)}</td><td>${avgPNoDNF(d)}</td><td>${avgS(d)}</td><td>${avgF(d)}</td>
       <td class="mv-g">${poles(d)}</td>
       <td class="mv-g">${d.wins||0}</td>
@@ -1299,7 +1322,7 @@ function buildMetricsPage() {
       {k:'Finishes Outside Top 20',v:out20(d),c:out20(d)>0?'red':''},
       {k:'Laps Led',v:lapsLedTotal(d),c:lapsLedTotal(d)>0?'gold':''},
       {k:'vs Chase Cutline',v:pts?(diff>0?'+':'')+diff:'—',c:diff>=0?'green':'red'},
-      {k:'vs Series Leader',v:pts?pts-ldr:'—',c:'red'},
+      {k:IS_PO()?(ldrGap(d).ref==='Ldr'?'vs Playoff Leader':'vs P13'):'vs Series Leader',v:pts?(ldrGap(d).gap===0?'—':ldrGap(d).gap):'—',c:'red'},
       {k:'Projected at Race 24',v:p26,c:typeof p26==='number'&&p26>=cut?'green':'red'},
       {k:'Projected at Race 33',v:p33,c:''},
       {k:'Pts/race needed for cutline',v:pts&&nRaced(d)?((cut-pts)/(24-rd)).toFixed(1):'—',c:''},
